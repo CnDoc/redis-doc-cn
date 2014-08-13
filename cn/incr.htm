@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      INCR â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>INCR</span>
+        <span class='arg'>key</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href="append.htm" tppabs="http://redis.io/commands/append">
+                APPEND
+              </a>
+            </li>
+            <li>
+              <a href="bitcount.htm" tppabs="http://redis.io/commands/bitcount">
+                BITCOUNT
+              </a>
+            </li>
+            <li>
+              <a href="bitop.htm" tppabs="http://redis.io/commands/bitop">
+                BITOP
+              </a>
+            </li>
+            <li>
+              <a href="bitpos.htm" tppabs="http://redis.io/commands/bitpos">
+                BITPOS
+              </a>
+            </li>
+            <li>
+              <a href="decr.htm" tppabs="http://redis.io/commands/decr">
+                DECR
+              </a>
+            </li>
+            <li>
+              <a href="decrby.htm" tppabs="http://redis.io/commands/decrby">
+                DECRBY
+              </a>
+            </li>
+            <li>
+              <a href="get.htm" tppabs="http://redis.io/commands/get">
+                GET
+              </a>
+            </li>
+            <li>
+              <a href="getbit.htm" tppabs="http://redis.io/commands/getbit">
+                GETBIT
+              </a>
+            </li>
+            <li>
+              <a href="getrange.htm" tppabs="http://redis.io/commands/getrange">
+                GETRANGE
+              </a>
+            </li>
+            <li>
+              <a href="getset.htm" tppabs="http://redis.io/commands/getset">
+                GETSET
+              </a>
+            </li>
+            <li>
+              <a href="incr.htm" tppabs="http://redis.io/commands/incr">
+                <strong>INCR</strong>
+              </a>
+            </li>
+            <li>
+              <a href="incrby.htm" tppabs="http://redis.io/commands/incrby">
+                INCRBY
+              </a>
+            </li>
+            <li>
+              <a href="incrbyfloat.htm" tppabs="http://redis.io/commands/incrbyfloat">
+                INCRBYFLOAT
+              </a>
+            </li>
+            <li>
+              <a href="mget.htm" tppabs="http://redis.io/commands/mget">
+                MGET
+              </a>
+            </li>
+            <li>
+              <a href="mset.htm" tppabs="http://redis.io/commands/mset">
+                MSET
+              </a>
+            </li>
+            <li>
+              <a href="msetnx.htm" tppabs="http://redis.io/commands/msetnx">
+                MSETNX
+              </a>
+            </li>
+            <li>
+              <a href="psetex.htm" tppabs="http://redis.io/commands/psetex">
+                PSETEX
+              </a>
+            </li>
+            <li>
+              <a href="set.htm" tppabs="http://redis.io/commands/set">
+                SET
+              </a>
+            </li>
+            <li>
+              <a href="setbit.htm" tppabs="http://redis.io/commands/setbit">
+                SETBIT
+              </a>
+            </li>
+            <li>
+              <a href="setex.htm" tppabs="http://redis.io/commands/setex">
+                SETEX
+              </a>
+            </li>
+            <li>
+              <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">
+                SETNX
+              </a>
+            </li>
+            <li>
+              <a href="setrange.htm" tppabs="http://redis.io/commands/setrange">
+                SETRANGE
+              </a>
+            </li>
+            <li>
+              <a href="strlen.htm" tppabs="http://redis.io/commands/strlen">
+                STRLEN
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.0.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(1)</p>
+        </div>
+        <p>Increments the number stored at <code>key</code> by one.
+        If the key does not exist, it is set to <code>0</code> before performing the operation.
+        An error is returned if the key contains a value of the wrong type or contains a
+        string that can not be represented as integer.
+        This operation is limited to 64 bit signed integers.</p>
+        
+        <p><strong>Note</strong>: this is a string operation because Redis does not have a dedicated
+        integer type.
+        The string stored at the key is interpreted as a base-10 <strong>64 bit signed
+        integer</strong> to execute the operation.</p>
+        
+        <p>Redis stores integers in their integer representation, so for string values
+        that actually hold an integer, there is no overhead for storing the string
+        representation of the integer.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="protocol.htm#integer-reply" tppabs="http://redis.io/topics/protocol#integer-reply">Integer reply</a>: the value of <code>key</code> after the increment</p>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='ed39d2f7044d2507619016a87e23fb58'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SET mykey &quot;10&quot;</span>
+          <pre>OK</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>INCR mykey</span>
+          <pre>(integer) 11</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>GET mykey</span>
+          <pre>"11"</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+        
+        
+        <h2>Pattern: Counter</h2>
+        
+        <p>The counter pattern is the most obvious thing you can do with Redis atomic
+        increment operations.
+        The idea is simply send an <a href="incr.htm" tppabs="http://redis.io/commands/incr">INCR</a> command to Redis every time an operation
+        occurs.
+        For instance in a web application we may want to know how many page views this
+        user did every day of the year.</p>
+        
+        <p>To do so the web application may simply increment a key every time the user
+        performs a page view, creating the key name concatenating the User ID and a
+        string representing the current date.</p>
+        
+        <p>This simple pattern can be extended in many ways:</p>
+        
+        <ul>
+        <li>It is possible to use <a href="incr.htm" tppabs="http://redis.io/commands/incr">INCR</a> and <a href="expire.htm" tppabs="http://redis.io/commands/expire">EXPIRE</a> together at every page view to have
+        a counter counting only the latest N page views separated by less than the
+        specified amount of seconds.</li>
+        <li>A client may use GETSET in order to atomically get the current counter value
+        and reset it to zero.</li>
+        <li>Using other atomic increment/decrement commands like <a href="decr.htm" tppabs="http://redis.io/commands/decr">DECR</a> or <a href="incrby.htm" tppabs="http://redis.io/commands/incrby">INCRBY</a> it
+        is possible to handle values that may get bigger or smaller depending on the
+        operations performed by the user.
+        Imagine for instance the score of different users in an online game.</li>
+        </ul>
+        
+        <h2>Pattern: Rate limiter</h2>
+        
+        <p>The rate limiter pattern is a special counter that is used to limit the rate at
+        which an operation can be performed.
+        The classical materialization of this pattern involves limiting the number of
+        requests that can be performed against a public API.</p>
+        
+        <p>We provide two implementations of this pattern using <a href="incr.htm" tppabs="http://redis.io/commands/incr">INCR</a>, where we assume
+        that the problem to solve is limiting the number of API calls to a maximum of
+        <em>ten requests per second per IP address</em>.</p>
+        
+        <h2>Pattern: Rate limiter 1</h2>
+        
+        <p>The more simple and direct implementation of this pattern is the following:</p>
+        
+        <pre><code>FUNCTION LIMIT_API_CALL(ip)&#x000A;ts = CURRENT_UNIX_TIME()&#x000A;keyname = ip+&quot;:&quot;+ts&#x000A;current = GET(keyname)&#x000A;IF current != NULL AND current &gt; 10 THEN&#x000A;    ERROR &quot;too many requests per second&quot;&#x000A;ELSE&#x000A;    MULTI&#x000A;        INCR(keyname,1)&#x000A;        EXPIRE(keyname,10)&#x000A;    EXEC&#x000A;    PERFORM_API_CALL()&#x000A;END&#x000A;</code></pre>
+        
+        <p>Basically we have a counter for every IP, for every different second.
+        But this counters are always incremented setting an expire of 10 seconds so that
+        they&#39;ll be removed by Redis automatically when the current second is a different
+        one.</p>
+        
+        <p>Note the used of <a href="multi.htm" tppabs="http://redis.io/commands/multi">MULTI</a> and <a href="exec.htm" tppabs="http://redis.io/commands/exec">EXEC</a> in order to make sure that we&#39;ll both
+        increment and set the expire at every API call.</p>
+        
+        <h2>Pattern: Rate limiter 2</h2>
+        
+        <p>An alternative implementation uses a single counter, but is a bit more complex
+        to get it right without race conditions.
+        We&#39;ll examine different variants.</p>
+        
+        <pre><code>FUNCTION LIMIT_API_CALL(ip):&#x000A;current = GET(ip)&#x000A;IF current != NULL AND current &gt; 10 THEN&#x000A;    ERROR &quot;too many requests per second&quot;&#x000A;ELSE&#x000A;    value = INCR(ip)&#x000A;    IF value == 1 THEN&#x000A;        EXPIRE(value,1)&#x000A;    END&#x000A;    PERFORM_API_CALL()&#x000A;END&#x000A;</code></pre>
+        
+        <p>The counter is created in a way that it only will survive one second, starting
+        from the first request performed in the current second.
+        If there are more than 10 requests in the same second the counter will reach a
+        value greater than 10, otherwise it will expire and start again from 0.</p>
+        
+        <p><strong>In the above code there is a race condition</strong>.
+        If for some reason the client performs the <a href="incr.htm" tppabs="http://redis.io/commands/incr">INCR</a> command but does not perform
+        the <a href="expire.htm" tppabs="http://redis.io/commands/expire">EXPIRE</a> the key will be leaked until we&#39;ll see the same IP address again.</p>
+        
+        <p>This can be fixed easily turning the <a href="incr.htm" tppabs="http://redis.io/commands/incr">INCR</a> with optional <a href="expire.htm" tppabs="http://redis.io/commands/expire">EXPIRE</a> into a Lua
+        script that is send using the <a href="eval.htm" tppabs="http://redis.io/commands/eval">EVAL</a> command (only available since Redis version
+        2.6).</p>
+        
+        <pre><code>local current&#x000A;current = redis.call(&quot;incr&quot;,KEYS[1])&#x000A;if tonumber(current) == 1 then&#x000A;    redis.call(&quot;expire&quot;,KEYS[1],1)&#x000A;end&#x000A;</code></pre>
+        
+        <p>There is a different way to fix this issue without using scripting, but using
+        Redis lists instead of counters.
+        The implementation is more complex and uses more advanced features but has the
+        advantage of remembering the IP addresses of the clients currently performing an
+        API call, that may be useful or not depending on the application.</p>
+        
+        <pre><code>FUNCTION LIMIT_API_CALL(ip)&#x000A;current = LLEN(ip)&#x000A;IF current &gt; 10 THEN&#x000A;    ERROR &quot;too many requests per second&quot;&#x000A;ELSE&#x000A;    IF EXISTS(ip) == FALSE&#x000A;        MULTI&#x000A;            RPUSH(ip,ip)&#x000A;            EXPIRE(ip,1)&#x000A;        EXEC&#x000A;    ELSE&#x000A;        RPUSHX(ip,ip)&#x000A;    END&#x000A;    PERFORM_API_CALL()&#x000A;END&#x000A;</code></pre>
+        
+        <p>The <a href="rpushx.htm" tppabs="http://redis.io/commands/rpushx">RPUSHX</a> command only pushes the element if the key already exists.</p>
+        
+        <p>Note that we have a race here, but it is not a problem: <a href="exists.htm" tppabs="http://redis.io/commands/exists">EXISTS</a> may return
+        false but the key may be created by another client before we create it inside
+        the <a href="multi.htm" tppabs="http://redis.io/commands/multi">MULTI</a> / <a href="exec.htm" tppabs="http://redis.io/commands/exec">EXEC</a> block.
+        However this race will just miss an API call under rare conditions, so the rate
+        limiting will still work correctly.</p>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_incr';
+          var disqus_url = 'incr.htm'/*tpa=http://redis.io/commands/incr*/;
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href="javascript:if(confirm('http://disqus.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://disqus.com/'" tppabs="http://disqus.com/">
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

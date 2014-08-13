@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Redis Sentinel Documentation â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics sentinel'>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Redis Sentinel Documentation</h1>
+        
+        <p>Redis Sentinel is a system designed to help managing Redis instances.
+        It performs the following four tasks:</p>
+        
+        <ul>
+        <li><strong>Monitoring</strong>. Sentinel constantly checks if your master and slave instances are working as expected.</li>
+        <li><strong>Notification</strong>. Sentinel can notify the system administrator, or another computer program, via an API, that something is wrong with one of the monitored Redis instances.</li>
+        <li><strong>Automatic failover</strong>. If a master is not working as expected, Sentinel can start a failover process where a slave is promoted to master, the other additional slaves are reconfigured to use the new master, and the applications using the Redis server informed about the new address to use when connecting.</li>
+        <li><strong>Configuration provider</strong>. Sentinel acts as a source of authority for clients service discovery: clients connect to Sentinels in order to ask for the address of the current Redis master responsible for a given service. If a failover occurs, Sentinels will report the new address.</li>
+        </ul>
+        
+        <h2>Distributed nature of Sentinel</h2>
+        
+        <p>Redis Sentinel is a distributed system, this means that usually you want to run
+        multiple Sentinel processes across your infrastructure, and this processes
+        will use gossip protocols in order to understand if a master is down and
+        agreement protocols in order to get authorized to perform the failover and assign
+        a new version to the new configuration.</p>
+        
+        <p>Distributed systems have given <em>safety</em> and <em>liveness</em> properties, in order to
+        use Redis Sentinel well you are supposed to understand, at least at higher level,
+        how Sentinel works as a distributed system. This makes Sentinel more complex but
+        also better compared to a system using a single process, for example:</p>
+        
+        <ul>
+        <li>A cluster of Sentinels can failover a master even if some Sentinels are failing.</li>
+        <li>A single Sentinel not working well, or not well connected, can&#39;t failover a master without authorization from other Sentinels.</li>
+        <li>Clients can connect to any random Sentinel to fetch the configuration of a master.</li>
+        </ul>
+        
+        <h2>Obtaining Sentinel</h2>
+        
+        <p>The current version of Sentinel is called <strong>Sentinel 2</strong>. It is a rewrite of
+        the initial Sentinel implementation using stronger and simpler to predict
+        algorithms (that are explained in this documentation).</p>
+        
+        <p>A stable release of Redis Sentinel is shipped with Redis 2.8, which is the
+        latest stable release of Redis.</p>
+        
+        <p>New developments are performed in the <em>unstable</em> branch, and new features are
+        backported into the 2.8 branch as soon as they are considered to be stable.</p>
+        
+        <p>IMPORTANT: <strong>Even if you are using Redis 2.6, you should use Sentinel shipped with Redis 2.8</strong>. Redis Sentinel shipped with Redis 2.6, that is, &quot;Sentinel 1&quot;,
+        is deprecated and has many bugs. In general you should migrate all your
+        Redis and Sentinel instances to Redis 2.8 ASAP to get a better overall
+        experience.</p>
+        
+        <h2>Running Sentinel</h2>
+        
+        <p>If you are using the <code>redis-sentinel</code> executable (or if you have a symbolic
+        link with that name to the <code>redis-server</code> executable) you can run Sentinel
+        with the following command line:</p>
+        
+        <pre><code>redis-sentinel /path/to/sentinel.conf&#x000A;</code></pre>
+        
+        <p>Otherwise you can use directly the <code>redis-server</code> executable starting it in
+        Sentinel mode:</p>
+        
+        <pre><code>redis-server /path/to/sentinel.conf --sentinel&#x000A;</code></pre>
+        
+        <p>Both ways work the same.</p>
+        
+        <p>However <strong>it is mandatory</strong> to use a configuration file when running Sentinel, as this file will be used by the system in order to save the current state that will be reloaded in case of restarts. Sentinel will simply refuse to start if no configuration file is given or if the configuration file path is not writable.</p>
+        
+        <p>Sentinels by default run <strong>listening for connections to TCP port 26379</strong>, so
+        for Sentinels to work, port 26379 of your servers <strong>must be open</strong> to receive
+        connections from the IP addresses of the other Sentinel instances.
+        Otherwise Sentinels can&#39;t talk and can&#39;t agree about what to do, so failover
+        will never be performed.</p>
+        
+        <h2>Configuring Sentinel</h2>
+        
+        <p>The Redis source distribution contains a file called <code>sentinel.conf</code>
+        that is a self-documented example configuration file you can use to
+        configure Sentinel, however a typical minimal configuration file looks like the
+        following:</p>
+        
+        <pre><code>sentinel monitor mymaster 127.0.0.1 6379 2&#x000A;sentinel down-after-milliseconds mymaster 60000&#x000A;sentinel failover-timeout mymaster 180000&#x000A;sentinel parallel-syncs mymaster 1&#x000A;&#x000A;sentinel monitor resque 192.168.1.3 6380 4&#x000A;sentinel down-after-milliseconds resque 10000&#x000A;sentinel failover-timeout resque 180000&#x000A;sentinel parallel-syncs resque 5&#x000A;</code></pre>
+        
+        <p>You only need to specify the masters to monitor, giving to each separated
+        master (that may have any number of slaves) a different name. There is no
+        need to specify slaves, which are auto-discovered. Sentinel will update the
+        configuration automatically with additional informations about slaves (in
+        order to retain the information in case of restart). The configuration is
+        also rewritten every time a slave is promoted to master during a failover.</p>
+        
+        <p>The example configuration above, basically monitor two sets of Redis
+        instances, each composed of a master and an undefined number of slaves.
+        One set of instances is called <code>mymaster</code>, and the other <code>resque</code>.</p>
+        
+        <p>For the sake of clarity, let&#39;s check line by line what the configuration
+        options mean:</p>
+        
+        <p>The first line is used to tell Redis to monitor a master called <em>mymaster</em>,
+        that is at address 127.0.0.1 and port 6379, with a level of agreement needed
+        to detect this master as failing of 2 sentinels (if the agreement is not reached
+        the automatic failover does not start).</p>
+        
+        <p>However note that whatever the agreement you specify to detect an instance as not working, a Sentinel requires <strong>the vote from the majority</strong> of the known Sentinels in the system in order to start a failover and obtain a new <em>configuration Epoch</em> to assign to the new configuration after the failover.</p>
+        
+        <p>In the example the quorum is set to to 2, so it takes 2 sentinels that agree that
+        a given master is not reachable or in an error condition for a failover to
+        be triggered (however as you&#39;ll see in the next section to trigger a failover is
+        not enough to start a successful failover, authorization is required).</p>
+        
+        <p>The other options are almost always in the form:</p>
+        
+        <pre><code>sentinel &lt;option_name&gt; &lt;master_name&gt; &lt;option_value&gt;&#x000A;</code></pre>
+        
+        <p>And are used for the following purposes:</p>
+        
+        <ul>
+        <li><code>down-after-milliseconds</code> is the time in milliseconds an instance should not
+        be reachable (either does not reply to our PINGs or it is replying with an
+        error) for a Sentinel starting to think it is down. After this time has elapsed
+        the Sentinel will mark an instance as <strong>subjectively down</strong> (also known as
+        <code>SDOWN</code>), that is not enough to start the automatic failover.
+        However if enough instances will think that there is a subjectively down
+        condition, then the instance is marked as <strong>objectively down</strong>. The number of
+        sentinels that needs to agree depends on the configured agreement for this
+        master.</li>
+        <li><code>parallel-syncs</code> sets the number of slaves that can be reconfigured to use
+        the new master after a failover at the same time. The lower the number, the
+        more time it will take for the failover process to complete, however if the
+        slaves are configured to serve old data, you may not want all the slaves to
+        resync at the same time with the new master, as while the replication process
+        is mostly non blocking for a slave, there is a moment when it stops to load
+        the bulk data from the master during a resync. You may make sure only one
+        slave at a time is not reachable by setting this option to the value of 1.</li>
+        </ul>
+        
+        <p>Additional options are described in the rest of this document and
+        documented in the example <code>sentinel.conf</code> file shipped with the Redis
+        distribution.</p>
+        
+        <p>All the configuration parameters can be modified at runtime using the <code>SENTINEL SET</code> command. See the <strong>Reconfiguring Sentinel at runtime</strong> section for more information.</p>
+        
+        <h2>Quorum</h2>
+        
+        <p>The previous section showed that every master monitored by Sentinel is associated to
+        a configured <strong>quorum</strong>. It specifies the number of Sentinel processes
+        that need to agree about the unreachability or error condition of the master in
+        order to trigger a failover.</p>
+        
+        <p>However, after the failover is triggered, in order for the failover to actually be
+        performed, <strong>at least a majority of Sentinels must authorized the Sentinel to
+        failover</strong>.</p>
+        
+        <p>Let&#39;s try to make things a bit more clear:</p>
+        
+        <ul>
+        <li>Quorum: the number of Sentinel processes that need to detect an error condition in order for a master to be flagged as <strong>ODOWN</strong>.</li>
+        <li>The failover is triggered by the <strong>ODOWN</strong> state.</li>
+        <li>Once the failover is triggered, the Sentinel trying to failover is required to ask for authorization to a majority of Sentinels (or more than the majority if the quorum is set to a number greater than the majority).</li>
+        </ul>
+        
+        <p>The difference may seem subtle but is actually quite simple to understand and use.
+        For example if you have 5 Sentinel instances, and the quorum is set to 2, a failover
+        will be triggered as soon as 2 Sentinels believe that the master is not reachable,
+        however one of the two Sentinels will be able to failover only if it gets authorization
+        at least from 3 Sentinels.</p>
+        
+        <p>If instead the quorum is configured to 5, all the Sentinels must agree about the master
+        error condition, and the authorization from all Sentinels is required in order to
+        failover.</p>
+        
+        <h2>Configuration epochs</h2>
+        
+        <p>Sentinels require to get authorizations from a majority in order to start a
+        failover for a few important reasons:</p>
+        
+        <p>When a Sentinel is authorized, it gets an unique <strong>configuration epoch</strong> for the master it is failing over. This is a number that will be used to version the new configuration after the failover is completed. Because a majority agreed that a given version was assigned to a given Sentinel, no other Sentinel will be able to use it. This means that every configuration of every failover is versioned with an unique version. We&#39;ll see why this is so important.</p>
+        
+        <p>Moreover Sentinels have a rule: if a Sentinel voted another Sentinel for the failover of a given master, it will wait some time to try to failover the same master again. This delay is the <code>failover-timeout</code> you can configure in <code>sentinel.conf</code>. This means that Sentinels will not try to failover the same master at the same time, the first to ask to be authorized will try, if it fails another will try after some time, and so forth.</p>
+        
+        <p>Redis Sentinel guarantees the <em>liveness</em> property that if a majority of Sentinels are able to talk, eventually one will be authorized to failover if the master is down.</p>
+        
+        <p>Redis Sentinel also guarantees the <em>safety</em> property that every Sentinel will failover the same master using a different <em>configuration epoch</em>.</p>
+        
+        <h2>Configuration propagation</h2>
+        
+        <p>Once a Sentinel is able to failover a master successfully, it will start to broadcast
+        the new configuration so that the other Sentinels will update their information
+        about a given master.</p>
+        
+        <p>For a failover to be considered successful, it requires that the Sentinel was able
+        to send the <code>SLAVEOF NO ONE</code> command to the selected slave, and that the switch to
+        master was later observed in the <a href="info.htm" tppabs="http://redis.io/commands/info">INFO</a> output of the master.</p>
+        
+        <p>At this point, even if the reconfiguration of the slaves is in progress, the failover
+        is considered to be successful, and all the Sentinels are required to start reporting
+        the new configuration.</p>
+        
+        <p>The way a new configuration is propagated is the reason why we need that every
+        Sentinel failover is authorized with a different version number (configuration epoch).</p>
+        
+        <p>Every Sentinel continuously broadcast its version of the configuration of a master
+        using Redis Pub/Sub messages, both in the master and all the slaves.
+        At the same time all the Sentinels wait for messages to see what is the configuration
+        advertised by the other Sentinels.</p>
+        
+        <p>Configurations are broadcasted in the <code>__sentinel__:hello</code> Pub/Sub channel.</p>
+        
+        <p>Because every configuration has a different version number, the greater version
+        always wins over smaller versions.</p>
+        
+        <p>So for example the configuration for the master <code>mymaster</code> start with all the
+        Sentinels believing the master is at 192.168.1.50:6379. This configuration
+        has version 1. After some time a Sentinel is authorized to failover with version 2.
+        If the failover is successful, it will start to broadcast a new configuration, let&#39;s
+        say 192.168.50:9000, with version 2. All the other instances will see this configuration
+        and will update their configuration accordingly, since the new configuration has
+        a greater version.</p>
+        
+        <p>This means that Sentinel guarantees a second liveness property: a set of
+        Sentinels that are able to communicate will all converge to the same configuration
+        with the higher version number.</p>
+        
+        <p>Basically if the net is partitioned, every partition will converge to the higher
+        local configuration. In the special case of no partitions, there is a single
+        partition and every Sentinel will agree about the configuration.</p>
+        
+        <h2>More details about SDOWN and ODOWN</h2>
+        
+        <p>As already briefly mentioned in this document Redis Sentinel has two different
+        concepts of <em>being down</em>, one is called a <em>Subjectively Down</em> condition
+        (SDOWN) and is a down condition that is local to a given Sentinel instance.
+        Another is called <em>Objectively Down</em> condition (ODOWN) and is reached when
+        enough Sentinels (at least the number configured as the <code>quorum</code> parameter
+        of the monitored master) have an SDOWN condition, and get feedbacks from
+        other Sentinels using the <code>SENTINEL is-master-down-by-addr</code> command.</p>
+        
+        <p>From the point of view of a Sentinel an SDOWN condition is reached if we
+        don&#39;t receive a valid reply to PING requests for the number of seconds
+        specified in the configuration as <code>is-master-down-after-milliseconds</code>
+        parameter.</p>
+        
+        <p>An acceptable reply to PING is one of the following:</p>
+        
+        <ul>
+        <li>PING replied with +PONG.</li>
+        <li>PING replied with -LOADING error.</li>
+        <li>PING replied with -MASTERDOWN error.</li>
+        </ul>
+        
+        <p>Any other reply (or no reply) is considered non valid.</p>
+        
+        <p>Note that SDOWN requires that no acceptable reply is received for the whole
+        interval configured, so for instance if the interval is 30000 milliseconds
+        (30 seconds) and we receive an acceptable ping reply every 29 seconds, the
+        instance is considered to be working.</p>
+        
+        <p>To switch from SDOWN to ODOWN no strong consensus algorithm is used, but
+        just a form of gossip: if a given Sentinel gets reports that the master
+        is not working from enough Sentinels in a given time range, the SDOWN is
+        promoted to ODOWN. If this acknowledge is later missing, the flag is cleared.</p>
+        
+        <p>As already explained, a more strict authorization is required in order
+        to really start the failover, but no failover can be triggered without
+        reaching the ODOWN state.</p>
+        
+        <p>The ODOWN condition <strong>only applies to masters</strong>. For other kind of instances
+        Sentinel don&#39;t require any agreement, so the ODOWN state is never reached
+        for slaves and other sentinels.</p>
+        
+        <h2>Sentinels and Slaves auto discovery</h2>
+        
+        <p>While Sentinels stay connected with other Sentinels in order to reciprocally
+        check the availability of each other, and to exchange messages, you don&#39;t
+        need to configure the other Sentinel addresses in every Sentinel instance you
+        run, as Sentinel uses the Redis master Pub/Sub capabilities in order to
+        discover the other Sentinels that are monitoring the same master.</p>
+        
+        <p>This is obtained by sending <em>Hello Messages</em> into the channel named
+        <code>__sentinel__:hello</code>.</p>
+        
+        <p>Similarly you don&#39;t need to configure what is the list of the slaves attached
+        to a master, as Sentinel will auto discover this list querying Redis.</p>
+        
+        <ul>
+        <li>Every Sentinel publishes a message to every monitored master and slave Pub/Sub channel <code>__sentinel__:hello</code>, every two seconds, announcing its presence with ip, port, runid.</li>
+        <li>Every Sentinel is subscribed to the Pub/Sub channel <code>__sentinel__:hello</code> of every master and slave, looking for unknown sentinels. When new sentinels are detected, they are added as sentinels of this master.</li>
+        <li>Hello messages also include the full current configuration of the master. If another Sentinel has a configuration for a given master that is older than the one received, it updates to the new configuration immediately.</li>
+        <li>Before adding a new sentinel to a master a Sentinel always checks if there is already a sentinel with the same runid or the same address (ip and port pair). In that case all the matching sentinels are removed, and the new added.</li>
+        </ul>
+        
+        <h2>Consistency under partitions</h2>
+        
+        <p>Redis Sentinel configurations are eventually consistent, so every partition will
+        converge to the higher configuration available.
+        However in a real-world system using Sentinel there are three different players:</p>
+        
+        <ul>
+        <li>Redis instances.</li>
+        <li>Sentinel instances.</li>
+        <li>Clients.</li>
+        </ul>
+        
+        <p>In order to define the behavior of the system we have to consider all three.</p>
+        
+        <p>The following is a simple network where there are there nodes, each running
+        a Redis instance, and a Sentinel instance:</p>
+        
+        <pre><code>            +-------------+&#x000A;            | Sentinel 1  | &lt;--- Client A&#x000A;            | Redis 1 (M) |&#x000A;            +-------------+&#x000A;                    |&#x000A;                    |&#x000A;+-------------+     |                     +------------+&#x000A;| Sentinel 2  |-----+-- / partition / ----| Sentinel 3 | &lt;--- Client B&#x000A;| Redis 2 (S) |                           | Redis 3 (M)|&#x000A;+-------------+                           +------------+&#x000A;</code></pre>
+        
+        <p>In this system the original state was that Redis 3 was the master, while
+        Redis 1 and 2 were slaves. A partition occurred isolting the old master.
+        Sentinels 1 and 2 started a failover promoting Sentinel 1 as the new master.</p>
+        
+        <p>The Sentinel properties guarantee that Sentinel 1 and 2 now have the new
+        configuration for the master. However Sentinel 3 has still the old configuration
+        since it lives in a different partition.</p>
+        
+        <p>When know that Sentinel 3 will get its configuration updated when the network
+        partition will heal, however what happens during the partition if there
+        are clients partitioned with the old master?</p>
+        
+        <p>Clients will be still able to write to Redis 3, the old master. When the
+        partition will rejoin, Redis 3 will be turned into a slave of Redis 1, and
+        all the data written during the partition will be lost.</p>
+        
+        <p>Depending on your configuration you may want or not that this scenario happens:</p>
+        
+        <ul>
+        <li>If you are using Redis as a cache, it could be handy that Client B is still able to write to the old master, even if its data will be lost.</li>
+        <li>If you are using Redis as a store, this is not good and you need to configure the system in order to partially prevent this problem.</li>
+        </ul>
+        
+        <p>Since Redis is asynchronously replicated, there is no way to totally prevent data loss in this scenario, however you can bound the divergence between Redis 3 and Redis 1
+        using the following Redis configuration option:</p>
+        
+        <pre><code>min-slaves-to-write 1&#x000A;min-slaves-max-lag 10&#x000A;</code></pre>
+        
+        <p>With the above configuration (please see the self-commented <code>redis.conf</code> example in the Redis distribution for more information) a Redis instance, when acting as a master, will stop accepting writes if it can&#39;t write to at least 1 slave. Since replication is asynchronous <em>not being able to write</em> actually means that the slave is either disconnected, or is not sending us asynchronous acknowledges for more than the specified <code>max-lag</code> number of seconds.</p>
+        
+        <p>Using this configuration the Redis 3 in the above example will become unavailable after 10 seconds. When the partition heals, the Sentinel 3 configuration will converge to
+        the new one, and Client B will be able to fetch a valid configuration and continue.</p>
+        
+        <h2>Sentinel persistent state</h2>
+        
+        <p>Sentinel state is persisted in the sentinel configuration file. For example
+        every time a new configuration is received, or created (leader Sentinels), for
+        a master, the configuration is persisted on disk together with the configuration
+        epoch. This means that it is safe to stop and restart Sentinel processes.</p>
+        
+        <h2>Sentinel reconfiguration of instances outside the failover procedure.</h2>
+        
+        <p>Even when no failover is in progress, Sentinels will always try to set the
+        current configuration on monitored instances. Specifically:</p>
+        
+        <ul>
+        <li>Slaves (according to the current configuration) that claim to be masters, will be configured as slaves to replicate with the current master.</li>
+        <li>Slaves connected to a wrong master, will be reconfigured to replicate with the right master.</li>
+        </ul>
+        
+        <p>For Sentinels to reconfigure slaves, the wrong configuration must be observed for some time, that is greater than the period used to broadcast new configurations.</p>
+        
+        <p>This prevents that Sentinels with a stale configuration (for example because they just rejoined from a partition) will try to change the slaves configuration before receiving an update.</p>
+        
+        <p>Also note how the semantics of always trying to impose the current configuration makes
+        the failover more resistant to partitions:</p>
+        
+        <ul>
+        <li>Masters failed over are reconfigured as slaves when they return available.</li>
+        <li>Slaves partitioned away during a partition are reconfigured once reachable.</li>
+        </ul>
+        
+        <h1>Sentinel API</h1>
+        
+        <p>By default Sentinel runs using TCP port 26379 (note that 6379 is the normal
+        Redis port). Sentinels accept commands using the Redis protocol, so you can
+        use <code>redis-cli</code> or any other unmodified Redis client in order to talk with
+        Sentinel.</p>
+        
+        <p>There are two ways to talk with Sentinel: it is possible to directly query
+        it to check what is the state of the monitored Redis instances from its point
+        of view, to see what other Sentinels it knows, and so forth.</p>
+        
+        <p>An alternative is to use Pub/Sub to receive <em>push style</em> notifications from
+        Sentinels, every time some event happens, like a failover, or an instance
+        entering an error condition, and so forth.</p>
+        
+        <h2>Sentinel commands</h2>
+        
+        <p>The following is a list of accepted commands:</p>
+        
+        <ul>
+        <li><strong>PING</strong> This command simply returns PONG.</li>
+        <li><strong>SENTINEL masters</strong> Show a list of monitored masters and their state.</li>
+        <li><strong>SENTINEL master <code>&lt;master name&gt;</code></strong> Show the state and info of the specified master.</li>
+        <li><strong>SENTINEL slaves <code>&lt;master name&gt;</code></strong> Show a list of slaves for this master, and their state.</li>
+        <li><strong>SENTINEL get-master-addr-by-name <code>&lt;master name&gt;</code></strong> Return the ip and port number of the master with that name. If a failover is in progress or terminated successfully for this master it returns the address and port of the promoted slave.</li>
+        <li><strong>SENTINEL reset <code>&lt;pattern&gt;</code></strong> This command will reset all the masters with matching name. The pattern argument is a glob-style pattern. The reset process clears any previous state in a master (including a failover in progress), and removes every slave and sentinel already discovered and associated with the master.</li>
+        <li><strong>SENTINEL failover <code>&lt;master name&gt;</code></strong> Force a failover as if the master was not reachable, and without asking for agreement to other Sentinels (however a new version of the configuration will be published so that the other Sentinels will update their configurations).</li>
+        </ul>
+        
+        <h2>Reconfiguring Sentinel at Runtime</h2>
+        
+        <p>Starting with Redis version 2.8.4, Sentinel provides an API in order to add, remove, or change the configuration of a given master. Note that if you have multiple sentinels you should apply the changes to all to your instances for Redis Sentinel to work properly. This means that changing the configuration of a single Sentinel does not automatically propagates the changes to the other Sentinels in the network.</p>
+        
+        <p>The following is a list of <code>SENTINEL</code> sub commands used in order to update the configuration of a Sentinel instance.</p>
+        
+        <ul>
+        <li><strong>SENTINEL MONITOR <code>&lt;name&gt;</code> <code>&lt;ip&gt;</code> <code>&lt;port&gt;</code> <code>&lt;quorum&gt;</code></strong> This command tells the Sentinel to start monitoring a new master with the specified name, ip, port, and quorum. It is identical to the <code>sentinel monitor</code> configuration directive in <code>sentinel.conf</code> configuration file, with the difference that you can&#39;t use an hostname in as <code>ip</code>, but you need to provide an IPv4 or IPv6 address.</li>
+        <li><strong>SENTINEL REMOVE <code>&lt;name&gt;</code></strong> is used in order to remove the specified master: the master will no longer be monitored, and will totally be removed from the internal state of the Sentinel, so it will no longer listed by <code>SENTINEL masters</code> and so forth.</li>
+        <li><strong>SENTINEL SET <code>&lt;name&gt;</code> <code>&lt;option&gt;</code> <code>&lt;value&gt;</code></strong> The SET command is very similar to the <code>CONFIG SET</code> command of Redis, and is used in order to change configuration parameters of a specific master. Multiple option / value pairs can be specified (or none at all). All the configuration parameters that can be configured via <code>sentinel.conf</code> are also configurable using the SET command.</li>
+        </ul>
+        
+        <p>The following is an example of <code>SENTINEL SET</code> command in order to modify the <code>down-after-milliseconds</code> configuration of a master called <code>objects-cache</code>:</p>
+        
+        <pre><code>SENTINEL SET objects-cache-master down-after-milliseconds 1000&#x000A;</code></pre>
+        
+        <p>As already stated, <code>SENTINEL SET</code> can be used to set all the configuration parameters that are settable in the startup configuration file. Moreover it is possible to change just the master quorum configuration without removing and re-adding the master with <code>SENTINEL REMOVE</code> followed by <code>SENTINEL MONITOR</code>, but simply using:</p>
+        
+        <pre><code>SENTINEL SET objects-cache-master quorum 5&#x000A;</code></pre>
+        
+        <p>Note that there is no equivalent GET command since <code>SENTINEL MASTER</code> provides all the configuration parameters in a simple to parse format (as a field/value pairs array).</p>
+        
+        <h2>Pub/Sub Messages</h2>
+        
+        <p>A client can use a Sentinel as it was a Redis compatible Pub/Sub server
+        (but you can&#39;t use <a href="publish.htm" tppabs="http://redis.io/commands/publish">PUBLISH</a>) in order to <a href="subscribe.htm" tppabs="http://redis.io/commands/subscribe">SUBSCRIBE</a> or <a href="psubscribe.htm" tppabs="http://redis.io/commands/psubscribe">PSUBSCRIBE</a> to
+        channels and get notified about specific events.</p>
+        
+        <p>The channel name is the same as the name of the event. For instance the
+        channel named <code>+sdown</code> will receive all the notifications related to instances
+        entering an <code>SDOWN</code> condition.</p>
+        
+        <p>To get all the messages simply subscribe using <code>PSUBSCRIBE *</code>.</p>
+        
+        <p>The following is a list of channels and message formats you can receive using
+        this API. The first word is the channel / event name, the rest is the format of the data.</p>
+        
+        <p>Note: where <em>instance details</em> is specified it means that the following arguments are provided to identify the target instance:</p>
+        
+        <pre><code>&lt;instance-type&gt; &lt;name&gt; &lt;ip&gt; &lt;port&gt; @ &lt;master-name&gt; &lt;master-ip&gt; &lt;master-port&gt;&#x000A;</code></pre>
+        
+        <p>The part identifying the master (from the @ argument to the end) is optional
+        and is only specified if the instance is not a master itself.</p>
+        
+        <ul>
+        <li><strong>+reset-master</strong> <code>&lt;instance details&gt;</code> -- The master was reset.</li>
+        <li><strong>+slave</strong> <code>&lt;instance details&gt;</code> -- A new slave was detected and attached.</li>
+        <li><strong>+failover-state-reconf-slaves</strong> <code>&lt;instance details&gt;</code> -- Failover state changed to <code>reconf-slaves</code> state.</li>
+        <li><strong>+failover-detected</strong> <code>&lt;instance details&gt;</code> -- A failover started by another Sentinel or any other external entity was detected (An attached slave turned into a master).</li>
+        <li><strong>+slave-reconf-sent</strong> <code>&lt;instance details&gt;</code> -- The leader sentinel sent the <a href="slaveof.htm" tppabs="http://redis.io/commands/slaveof">SLAVEOF</a> command to this instance in order to reconfigure it for the new slave.</li>
+        <li><strong>+slave-reconf-inprog</strong> <code>&lt;instance details&gt;</code> -- The slave being reconfigured showed to be a slave of the new master ip:port pair, but the synchronization process is not yet complete.</li>
+        <li><strong>+slave-reconf-done</strong> <code>&lt;instance details&gt;</code> -- The slave is now synchronized with the new master.</li>
+        <li><strong>-dup-sentinel</strong> <code>&lt;instance details&gt;</code> -- One or more sentinels for the specified master were removed as duplicated (this happens for instance when a Sentinel instance is restarted).</li>
+        <li><strong>+sentinel</strong> <code>&lt;instance details&gt;</code> -- A new sentinel for this master was detected and attached.</li>
+        <li><strong>+sdown</strong> <code>&lt;instance details&gt;</code> -- The specified instance is now in Subjectively Down state.</li>
+        <li><strong>-sdown</strong> <code>&lt;instance details&gt;</code> -- The specified instance is no longer in Subjectively Down state.</li>
+        <li><strong>+odown</strong> <code>&lt;instance details&gt;</code> -- The specified instance is now in Objectively Down state.</li>
+        <li><strong>-odown</strong> <code>&lt;instance details&gt;</code> -- The specified instance is no longer in Objectively Down state.</li>
+        <li><strong>+new-epoch</strong> <code>&lt;instance details&gt;</code> -- The current epoch was updated.</li>
+        <li><strong>+try-failover</strong> <code>&lt;instance details&gt;</code> -- New failover in progress, waiting to be elected by the majority.</li>
+        <li><strong>+elected-leader</strong> <code>&lt;instance details&gt;</code> -- Won the election for the specified epoch, can do the failover.</li>
+        <li><strong>+failover-state-select-slave</strong> <code>&lt;instance details&gt;</code> -- New failover state is <code>select-slave</code>: we are trying to find a suitable slave for promotion.</li>
+        <li><strong>no-good-slave</strong> <code>&lt;instance details&gt;</code> -- There is no good slave to promote. Currently we&#39;ll try after some time, but probably this will change and the state machine will abort the failover at all in this case.</li>
+        <li><strong>selected-slave</strong> <code>&lt;instance details&gt;</code> -- We found the specified good slave to promote.</li>
+        <li><strong>failover-state-send-slaveof-noone</strong> <code>&lt;instance details&gt;</code> -- We are trynig to reconfigure the promoted slave as master, waiting for it to switch.</li>
+        <li><strong>failover-end-for-timeout</strong> <code>&lt;instance details&gt;</code> -- The failover terminated for timeout, slaves will eventually be configured to replicate with the new master anyway.</li>
+        <li><strong>failover-end</strong> <code>&lt;instance details&gt;</code> -- The failover terminated with success. All the slaves appears to be reconfigured to replicate with the new master.</li>
+        <li><strong>switch-master</strong> <code>&lt;master name&gt; &lt;oldip&gt; &lt;oldport&gt; &lt;newip&gt; &lt;newport&gt;</code> -- The master new IP and address is the specified one after a configuration change. This is <strong>the message most external users are interested in</strong>.</li>
+        <li><strong>+tilt</strong> -- Tilt mode entered.</li>
+        <li><strong>-tilt</strong> -- Tilt mode exited.</li>
+        </ul>
+        
+        <h2>TILT mode</h2>
+        
+        <p>Redis Sentinel is heavily dependent on the computer time: for instance in
+        order to understand if an instance is available it remembers the time of the
+        latest successful reply to the PING command, and compares it with the current
+        time to understand how old it is.</p>
+        
+        <p>However if the computer time changes in an unexpected way, or if the computer
+        is very busy, or the process blocked for some reason, Sentinel may start to
+        behave in an unexpected way.</p>
+        
+        <p>The TILT mode is a special &quot;protection&quot; mode that a Sentinel can enter when
+        something odd is detected that can lower the reliability of the system.
+        The Sentinel timer interrupt is normally called 10 times per second, so we
+        expect that more or less 100 milliseconds will elapse between two calls
+        to the timer interrupt.</p>
+        
+        <p>What a Sentinel does is to register the previous time the timer interrupt
+        was called, and compare it with the current call: if the time difference
+        is negative or unexpectedly big (2 seconds or more) the TILT mode is entered
+        (or if it was already entered the exit from the TILT mode postponed).</p>
+        
+        <p>When in TILT mode the Sentinel will continue to monitor everything, but:</p>
+        
+        <ul>
+        <li>It stops acting at all.</li>
+        <li>It starts to reply negatively to <code>SENTINEL is-master-down-by-addr</code> requests as the ability to detect a failure is no longer trusted.</li>
+        </ul>
+        
+        <p>If everything appears to be normal for 30 second, the TILT mode is exited.</p>
+        
+        <h2>Handling of -BUSY state</h2>
+        
+        <p>(Warning: Yet not implemented)</p>
+        
+        <p>The -BUSY error is returned when a script is running for more time than the
+        configured script time limit. When this happens before triggering a fail over
+        Redis Sentinel will try to send a &quot;SCRIPT KILL&quot; command, that will only
+        succeed if the script was read-only.</p>
+        
+        <h2>Sentinel clients implementation</h2>
+        
+        <p>Sentinel requires explicit client support, unless the system is configured to execute a script that performs a transparent redirection of all the requests to the new master instance (virtual IP or other similar systems). The topic of client libraries implementation is covered in the document <a href="sentinel-clients.htm" tppabs="http://redis.io/topics/sentinel-clients">Sentinel clients guidelines</a>.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

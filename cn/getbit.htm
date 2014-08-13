@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      GETBIT â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>GETBIT</span>
+        <span class='arg'>key</span>
+        <span class='arg'>offset</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href="append.htm" tppabs="http://redis.io/commands/append">
+                APPEND
+              </a>
+            </li>
+            <li>
+              <a href="bitcount.htm" tppabs="http://redis.io/commands/bitcount">
+                BITCOUNT
+              </a>
+            </li>
+            <li>
+              <a href="bitop.htm" tppabs="http://redis.io/commands/bitop">
+                BITOP
+              </a>
+            </li>
+            <li>
+              <a href="bitpos.htm" tppabs="http://redis.io/commands/bitpos">
+                BITPOS
+              </a>
+            </li>
+            <li>
+              <a href="decr.htm" tppabs="http://redis.io/commands/decr">
+                DECR
+              </a>
+            </li>
+            <li>
+              <a href="decrby.htm" tppabs="http://redis.io/commands/decrby">
+                DECRBY
+              </a>
+            </li>
+            <li>
+              <a href="get.htm" tppabs="http://redis.io/commands/get">
+                GET
+              </a>
+            </li>
+            <li>
+              <a href="getbit.htm" tppabs="http://redis.io/commands/getbit">
+                <strong>GETBIT</strong>
+              </a>
+            </li>
+            <li>
+              <a href="getrange.htm" tppabs="http://redis.io/commands/getrange">
+                GETRANGE
+              </a>
+            </li>
+            <li>
+              <a href="getset.htm" tppabs="http://redis.io/commands/getset">
+                GETSET
+              </a>
+            </li>
+            <li>
+              <a href="incr.htm" tppabs="http://redis.io/commands/incr">
+                INCR
+              </a>
+            </li>
+            <li>
+              <a href="incrby.htm" tppabs="http://redis.io/commands/incrby">
+                INCRBY
+              </a>
+            </li>
+            <li>
+              <a href="incrbyfloat.htm" tppabs="http://redis.io/commands/incrbyfloat">
+                INCRBYFLOAT
+              </a>
+            </li>
+            <li>
+              <a href="mget.htm" tppabs="http://redis.io/commands/mget">
+                MGET
+              </a>
+            </li>
+            <li>
+              <a href="mset.htm" tppabs="http://redis.io/commands/mset">
+                MSET
+              </a>
+            </li>
+            <li>
+              <a href="msetnx.htm" tppabs="http://redis.io/commands/msetnx">
+                MSETNX
+              </a>
+            </li>
+            <li>
+              <a href="psetex.htm" tppabs="http://redis.io/commands/psetex">
+                PSETEX
+              </a>
+            </li>
+            <li>
+              <a href="set.htm" tppabs="http://redis.io/commands/set">
+                SET
+              </a>
+            </li>
+            <li>
+              <a href="setbit.htm" tppabs="http://redis.io/commands/setbit">
+                SETBIT
+              </a>
+            </li>
+            <li>
+              <a href="setex.htm" tppabs="http://redis.io/commands/setex">
+                SETEX
+              </a>
+            </li>
+            <li>
+              <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">
+                SETNX
+              </a>
+            </li>
+            <li>
+              <a href="setrange.htm" tppabs="http://redis.io/commands/setrange">
+                SETRANGE
+              </a>
+            </li>
+            <li>
+              <a href="strlen.htm" tppabs="http://redis.io/commands/strlen">
+                STRLEN
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 2.2.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(1)</p>
+        </div>
+        <p>Returns the bit value at <em>offset</em> in the string value stored at <em>key</em>.</p>
+        
+        <p>When <em>offset</em> is beyond the string length, the string is assumed to be a
+        contiguous space with 0 bits.
+        When <em>key</em> does not exist it is assumed to be an empty string, so <em>offset</em> is
+        always out of range and the value is also assumed to be a contiguous space with
+        0 bits.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="protocol.htm#integer-reply" tppabs="http://redis.io/topics/protocol#integer-reply">Integer reply</a>: the bit value stored at <em>offset</em>.</p>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='23a5e96f31b4a0b5e881ef0b10514370'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SETBIT mykey 7 1</span>
+          <pre>(integer) 0</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>GETBIT mykey 0</span>
+          <pre>(integer) 0</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>GETBIT mykey 7</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>GETBIT mykey 100</span>
+          <pre>(integer) 0</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_getbit';
+          var disqus_url = 'getbit.htm'/*tpa=http://redis.io/commands/getbit*/;
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href="javascript:if(confirm('http://disqus.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://disqus.com/'" tppabs="http://disqus.com/">
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

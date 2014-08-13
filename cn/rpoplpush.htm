@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      RPOPLPUSH â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>RPOPLPUSH</span>
+        <span class='arg'>source</span>
+        <span class='arg'>destination</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href="blpop.htm" tppabs="http://redis.io/commands/blpop">
+                BLPOP
+              </a>
+            </li>
+            <li>
+              <a href="brpop.htm" tppabs="http://redis.io/commands/brpop">
+                BRPOP
+              </a>
+            </li>
+            <li>
+              <a href="brpoplpush.htm" tppabs="http://redis.io/commands/brpoplpush">
+                BRPOPLPUSH
+              </a>
+            </li>
+            <li>
+              <a href="lindex.htm" tppabs="http://redis.io/commands/lindex">
+                LINDEX
+              </a>
+            </li>
+            <li>
+              <a href="linsert.htm" tppabs="http://redis.io/commands/linsert">
+                LINSERT
+              </a>
+            </li>
+            <li>
+              <a href="llen.htm" tppabs="http://redis.io/commands/llen">
+                LLEN
+              </a>
+            </li>
+            <li>
+              <a href="lpop.htm" tppabs="http://redis.io/commands/lpop">
+                LPOP
+              </a>
+            </li>
+            <li>
+              <a href="lpush.htm" tppabs="http://redis.io/commands/lpush">
+                LPUSH
+              </a>
+            </li>
+            <li>
+              <a href="lpushx.htm" tppabs="http://redis.io/commands/lpushx">
+                LPUSHX
+              </a>
+            </li>
+            <li>
+              <a href="lrange.htm" tppabs="http://redis.io/commands/lrange">
+                LRANGE
+              </a>
+            </li>
+            <li>
+              <a href="lrem.htm" tppabs="http://redis.io/commands/lrem">
+                LREM
+              </a>
+            </li>
+            <li>
+              <a href="lset.htm" tppabs="http://redis.io/commands/lset">
+                LSET
+              </a>
+            </li>
+            <li>
+              <a href="ltrim.htm" tppabs="http://redis.io/commands/ltrim">
+                LTRIM
+              </a>
+            </li>
+            <li>
+              <a href="rpop.htm" tppabs="http://redis.io/commands/rpop">
+                RPOP
+              </a>
+            </li>
+            <li>
+              <a href="rpoplpush.htm" tppabs="http://redis.io/commands/rpoplpush">
+                <strong>RPOPLPUSH</strong>
+              </a>
+            </li>
+            <li>
+              <a href="rpush.htm" tppabs="http://redis.io/commands/rpush">
+                RPUSH
+              </a>
+            </li>
+            <li>
+              <a href="rpushx.htm" tppabs="http://redis.io/commands/rpushx">
+                RPUSHX
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.2.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(1)</p>
+        </div>
+        <p>Atomically returns and removes the last element (tail) of the list stored at
+        <code>source</code>, and pushes the element at the first element (head) of the list stored
+        at <code>destination</code>.</p>
+        
+        <p>For example: consider <code>source</code> holding the list <code>a,b,c</code>, and <code>destination</code>
+        holding the list <code>x,y,z</code>.
+        Executing <a href="rpoplpush.htm" tppabs="http://redis.io/commands/rpoplpush">RPOPLPUSH</a> results in <code>source</code> holding <code>a,b</code> and <code>destination</code>
+        holding <code>c,x,y,z</code>.</p>
+        
+        <p>If <code>source</code> does not exist, the value <code>nil</code> is returned and no operation is
+        performed.
+        If <code>source</code> and <code>destination</code> are the same, the operation is equivalent to
+        removing the last element from the list and pushing it as first element of the
+        list, so it can be considered as a list rotation command.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="protocol.htm#bulk-string-reply" tppabs="http://redis.io/topics/protocol#bulk-string-reply">Bulk string reply</a>: the element being popped and pushed.</p>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='a18346cd4495bf43fcf5be3c53767cc8'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>RPUSH mylist &quot;one&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>RPUSH mylist &quot;two&quot;</span>
+          <pre>(integer) 2</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>RPUSH mylist &quot;three&quot;</span>
+          <pre>(integer) 3</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>RPOPLPUSH mylist myotherlist</span>
+          <pre>"three"</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>LRANGE mylist 0 -1</span>
+          <pre>1) "one"&#x000A;2) "two"</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>LRANGE myotherlist 0 -1</span>
+          <pre>1) "three"</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+        
+        
+        <h2>Pattern: Reliable queue</h2>
+        
+        <p>Redis is often used as a messaging server to implement processing of background
+        jobs or other kinds of messaging tasks.
+        A simple form of queue is often obtained pushing values into a list in the
+        producer side, and waiting for this values in the consumer side using <a href="rpop.htm" tppabs="http://redis.io/commands/rpop">RPOP</a>
+        (using polling), or <a href="brpop.htm" tppabs="http://redis.io/commands/brpop">BRPOP</a> if the client is better served by a blocking
+        operation.</p>
+        
+        <p>However in this context the obtained queue is not <em>reliable</em> as messages can
+        be lost, for example in the case there is a network problem or if the consumer
+        crashes just after the message is received but it is still to process.</p>
+        
+        <p><a href="rpoplpush.htm" tppabs="http://redis.io/commands/rpoplpush">RPOPLPUSH</a> (or <a href="brpoplpush.htm" tppabs="http://redis.io/commands/brpoplpush">BRPOPLPUSH</a> for the blocking variant) offers a way to avoid
+        this problem: the consumer fetches the message and at the same time pushes it
+        into a <em>processing</em> list.
+        It will use the <a href="lrem.htm" tppabs="http://redis.io/commands/lrem">LREM</a> command in order to remove the message from the
+        <em>processing</em> list once the message has been processed.</p>
+        
+        <p>An additional client may monitor the <em>processing</em> list for items that remain
+        there for too much time, and will push those timed out items into the queue
+        again if needed.</p>
+        
+        <h2>Pattern: Circular list</h2>
+        
+        <p>Using <a href="rpoplpush.htm" tppabs="http://redis.io/commands/rpoplpush">RPOPLPUSH</a> with the same source and destination key, a client can visit
+        all the elements of an N-elements list, one after the other, in <span class="math">O(N) </span>without
+        transferring the full list from the server to the client using a single <a href="lrange.htm" tppabs="http://redis.io/commands/lrange">LRANGE</a>
+        operation.</p>
+        
+        <p>The above pattern works even if the following two conditions: * There are
+        multiple clients rotating the list: they&#39;ll fetch different elements, until all
+        the elements of the list are visited, and the process restarts.
+        * Even if other clients are actively pushing new items at the end of the list.</p>
+        
+        <p>The above makes it very simple to implement a system where a set of items must
+        be processed by N workers continuously as fast as possible.
+        An example is a monitoring system that must check that a set of web sites are
+        reachable, with the smallest delay possible, using a number of parallel workers.</p>
+        
+        <p>Note that this implementation of workers is trivially scalable and reliable,
+        because even if a message is lost the item is still in the queue and will be
+        processed at the next iteration.</p>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_rpoplpush';
+          var disqus_url = 'rpoplpush.htm'/*tpa=http://redis.io/commands/rpoplpush*/;
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href="javascript:if(confirm('http://disqus.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://disqus.com/'" tppabs="http://disqus.com/">
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

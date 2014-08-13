@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      PFCOUNT â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>PFCOUNT</span>
+        <span class='arg'>key [key ...]</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href="pfadd.htm" tppabs="http://redis.io/commands/pfadd">
+                PFADD
+              </a>
+            </li>
+            <li>
+              <a href="pfcount.htm" tppabs="http://redis.io/commands/pfcount">
+                <strong>PFCOUNT</strong>
+              </a>
+            </li>
+            <li>
+              <a href="pfmerge.htm" tppabs="http://redis.io/commands/pfmerge">
+                PFMERGE
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 2.8.9.</strong></p>
+          <p><strong>Time complexity:</strong> O(1) with every small average constant times when called with a single key. O(N) with N being the number of keys, and much bigger constant times, when called with multiple keys.</p>
+        </div>
+        <p>When called with a single key, returns the approximated cardinality computed by the HyperLogLog data structure stored at the specified variable, which is 0 if the variable does not exist.</p>
+        
+        <p>When called with multiple keys, returns the approximated cardinality of the union of the HyperLogLogs passed, by internally merging the HyperLogLogs stored at the provided keys into a temporary hyperLogLog.</p>
+        
+        <p>The HyperLogLog data structure can be used in order to count <strong>unique</strong> elements in a set using just a small constant amount of memory, specifically 12k bytes for every HyperLogLog (plus a few bytes for the key itself).</p>
+        
+        <p>The returned cardinality of the observed set is not exact, but approximated with a standard error of 0.81%.</p>
+        
+        <p>For example in order to take the count of all the unique search queries performed in a day, a program needs to call <a href="pfadd.htm" tppabs="http://redis.io/commands/pfadd">PFADD</a> every time a query is processed. The estimated number of unique queries can be retrieved with <a href="pfcount.htm" tppabs="http://redis.io/commands/pfcount">PFCOUNT</a> at any time.</p>
+        
+        <p>Note: as a side effect of calling this function, it is possible that the HyperLogLog is modified, since the last 8 bytes encode the latest computed cardinality
+        for caching purposes. So <a href="pfcount.htm" tppabs="http://redis.io/commands/pfcount">PFCOUNT</a> is technically a write command.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="protocol.htm#integer-reply" tppabs="http://redis.io/topics/protocol#integer-reply">Integer reply</a>, specifically:</p>
+        
+        <ul>
+        <li>The approximated number of unique elements observed via <a href="pfadd.htm" tppabs="http://redis.io/commands/pfadd">PFADD</a>.</li>
+        </ul>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='d109818ada83562aa3def70e861f5994'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>PFADD hll foo bar zap</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>PFADD hll zap zap zap</span>
+          <pre>(integer) 0</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>PFADD hll foo bar</span>
+          <pre>(integer) 0</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>PFCOUNT hll</span>
+          <pre>(integer) 3</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>PFADD some-other-hll 1 2 3</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>PFCOUNT hll some-other-hll</span>
+          <pre>(integer) 6</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+        
+        
+        <h2>Performances</h2>
+        
+        <p>When <a href="pfcount.htm" tppabs="http://redis.io/commands/pfcount">PFCOUNT</a> is called with a single key, performances as excellent even if
+        in theory constant times to process a dense HyperLogLog are high. This is
+        possible because the <a href="pfcount.htm" tppabs="http://redis.io/commands/pfcount">PFCOUNT</a> uses caching in order to remember the cardinality
+        previously computed, that rarely changes because most <a href="pfadd.htm" tppabs="http://redis.io/commands/pfadd">PFADD</a> operations will
+        not update any register. Hundreds of operations per second are possible.</p>
+        
+        <p>When <a href="pfcount.htm" tppabs="http://redis.io/commands/pfcount">PFCOUNT</a> is called with multiple keys, an on-the-fly merge of the
+        HyperLogLogs is performed, which is slow, moreover the cardinality of the union
+        can&#39;t be cached, so when used with multiple keys <a href="pfcount.htm" tppabs="http://redis.io/commands/pfcount">PFCOUNT</a> may take a time in
+        the order of magnitude of the millisecond, and should be not abused.</p>
+        
+        <p>The user should take in mind that single-key and multiple-keys executions of
+        this command are semantically different and have different performances.</p>
+        
+        <h2>HyperLogLog representation</h2>
+        
+        <p>Redis HyperLogLogs are represented using a double representation: the <em>sparse</em> representation suitable for HLLs counting a small number of elements (resulting in a small number of registers set to non-zero value), and a <em>dense</em> representation suitable for higher cardinalities. Redis automatically switches from the sparse to the dense representation when needed.</p>
+        
+        <p>The sparse representation uses a run-length encoding optimized to store efficiently a big number of registers set to zero. The dense representation is a Redis string of 12288 bytes in order to store 16384 6-bit counters. The need for the double representation comes from the fact that using 12k (which is the dense representation memory requirement) to encode just a few registers for smaller cardinalities is extremely suboptimal.</p>
+        
+        <p>Both representations are prefixed with a 16 bytes header, that includes a magic, an encoding / version fiend, and the cached cardinality estimation computed, stored in little endian format (the most significant bit is 1 if the estimation is invalid since the HyperLogLog was updated since the cardinality was computed).</p>
+        
+        <p>The HyperLogLog, being a Redis string, can be retrieved with <a href="get.htm" tppabs="http://redis.io/commands/get">GET</a> and restored with <a href="set.htm" tppabs="http://redis.io/commands/set">SET</a>. Calling <a href="pfadd.htm" tppabs="http://redis.io/commands/pfadd">PFADD</a>, <a href="pfcount.htm" tppabs="http://redis.io/commands/pfcount">PFCOUNT</a> or <a href="pfmerge.htm" tppabs="http://redis.io/commands/pfmerge">PFMERGE</a> commands with a corrupted HyperLogLog is never a problem, it may return random values but does not affect the stability of the server. Most of the times when corrupting a sparse representation, the server recognizes the corruption and returns an error.</p>
+        
+        <p>The representation is neutral from the point of view of the processor word size and endianess, so the same representation is used by 32 bit and 64 bit processor, big endian or little endian.</p>
+        
+        <p>More details about the Redis HyperLogLog implementation can be found in <a href="javascript:if(confirm('http://antirez.com/news/75  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://antirez.com/news/75'" tppabs="http://antirez.com/news/75">this blog post</a>. The source code of the implementation in the <code>hyperloglog.c</code> file is also easy to read and understand, and includes a full specification for the exact encoding used for the sparse and dense representations.</p>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_pfcount';
+          var disqus_url = 'pfcount.htm'/*tpa=http://redis.io/commands/pfcount*/;
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href="javascript:if(confirm('http://disqus.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://disqus.com/'" tppabs="http://disqus.com/">
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

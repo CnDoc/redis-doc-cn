@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Data types â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics data-types'>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Data types</h1>
+        
+        <p><a name="strings"></a></p>
+        
+        <h2>Strings</h2>
+        
+        <p>Strings are the most basic kind of Redis value. Redis Strings are binary safe, this means that a Redis string can contain any kind of data, for instance a
+        JPEG image or a serialized Ruby object.</p>
+        
+        <p>A String value can be at max 512 Megabytes in length.</p>
+        
+        <p>You can do a number of interesting things using strings in Redis, for instance you can:</p>
+        
+        <ul>
+        <li>Use Strings as atomic counters using commands in the INCR family: <a href="incr.htm" tppabs="http://redis.io/commands/incr">INCR</a>, <a href="decr.htm" tppabs="http://redis.io/commands/decr">DECR</a>, <a href="incrby.htm" tppabs="http://redis.io/commands/incrby">INCRBY</a>.</li>
+        <li>Append to strings with the <a href="append.htm" tppabs="http://redis.io/commands/append">APPEND</a> command.</li>
+        <li>Use Strings as a random access vectors with <a href="getrange.htm" tppabs="http://redis.io/commands/getrange">GETRANGE</a> and <a href="setrange.htm" tppabs="http://redis.io/commands/setrange">SETRANGE</a>.</li>
+        <li>Encode a lot of data in little space, or create a Redis backed Bloom Filter using <a href="getbit.htm" tppabs="http://redis.io/commands/getbit">GETBIT</a> and <a href="setbit.htm" tppabs="http://redis.io/commands/setbit">SETBIT</a>.</li>
+        </ul>
+        
+        <p>Check all the <a href="index-1.htm#string" tppabs="http://redis.io/commands/#string">available string commands</a> for more information, or read the <a href="data-types-intro.htm" tppabs="http://redis.io/topics/data-types-intro">introduction to Redis data types</a>.</p>
+        
+        <p><a name="lists"></a></p>
+        
+        <h2>Lists</h2>
+        
+        <p>Redis Lists are simply lists of strings, sorted by insertion order.
+        It is possible to add elements to a Redis List pushing new elements on the head  (on the left) or on the tail (on the right) of the list.</p>
+        
+        <p>The <a href="lpush.htm" tppabs="http://redis.io/commands/lpush">LPUSH</a> command inserts a new element on the head, while
+        <a href="rpush.htm" tppabs="http://redis.io/commands/rpush">RPUSH</a> inserts a new element on the tail. A new list is created
+        when one of this operations is performed against an empty key.
+        Similarly the key is removed from the key space if a list operation will
+        empty the list. These are very handy semantics since all the list commands will
+        behave exactly like they were called with an empty list if called with a
+        non-existing key as argument.</p>
+        
+        <p>Some example of list operations and resulting lists:</p>
+        
+        <pre><code>LPUSH mylist a   # now the list is &quot;a&quot;&#x000A;LPUSH mylist b   # now the list is &quot;b&quot;,&quot;a&quot;&#x000A;RPUSH mylist c   # now the list is &quot;b&quot;,&quot;a&quot;,&quot;c&quot; (RPUSH was used this time)&#x000A;</code></pre>
+        
+        <p>The max length of a list is 2<sup>32</sup> - 1 elements (4294967295, more than 4 billion of elements per list).</p>
+        
+        <p>The main features of Redis Lists from the point of view of time complexity are
+        the support for constant time insertion and deletion of elements near the
+        head and tail, even with many millions of inserted items.
+        Accessing elements is very fast near the extremes of the list but
+        is slow if you try accessing the middle of a very big list, as it is
+        an <span class="math">O(N) </span>operation.</p>
+        
+        <p>You can do many interesting things with Redis Lists, for instance you can:</p>
+        
+        <ul>
+        <li>Model a timeline in a social network, using <a href="lpush.htm" tppabs="http://redis.io/commands/lpush">LPUSH</a> in order to add new elements in the user time line, and using <a href="lrange.htm" tppabs="http://redis.io/commands/lrange">LRANGE</a> in order to retrieve a few of recently inserted items.</li>
+        <li>You can use <a href="lpush.htm" tppabs="http://redis.io/commands/lpush">LPUSH</a> together with <a href="ltrim.htm" tppabs="http://redis.io/commands/ltrim">LTRIM</a> to create a list that never exceeds a given number of elements, but just remembers the latest N elements.</li>
+        <li>Lists can be used as a message passing primitive, See for instance the well known <a href="javascript:if(confirm('https://github.com/defunkt/resque  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/defunkt/resque'" tppabs="https://github.com/defunkt/resque">Resque</a> Ruby library for creating background jobs.</li>
+        <li>You can do a lot more with lists, this data type supports a number of commands, including blocking commands like <a href="blpop.htm" tppabs="http://redis.io/commands/blpop">BLPOP</a>.</li>
+        </ul>
+        
+        <p>Please check all the <a href="commands.htm#list" tppabs="http://redis.io/commands#list">available commands operating on lists</a> for more information, or read the <a href="data-types-intro.htm" tppabs="http://redis.io/topics/data-types-intro">introduction to Redis data types</a>.</p>
+        
+        <p><a name="sets"></a></p>
+        
+        <h2>Sets</h2>
+        
+        <p>Redis Sets are an unordered collection of Strings. It is possible to add,
+        remove, and test for existence of members in <span class="math">O(1) </span>(constant time regardless
+        of the number of elements contained inside the Set).</p>
+        
+        <p>Redis Sets have the desirable property of not allowing repeated members. Adding the same element multiple times will result in a set having a single copy of this element. Practically speaking this means that adding a member does not require a <em>check if exists then add</em> operation.</p>
+        
+        <p>A very interesting thing about Redis Sets is that they support a number of
+        server side commands to compute sets starting from existing sets, so you
+        can do unions, intersections, differences of sets in very short time.</p>
+        
+        <p>The max number of members in a set is 2<sup>32</sup> - 1 (4294967295, more than 4 billion   of members per set).</p>
+        
+        <p>You can do many interesting things using Redis Sets, for instance you can:</p>
+        
+        <ul>
+        <li>You can track unique things using Redis Sets. Want to know all the unique IP addresses visiting a given blog post? Simply use <a href="sadd.htm" tppabs="http://redis.io/commands/sadd">SADD</a> every time you process a page view. You are sure repeated IPs will not be inserted.</li>
+        <li>Redis Sets are good to represent relations. You can create a tagging system with Redis using a Set to represent every tag. Then you can add all the IDs of all the objects having a given tag into a Set representing this particular tag, using the <a href="sadd.htm" tppabs="http://redis.io/commands/sadd">SADD</a> command. Do you want all the IDs of all the Objects having a three different tags at the same time? Just use <a href="sinter.htm" tppabs="http://redis.io/commands/sinter">SINTER</a>.</li>
+        <li>You can use Sets to extract elements at random using the <a href="spop.htm" tppabs="http://redis.io/commands/spop">SPOP</a> or <a href="srandmember.htm" tppabs="http://redis.io/commands/srandmember">SRANDMEMBER</a> commands.</li>
+        </ul>
+        
+        <p>As usually check the <a href="commands.htm#set" tppabs="http://redis.io/commands#set">full list of Set commands</a> for more information, or read the <a href="data-types-intro.htm" tppabs="http://redis.io/topics/data-types-intro">introduction to Redis data types</a>.</p>
+        
+        <p><a name="hashes"></a></p>
+        
+        <h2>Hashes</h2>
+        
+        <p>Redis Hashes are maps between string fields and string values, so they are the perfect data type to represent objects (eg: A User with a number of fields like name, surname, age, and so forth):</p>
+        
+        <pre><code>@cli&#x000A;HMSET user:1000 username antirez password P1pp0 age 34&#x000A;HGETALL user:1000&#x000A;HSET user:1000 password 12345&#x000A;HGETALL user:1000&#x000A;</code></pre>
+        
+        <p>A hash with a few fields (where few means up to one hundred or so) is stored in a way
+        that takes very little space, so you can store millions of objects in a small
+        Redis instance.</p>
+        
+        <p>While Hashes are used mainly to represent objects, they are capable of storing many elements, so you can use Hashes for many other tasks as well.</p>
+        
+        <p>Every hash can store up to 2<sup>32</sup> - 1 field-value pairs (more than 4 billion).</p>
+        
+        <p>Check the <a href="commands.htm#hash" tppabs="http://redis.io/commands#hash">full list of Hash commands</a> for more information, or read the <a href="data-types-intro.htm" tppabs="http://redis.io/topics/data-types-intro">introduction to Redis data types</a>.</p>
+        
+        <p><a name="sorted-sets"></a></p>
+        
+        <h2>Sorted sets</h2>
+        
+        <p>Redis Sorted Sets are, similarly to Redis Sets, non repeating collections of
+        Strings. The difference is that every member of a Sorted Set is associated
+        with score, that is used in order to take the sorted set ordered, from the
+        smallest to the greatest score.  While members are unique, scores may be
+        repeated.</p>
+        
+        <p>With sorted sets you can add, remove, or update elements in a very fast way
+        (in a time proportional to the logarithm of the number of elements). Since
+        elements are <em>taken in order</em> and not ordered afterwards, you can also get
+        ranges by score or by rank (position) in a very fast way.
+        Accessing the middle of a sorted set is also very fast, so you can use
+        Sorted Sets as a smart list of non repeating elements where you can quickly access
+        everything you need: elements in order, fast existence test, fast access
+        to elements in the middle!</p>
+        
+        <p>In short with sorted sets you can do a lot of tasks with great performance
+        that are really hard to model in other kind of databases.</p>
+        
+        <p>With Sorted Sets you can:</p>
+        
+        <ul>
+        <li>Take a leader board in a massive online game, where every time a new score
+        is submitted you update it using <a href="zadd.htm" tppabs="http://redis.io/commands/zadd">ZADD</a>. You can easily
+        take the top users using <a href="zrange.htm" tppabs="http://redis.io/commands/zrange">ZRANGE</a>, you can also, given an
+        user name, return its rank in the listing using <a href="zrank.htm" tppabs="http://redis.io/commands/zrank">ZRANK</a>.
+        Using ZRANK and ZRANGE together you can show users with a score similar to
+        a given user. All very <em>quickly</em>.</li>
+        <li>Sorted Sets are often used in order to index data that is stored inside Redis.
+        For instance if you have many hashes representing users, you can use a sorted set with elements having the age of the user as the score and the ID of the user as the value. So using <a href="zrangebyscore.htm" tppabs="http://redis.io/commands/zrangebyscore">ZRANGEBYSCORE</a> it will be trivial and fast to retrieve all the users with a given interval of ages.</li>
+        </ul>
+        
+        <p>Sorted Sets are probably the most advanced Redis data types, so take some time to check the <a href="commands.htm#sorted_set" tppabs="http://redis.io/commands#sorted_set">full list of Sorted Set commands</a> to discover what you can do with Redis! Also you may want to read the <a href="data-types-intro.htm" tppabs="http://redis.io/topics/data-types-intro">introduction to Redis data types</a>.</p>
+        
+        <h2>Bitmaps and HyperLogLogs</h2>
+        
+        <p>Redis also supports Bitmaps and HyperLogLogs which are actually data types
+        based on the String base type, but having their own semantics.</p>
+        
+        <p>Please refer to the <a href="data-types-intro.htm" tppabs="http://redis.io/topics/data-types-intro">introduction to Redis data types</a> for information about those types.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      ZREMRANGEBYRANK â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>ZREMRANGEBYRANK</span>
+        <span class='arg'>key</span>
+        <span class='arg'>start</span>
+        <span class='arg'>stop</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href="zadd.htm" tppabs="http://redis.io/commands/zadd">
+                ZADD
+              </a>
+            </li>
+            <li>
+              <a href="zcard.htm" tppabs="http://redis.io/commands/zcard">
+                ZCARD
+              </a>
+            </li>
+            <li>
+              <a href="zcount.htm" tppabs="http://redis.io/commands/zcount">
+                ZCOUNT
+              </a>
+            </li>
+            <li>
+              <a href="zincrby.htm" tppabs="http://redis.io/commands/zincrby">
+                ZINCRBY
+              </a>
+            </li>
+            <li>
+              <a href="zinterstore.htm" tppabs="http://redis.io/commands/zinterstore">
+                ZINTERSTORE
+              </a>
+            </li>
+            <li>
+              <a href="zlexcount.htm" tppabs="http://redis.io/commands/zlexcount">
+                ZLEXCOUNT
+              </a>
+            </li>
+            <li>
+              <a href="zrange.htm" tppabs="http://redis.io/commands/zrange">
+                ZRANGE
+              </a>
+            </li>
+            <li>
+              <a href="zrangebylex.htm" tppabs="http://redis.io/commands/zrangebylex">
+                ZRANGEBYLEX
+              </a>
+            </li>
+            <li>
+              <a href="zrangebyscore.htm" tppabs="http://redis.io/commands/zrangebyscore">
+                ZRANGEBYSCORE
+              </a>
+            </li>
+            <li>
+              <a href="zrank.htm" tppabs="http://redis.io/commands/zrank">
+                ZRANK
+              </a>
+            </li>
+            <li>
+              <a href="zrem.htm" tppabs="http://redis.io/commands/zrem">
+                ZREM
+              </a>
+            </li>
+            <li>
+              <a href="zremrangebylex.htm" tppabs="http://redis.io/commands/zremrangebylex">
+                ZREMRANGEBYLEX
+              </a>
+            </li>
+            <li>
+              <a href="zremrangebyrank.htm" tppabs="http://redis.io/commands/zremrangebyrank">
+                <strong>ZREMRANGEBYRANK</strong>
+              </a>
+            </li>
+            <li>
+              <a href="zremrangebyscore.htm" tppabs="http://redis.io/commands/zremrangebyscore">
+                ZREMRANGEBYSCORE
+              </a>
+            </li>
+            <li>
+              <a href="zrevrange.htm" tppabs="http://redis.io/commands/zrevrange">
+                ZREVRANGE
+              </a>
+            </li>
+            <li>
+              <a href="zrevrangebyscore.htm" tppabs="http://redis.io/commands/zrevrangebyscore">
+                ZREVRANGEBYSCORE
+              </a>
+            </li>
+            <li>
+              <a href="zrevrank.htm" tppabs="http://redis.io/commands/zrevrank">
+                ZREVRANK
+              </a>
+            </li>
+            <li>
+              <a href="zscan.htm" tppabs="http://redis.io/commands/zscan">
+                ZSCAN
+              </a>
+            </li>
+            <li>
+              <a href="zscore.htm" tppabs="http://redis.io/commands/zscore">
+                ZSCORE
+              </a>
+            </li>
+            <li>
+              <a href="zunionstore.htm" tppabs="http://redis.io/commands/zunionstore">
+                ZUNIONSTORE
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 2.0.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements removed by the operation.</p>
+        </div>
+        <p>Removes all elements in the sorted set stored at <code>key</code> with rank between <code>start</code>
+        and <code>stop</code>.
+        Both <code>start</code> and <code>stop</code> are <code>0</code> -based indexes with <code>0</code> being the element with
+        the lowest score.
+        These indexes can be negative numbers, where they indicate offsets starting at
+        the element with the highest score.
+        For example: <code>-1</code> is the element with the highest score, <code>-2</code> the element with
+        the second highest score and so forth.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="protocol.htm#integer-reply" tppabs="http://redis.io/topics/protocol#integer-reply">Integer reply</a>: the number of elements removed.</p>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='f282494aa9aae1cce9d5a12ee7b7dee4'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZADD myzset 1 &quot;one&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZADD myzset 2 &quot;two&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZADD myzset 3 &quot;three&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZREMRANGEBYRANK myzset 0 1</span>
+          <pre>(integer) 2</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZRANGE myzset 0 -1 WITHSCORES</span>
+          <pre>1) "three"&#x000A;2) "3"</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_zremrangebyrank';
+          var disqus_url = 'zremrangebyrank.htm'/*tpa=http://redis.io/commands/zremrangebyrank*/;
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href="javascript:if(confirm('http://disqus.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://disqus.com/'" tppabs="http://disqus.com/">
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      LRANGE â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>LRANGE</span>
+        <span class='arg'>key</span>
+        <span class='arg'>start</span>
+        <span class='arg'>stop</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href="blpop.htm" tppabs="http://redis.io/commands/blpop">
+                BLPOP
+              </a>
+            </li>
+            <li>
+              <a href="brpop.htm" tppabs="http://redis.io/commands/brpop">
+                BRPOP
+              </a>
+            </li>
+            <li>
+              <a href="brpoplpush.htm" tppabs="http://redis.io/commands/brpoplpush">
+                BRPOPLPUSH
+              </a>
+            </li>
+            <li>
+              <a href="lindex.htm" tppabs="http://redis.io/commands/lindex">
+                LINDEX
+              </a>
+            </li>
+            <li>
+              <a href="linsert.htm" tppabs="http://redis.io/commands/linsert">
+                LINSERT
+              </a>
+            </li>
+            <li>
+              <a href="llen.htm" tppabs="http://redis.io/commands/llen">
+                LLEN
+              </a>
+            </li>
+            <li>
+              <a href="lpop.htm" tppabs="http://redis.io/commands/lpop">
+                LPOP
+              </a>
+            </li>
+            <li>
+              <a href="lpush.htm" tppabs="http://redis.io/commands/lpush">
+                LPUSH
+              </a>
+            </li>
+            <li>
+              <a href="lpushx.htm" tppabs="http://redis.io/commands/lpushx">
+                LPUSHX
+              </a>
+            </li>
+            <li>
+              <a href="lrange.htm" tppabs="http://redis.io/commands/lrange">
+                <strong>LRANGE</strong>
+              </a>
+            </li>
+            <li>
+              <a href="lrem.htm" tppabs="http://redis.io/commands/lrem">
+                LREM
+              </a>
+            </li>
+            <li>
+              <a href="lset.htm" tppabs="http://redis.io/commands/lset">
+                LSET
+              </a>
+            </li>
+            <li>
+              <a href="ltrim.htm" tppabs="http://redis.io/commands/ltrim">
+                LTRIM
+              </a>
+            </li>
+            <li>
+              <a href="rpop.htm" tppabs="http://redis.io/commands/rpop">
+                RPOP
+              </a>
+            </li>
+            <li>
+              <a href="rpoplpush.htm" tppabs="http://redis.io/commands/rpoplpush">
+                RPOPLPUSH
+              </a>
+            </li>
+            <li>
+              <a href="rpush.htm" tppabs="http://redis.io/commands/rpush">
+                RPUSH
+              </a>
+            </li>
+            <li>
+              <a href="rpushx.htm" tppabs="http://redis.io/commands/rpushx">
+                RPUSHX
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.0.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(S+N) where S is the distance of start offset from HEAD for small lists, from nearest end (HEAD or TAIL) for large lists; and N is the number of elements in the specified range.</p>
+        </div>
+        <p>Returns the specified elements of the list stored at <code>key</code>.
+        The offsets <code>start</code> and <code>stop</code> are zero-based indexes, with <code>0</code> being the first
+        element of the list (the head of the list), <code>1</code> being the next element and so
+        on.</p>
+        
+        <p>These offsets can also be negative numbers indicating offsets starting at the
+        end of the list.
+        For example, <code>-1</code> is the last element of the list, <code>-2</code> the penultimate, and so
+        on.</p>
+        
+        <h2>Consistency with range functions in various programming languages</h2>
+        
+        <p>Note that if you have a list of numbers from 0 to 100, <code>LRANGE list 0 10</code> will
+        return 11 elements, that is, the rightmost item is included.
+        This <strong>may or may not</strong> be consistent with behavior of range-related functions
+        in your programming language of choice (think Ruby&#39;s <code>Range.new</code>, <code>Array#slice</code>
+        or Python&#39;s <code>range()</code> function).</p>
+        
+        <h2>Out-of-range indexes</h2>
+        
+        <p>Out of range indexes will not produce an error.
+        If <code>start</code> is larger than the end of the list, an empty list is returned.
+        If <code>stop</code> is larger than the actual end of the list, Redis will treat it like
+        the last element of the list.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="protocol.htm#array-reply" tppabs="http://redis.io/topics/protocol#array-reply">Array reply</a>: list of elements in the specified range.</p>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='f395b417d0ef16b78e0b26bed843ba88'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>RPUSH mylist &quot;one&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>RPUSH mylist &quot;two&quot;</span>
+          <pre>(integer) 2</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>RPUSH mylist &quot;three&quot;</span>
+          <pre>(integer) 3</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>LRANGE mylist 0 0</span>
+          <pre>1) "one"</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>LRANGE mylist -3 2</span>
+          <pre>1) "one"&#x000A;2) "two"&#x000A;3) "three"</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>LRANGE mylist -100 100</span>
+          <pre>1) "one"&#x000A;2) "two"&#x000A;3) "three"</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>LRANGE mylist 5 10</span>
+          <pre>(empty list or set)</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_lrange';
+          var disqus_url = 'lrange.htm'/*tpa=http://redis.io/commands/lrange*/;
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href="javascript:if(confirm('http://disqus.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://disqus.com/'" tppabs="http://disqus.com/">
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

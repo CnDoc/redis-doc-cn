@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Redis Security â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics security'>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Redis Security</h1>
+        
+        <p>This document provides an introduction to the topic of security from the point of
+        view of Redis: the access control provided by Redis, code security concerns,
+        attacks that can be triggered from the outside by selecting malicious inputs and
+        other similar topics are covered.</p>
+        
+        <p>For security related contacts please open an issue on Github, or when you feel it
+        is really important that the security of the communication is preserved, use the
+        GPG key at the end of this document.</p>
+        
+        <h2>Redis general security model</h2>
+        
+        <p>Redis is designed to be accessed by trusted clients inside trusted environments.
+        This means that usually it is not a good idea to expose the Redis instance
+        directly to the internet or, in general, to an environment where untrusted
+        clients can directly access the Redis TCP port or UNIX socket.</p>
+        
+        <p>For instance, in the common context of a web application implemented using Redis
+        as a database, cache, or messaging system, the clients inside the front-end
+        (web side) of the application will query Redis to generate pages or
+        to perform operations requested or triggered by the web application user.</p>
+        
+        <p>In this case, the web application mediates access between Redis and
+        untrusted clients (the user browsers accessing the web application).</p>
+        
+        <p>This is a specific example, but, in general, untrusted access to Redis should
+        always be mediated by a layer implementing ACLs, validating user input,
+        and deciding what operations to perform against the Redis instance.</p>
+        
+        <p>In general, Redis is not optimized for maximum security but for maximum
+        performance and simplicity.</p>
+        
+        <h2>Network security</h2>
+        
+        <p>Access to the Redis port should be denied to everybody but trusted clients
+        in the network, so the servers running Redis should be directly accessible
+        only by the computers implementing the application using Redis.</p>
+        
+        <p>In the common case of a single computer directly exposed to the internet, such
+        as a virtualized Linux instance (Linode, EC2, ...), the Redis port should be
+        firewalled to prevent access from the outside. Clients will still be able to
+        access Redis using the loopback interface.</p>
+        
+        <p>Note that it is possible to bind Redis to a single interface by adding a line
+        like the following to the <strong>redis.conf</strong> file:</p>
+        
+        <pre><code>bind 127.0.0.1&#x000A;</code></pre>
+        
+        <p>Failing to protect the Redis port from the outside can have a big security
+        impact because of the nature of Redis. For instance, a single <strong>FLUSHALL</strong> command
+        can be used by an external attacker to delete the whole data set.</p>
+        
+        <h2>Authentication feature</h2>
+        
+        <p>While Redis does not try to implement Access Control, it provides
+        a tiny layer of authentication that is optionally turned on editing the
+        <strong>redis.conf</strong> file.</p>
+        
+        <p>When the authorization layer is enabled, Redis will refuse any query by
+        unauthenticated clients. A client can authenticate itself by sending the
+        <strong>AUTH</strong> command followed by the password.</p>
+        
+        <p>The password is set by the system administrator in clear text inside the
+        redis.conf file. It should be long enough to prevent brute force attacks 
+        for two reasons:</p>
+        
+        <ul>
+        <li>Redis is very fast at serving queries. Many passwords per second can be tested by an external client.</li>
+        <li>The Redis password is stored inside the <strong>redis.conf</strong> file and inside the client configuration, so it does not need to be remembered by the system administrator, and thus it can be very long.</li>
+        </ul>
+        
+        <p>The goal of the authentication layer is to optionally provide a layer of
+        redundancy. If firewalling or any other system implemented to protect Redis
+        from external attackers fail, an external client will still not be able to 
+        access the Redis instance without knowledge of the authentication password.</p>
+        
+        <p>The AUTH command, like every other Redis command, is sent unencrypted, so it 
+        does not protect against an attacker that has enough access to the network to 
+        perform eavesdropping.</p>
+        
+        <h2>Data encryption support</h2>
+        
+        <p>Redis does not support encryption. In order to implement setups where
+        trusted parties can access a Redis instance over the internet or other
+        untrusted networks, an additional layer of protection should be implemented,
+        such as an SSL proxy.</p>
+        
+        <h2>Disabling of specific commands</h2>
+        
+        <p>It is possible to disable commands in Redis or to rename them into an unguessable
+        name, so that normal clients are limited to a specified set of commands.</p>
+        
+        <p>For instance, a virtualized server provider may offer a managed Redis instance
+        service. In this context, normal users should probably not be able to
+        call the Redis <strong>CONFIG</strong> command to alter the configuration of the instance,
+        but the systems that provide and remove instances should be able to do so.</p>
+        
+        <p>In this case, it is possible to either rename or completely shadow commands from 
+        the command table. This feature is available as a statement that can be used 
+        inside the redis.conf configuration file. For example:</p>
+        
+        <pre><code>rename-command CONFIG b840fc02d524045429941cc15f59e41cb7be6c52&#x000A;</code></pre>
+        
+        <p>In the above example, the <strong>CONFIG</strong> command was renamed into an unguessable name.
+        It is also possible to completely disable it (or any other command) by renaming it
+        to the empty string, like in the following example:</p>
+        
+        <pre><code>rename-command CONFIG &quot;&quot;&#x000A;</code></pre>
+        
+        <h2>Attacks triggered by carefully selected inputs from external clients</h2>
+        
+        <p>There is a class of attacks that an attacker can trigger from the outside even
+        without external access to the instance. An example of such attacks are
+        the ability to insert data into Redis that triggers pathological (worst case)
+        algorithm complexity on data structures implemented inside Redis internals.</p>
+        
+        <p>For instance an attacker could supply, via a web form, a set of strings that
+        is known to hash to the same bucket into an hash table in order to turn the
+        <span class="math">O(1) </span>expected time (the average time) to the <span class="math">O(N) </span>worst case, consuming more
+        CPU than expected, and ultimately causing a Denial of Service.</p>
+        
+        <p>To prevent this specific attack, Redis uses a per-execution pseudo-random
+        seed to the hash function.</p>
+        
+        <p>Redis implements the SORT command using the qsort algorithm. Currently, 
+        the algorithm is not randomized, so it is possible to trigger a quadratic
+        worst-case behavior by carefully selecting the right set of inputs.</p>
+        
+        <h2>String escaping and NoSQL injection</h2>
+        
+        <p>The Redis protocol has no concept of string escaping, so injection 
+        is impossible under normal circumstances using a normal client library.
+        The protocol uses prefixed-length strings and is completely binary safe.</p>
+        
+        <p>Lua scripts executed by the <strong>EVAL</strong> and <strong>EVALSHA</strong> commands follow the
+        same rules, and thus those commands are also safe.</p>
+        
+        <p>While it would be a very strange use case, the application should avoid composing 
+        the body of the Lua script using strings obtained from untrusted sources.</p>
+        
+        <h2>Code security</h2>
+        
+        <p>In a classical Redis setup, clients are allowed full access to the command set, 
+        but accessing the instance should never result in the ability to control the 
+        system where Redis is running.</p>
+        
+        <p>Internally, Redis uses all the well known practices for writing secure code, to
+        prevent buffer overflows, format bugs and other memory corruption issues.
+        However, the ability to control the server configuration using the <strong>CONFIG</strong>
+        command makes the client able to change the working dir of the program and
+        the name of the dump file. This allows clients to write RDB Redis files
+        at random paths, that is a security issue that may easily lead to the ability
+        to run untrusted code as the same user as Redis is running.</p>
+        
+        <p>Redis does not requires root privileges to run. It is recommended to
+        run it as an unprivileged <em>redis</em> user that is only used for this purpose.
+        The Redis authors are currently investigating the possibility of adding a new
+        configuration parameter to prevent <strong>CONFIG SET/GET dir</strong> and other similar run-time
+        configuration directives. This would prevent clients from forcing the server to
+        write Redis dump files at arbitrary locations.</p>
+        
+        <h2>GPG key</h2>
+        
+        <pre><code>-----BEGIN PGP PUBLIC KEY BLOCK-----&#x000A;Version: GnuPG v1.4.13 (Darwin)&#x000A;&#x000A;mQINBFJ7ouABEAC5HwiDmE+tRCsWyTaPLBFEGDHcWOLWzph5HdrRtB//UUlSVt9P&#x000A;tTWZpDvZQvq/ujnS2i2c54V+9NcgVqsCEpA0uJ/U1sUZ3RVBGfGO/l+BIMBnM+B+&#x000A;TzK825TxER57ILeT/2ZNSebZ+xHJf2Bgbun45pq3KaXUrRnuS8HWSysC+XyMoXET&#x000A;nksApwMmFWEPZy62gbeayf1U/4yxP/YbHfwSaldpEILOKmsZaGp8PAtVYMVYHsie&#x000A;gOUdS/jO0P3silagq39cPQLiTMSsyYouxaagbmtdbwINUX0cjtoeKddd4AK7PIww&#x000A;7su/lhqHZ58ZJdlApCORhXPaDCVrXp/uxAQfT2HhEGCJDTpctGyKMFXQbLUhSuzf&#x000A;IilRKJ4jqjcwy+h5lCfDJUvCNYfwyYApsMCs6OWGmHRd7QSFNSs335wAEbVPpO1n&#x000A;oBJHtOLywZFPF+qAm3LPV4a0OeLyA260c05QZYO59itakjDCBdHwrwv3EU8Z8hPd&#x000A;6pMNLZ/H1MNK/wWDVeSL8ZzVJabSPTfADXpc1NSwPPWSETS7JYWssdoK+lXMw5vK&#x000A;q2mSxabL/y91sQ5uscEDzDyJxEPlToApyc5qOUiqQj/thlA6FYBlo1uuuKrpKU1I&#x000A;e6AA3Gt3fJHXH9TlIcO6DoHvd5fS/o7/RxyFVxqbRqjUoSKQeBzXos3u+QARAQAB&#x000A;tChTYWx2YXRvcmUgU2FuZmlsaXBwbyA8YW50aXJlekBnbWFpbC5jb20+iQI+BBMB&#x000A;AgAoBQJSe6LgAhsDBQld/A8ABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRAx&#x000A;gTcoDlyI1riPD/oDDvyIVHtgHvdHqB8/GnF2EsaZgbNuwbiNZ+ilmqnjXzZpu5Su&#x000A;kGPXAAo+v+rJVLSU2rjCUoL5PaoSlhznw5PL1xpBosN9QzfynWLvJE42T4i0uNU/&#x000A;a7a1PQCluShnBchm4Xnb3ohNVthFF2MGFRT4OZ5VvK7UcRLYTZoGRlKRGKi9HWea&#x000A;2xFvyUd9jSuGZG/MMuoslgEPxei09rhDrKxnDNQzQZQpamm/42MITh/1dzEC5ZRx&#x000A;8hgh1J70/c+zEU7s6kVSGvmYtqbV49/YkqAbhENIeZQ+bCxcTpojEhfk6HoQkXoJ&#x000A;oK5m21BkMlUEvf1oTX22c0tuOrAX8k0y1M5oismT2e3bqs2OfezNsSfK2gKbeASk&#x000A;CyYivnbTjmOSPbkvtb27nDqXjb051q6m2A5d59KHfey8BZVuV9j35Ettx4nrS1Ni&#x000A;S7QrHWRvqceRrIrqXJKopyetzJ6kYDlbP+EVN9NJ2kz/WG6ermltMJQoC0oMhwAG&#x000A;dfrttG+QJ8PCOlaYiZLD2bjzkDfdfanE74EKYWt+cseenZUf0tsncltRbNdeGTQb&#x000A;1/GHfwJ+nbA1uKhcHCQ2WrEeGiYpvwKv2/nxBWZ3gwaiAwsz/kI6DQlPZqJoMea9&#x000A;8gDK2rQigMgbE88vIli4sNhc0yAtm3AbNgAO28NUhzIitB+av/xYxN/W/LkCDQRS&#x000A;e6LgARAAtdfwe05ZQ0TZYAoeAQXxx2mil4XLzj6ycNjj2JCnFgpYxA8m6nf1gudr&#x000A;C5V7HDlctp0i9i0wXbf07ubt4Szq4v3ihQCnPQKrZZWfRXxqg0/TOXFfkOdeIoXl&#x000A;Fl+yC5lUaSTJSg21nxIr8pEq/oPbwpdnWdEGSL9wFanfDUNJExJdzxgyPzD6xubc&#x000A;OIn2KviV9gbFzQfOIkgkl75V7gn/OA5g2SOLOIPzETLCvQYAGY9ppZrkUz+ji+aT&#x000A;Tg7HBL6zySt1sCCjyBjFFgNF1RZY4ErtFj5bdBGKCuglyZou4o2ETfA8A5NNpu7x&#x000A;zkls45UmqRTbmsTD2FU8Id77EaXxDz8nrmjz8f646J0rqn9pGnIg6Lc2PV8j7ACm&#x000A;/xaTH03taIloOBkTs/Cl01XYeloM0KQwrML43TIm3xSE/AyGF9IGTQo3zmv8SnMO&#x000A;F+Rv7+55QGlSkfIkXUNCUSm1+dJSBnUhVj/RAjxkekG2di+Jh/y8pkSUxPMDrYEa&#x000A;OtDoiq2G/roXjVQcbOyOrWA2oB58IVuXO6RzMYi6k6BMpcbmQm0y+TcJqo64tREV&#x000A;tjogZeIeYDu31eylwijwP67dtbWgiorrFLm2F7+povfXjsDBCQTYhjH4mZgV94ri&#x000A;hYjP7X2YfLV3tvGyjsMhw3/qLlEyx/f/97gdAaosbpGlVjnhqicAEQEAAYkCJQQY&#x000A;AQIADwUCUnui4AIbDAUJXfwPAAAKCRAxgTcoDlyI1kAND/sGnXTbMvfHd9AOzv7i&#x000A;hDX15SSeMDBMWC+8jH/XZASQF/zuHk0jZNTJ01VAdpIxHIVb9dxRrZ3bl56BByyI&#x000A;8m5DKJiIQWVai+pfjKj6C7p44My3KLodjEeR1oOODXXripGzqJTJNqpW5eCrCxTM&#x000A;yz1rzO1H1wziJrRNc+ACjVBE3eqcxsZkDZhWN1m8StlX40YgmQmID1CC+kRlV+hg&#x000A;LUlZLWQIFCGo2UJYoIL/xvUT3Sx4uKD4lpOjyApWzU40mGDaM5+SOsYYrT8rdwvk&#x000A;nd/efspff64meT9PddX1hi7Cdqbq9woQRu6YhGoCtrHyi/kklGF3EZiw0zWehGAR&#x000A;2pUeCTD28vsMfJ3ZL1mUGiwlFREUZAcjIlwWDG1RjZDJeZ0NV07KH1N1U8L8aFcu&#x000A;+CObnlwiavZxOR2yKvwkqmu9c7iXi/R7SVcGQlNao5CWINdzCLHj6/6drPQfGoBS&#x000A;K/w4JPe7fqmIonMR6O1Gmgkq3Bwl3rz6MWIBN6z+LuUF/b3ODY9rODsJGp21dl2q&#x000A;xCedf//PAyFnxBNf5NSjyEoPQajKfplfVS3mG8USkS2pafyq6RK9M5wpBR9I1Smm&#x000A;gon60uMJRIZbxUjQMPLOViGNXbPIilny3FdqbUgMieTBDxrJkE7mtkHfuYw8bERy&#x000A;vI1sAEeV6ZM/uc4CDI3E2TxEbQ==&#x000A;</code></pre>
+        
+        <p><strong>Key fingerprint</strong></p>
+        
+        <pre><code>pub   4096R/0E5C88D6 2013-11-07 [expires: 2063-10-26]&#x000A;      Key fingerprint = E5F3 DA80 35F0 2EC1 47F9  020F 3181 3728 0E5C 88D6&#x000A;      uid                  Salvatore Sanfilippo &lt;antirez@gmail.com&gt;&#x000A;      sub   4096R/3B34D15F 2013-11-07 [expires: 2063-10-26]&#x000A;</code></pre>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

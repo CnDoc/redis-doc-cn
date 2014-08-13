@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Redis Keyspace Notifications â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics notifications'>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Redis Keyspace Notifications</h1>
+        
+        <p><strong>IMPORTANT</strong> Keyspace notifications is a feature available since 2.8.0</p>
+        
+        <h2>Feature overview</h2>
+        
+        <p>Keyspace notifications allows clients to subscribe to Pub/Sub channels in order
+        to receive events affecting the Redis data set in some way.</p>
+        
+        <p>Examples of the events that is possible to receive are the following:</p>
+        
+        <ul>
+        <li>All the commands affecting a given key.</li>
+        <li>All the keys receiving an LPUSH operation.</li>
+        <li>All the keys expiring in the database 0.</li>
+        </ul>
+        
+        <p>Events are delivered using the normal Pub/Sub layer of Redis, so clients
+        implementing Pub/Sub are able to use this feature without modifications.</p>
+        
+        <p>Because Redis Pub/Sub is <em>fire and forget</em> currently there is no way to use this
+        feature if you application demands <strong>reliable notification</strong> of events, that is,
+        if your Pub/Sub client disconnects, and reconnects later, all the events
+        delivered during the time the client was disconnected are lost.</p>
+        
+        <p>In the future there are plans to allow for more reliable delivering of
+        events, but probably this will be addressed at a more general level either
+        bringing reliability to Pub/Sub itself, or allowing Lua scripts to intercept
+        Pub/Sub messages to perform operations like pushing the events into a list.</p>
+        
+        <h2>Type of events</h2>
+        
+        <p>Keyspace notifications are implemented sending two distinct type of events
+        for every operation affecting the Redis data space. For instance a <a href="del.htm" tppabs="http://redis.io/commands/del">DEL</a>
+        operation targeting the key named <code>mykey</code> in database <code>0</code> will trigger
+        the delivering of two messages, exactly equivalent to the following two
+        <a href="publish.htm" tppabs="http://redis.io/commands/publish">PUBLISH</a> commands:</p>
+        
+        <pre><code>PUBLISH __keyspace@0__:mykey del&#x000A;PUBLISH __keyevent@0__:del mykey&#x000A;</code></pre>
+        
+        <p>It is easy to see how one channel allows to listen to all the events targeting
+        the key <code>mykey</code> and the other channel allows to obtain informations about
+        all the keys that are target of a <code>del</code> operation.</p>
+        
+        <p>The first kind of event, with <code>keyspace</code> prefix in the channel is called
+        a <strong>Key-space notification</strong>, while the second, with the <code>keyevent</code> prefix,
+        is called a <strong>Key-event notification</strong>.</p>
+        
+        <p>In the above example a <code>del</code> event was generated for the key <code>mykey</code>.
+        What happens is that:</p>
+        
+        <ul>
+        <li>The Key-space channel receives as message the name of the event.</li>
+        <li>The Key-event channel receives as message the name of the key.</li>
+        </ul>
+        
+        <p>It is possible to enable only one kind of notification in order to deliver
+        just the subset of events we are interested in.</p>
+        
+        <h2>Configuration</h2>
+        
+        <p>By default keyspace events notifications are disabled because while not
+        very sensible the feature uses some CPU power. Notifications are enabled
+        using the <code>notify-keyspace-events</code> of redis.conf or via the <strong>CONFIG SET</strong>.</p>
+        
+        <p>Setting the parameter to the empty string disables notifications.
+        In order to enable the feature a non-empty string is used, composed of multiple
+        characters, where every character has a special meaning according to the
+        following table:</p>
+        
+        <pre><code>K     Keyspace events, published with __keyspace@&lt;db&gt;__ prefix.&#x000A;E     Keyevent events, published with __keyevent@&lt;db&gt;__ prefix.&#x000A;g     Generic commands (non-type specific) like DEL, EXPIRE, RENAME, ...&#x000A;$     String commands&#x000A;l     List commands&#x000A;s     Set commands&#x000A;h     Hash commands&#x000A;z     Sorted set commands&#x000A;x     Expired events (events generated every time a key expires)&#x000A;e     Evicted events (events generated when a key is evicted for maxmemory)&#x000A;A     Alias for g$lshzxe, so that the &quot;AKE&quot; string means all the events.&#x000A;</code></pre>
+        
+        <p>At least <code>K</code> or <code>E</code> should be present in the string, otherwise no event
+        will be delivered regardless of the rest of the string.</p>
+        
+        <p>For instance to enable just Key-space events for lists, the configuration
+        parameter must be set to <code>Kl</code>, and so forth.</p>
+        
+        <p>The string <code>KEA</code> can be used to enable every possible event.</p>
+        
+        <h2>Events generated by different commands</h2>
+        
+        <p>Different commands generate different kind of events according to the following list.</p>
+        
+        <ul>
+        <li><a href="del.htm" tppabs="http://redis.io/commands/del">DEL</a> generates a <code>del</code> event for every deleted key.</li>
+        <li><a href="rename.htm" tppabs="http://redis.io/commands/rename">RENAME</a> generates two events, a <code>rename_from</code> event for the source key, and a <code>rename_to</code> event for the destination key.</li>
+        <li><a href="expire.htm" tppabs="http://redis.io/commands/expire">EXPIRE</a> generates an <code>expire</code> event when an expire is set to the key, or a <code>del</code> event every time setting an expire results into the key being deleted (see <a href="expire.htm" tppabs="http://redis.io/commands/expire">EXPIRE</a> documentation for more info).</li>
+        <li><a href="sort.htm" tppabs="http://redis.io/commands/sort">SORT</a> generates a <code>sortstore</code> event when <code>STORE</code> is used to set a new key. If the resulting list is empty, and the <code>STORE</code> option is used, and there was already an existing key with that name, the result is that the key is deleted, so a <code>del</code> event is generated in this condition.</li>
+        <li><a href="set.htm" tppabs="http://redis.io/commands/set">SET</a> and all its variants (<a href="setex.htm" tppabs="http://redis.io/commands/setex">SETEX</a>, <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">SETNX</a>,<a href="getset.htm" tppabs="http://redis.io/commands/getset">GETSET</a>) generate <code>set</code> events. However <a href="setex.htm" tppabs="http://redis.io/commands/setex">SETEX</a> will also generate an <code>expire</code> events.</li>
+        <li><a href="mset.htm" tppabs="http://redis.io/commands/mset">MSET</a> generates a separated <code>set</code> event for every key.</li>
+        <li><a href="setrange.htm" tppabs="http://redis.io/commands/setrange">SETRANGE</a> generates a <code>setrange</code> event.</li>
+        <li><a href="incr.htm" tppabs="http://redis.io/commands/incr">INCR</a>, <a href="decr.htm" tppabs="http://redis.io/commands/decr">DECR</a>, <a href="incrby.htm" tppabs="http://redis.io/commands/incrby">INCRBY</a>, <a href="decrby.htm" tppabs="http://redis.io/commands/decrby">DECRBY</a> commands all generate <code>incrby</code> events.</li>
+        <li><a href="incrbyfloat.htm" tppabs="http://redis.io/commands/incrbyfloat">INCRBYFLOAT</a> generates an <code>incrbyfloat</code> events.</li>
+        <li><a href="append.htm" tppabs="http://redis.io/commands/append">APPEND</a> generates an <code>append</code> event.</li>
+        <li><a href="lpush.htm" tppabs="http://redis.io/commands/lpush">LPUSH</a> and <a href="lpushx.htm" tppabs="http://redis.io/commands/lpushx">LPUSHX</a> generates a single <code>lpush</code> event, even in the variadic case.</li>
+        <li><a href="rpush.htm" tppabs="http://redis.io/commands/rpush">RPUSH</a> and <a href="rpushx.htm" tppabs="http://redis.io/commands/rpushx">RPUSHX</a> generates a single <code>rpush</code> event, even in the variadic case.</li>
+        <li><a href="rpop.htm" tppabs="http://redis.io/commands/rpop">RPOP</a> generates an <code>rpop</code> event. Additionally a <code>del</code> event is generated if the key is removed because the last element from the list was popped.</li>
+        <li><a href="lpop.htm" tppabs="http://redis.io/commands/lpop">LPOP</a> generates an <code>lpop</code> event. Additionally a <code>del</code> event is generated if the key is removed because the last element from the list was popped.</li>
+        <li><a href="linsert.htm" tppabs="http://redis.io/commands/linsert">LINSERT</a> generates an <code>linsert</code> event.</li>
+        <li><a href="lset.htm" tppabs="http://redis.io/commands/lset">LSET</a> generates an <code>lset</code> event.</li>
+        <li><a href="ltrim.htm" tppabs="http://redis.io/commands/ltrim">LTRIM</a> generates an <code>ltrim</code> event, and additionally a <code>del</code> event if the resulting list is empty and the key is removed.</li>
+        <li><a href="rpoplpush.htm" tppabs="http://redis.io/commands/rpoplpush">RPOPLPUSH</a> and <a href="brpoplpush.htm" tppabs="http://redis.io/commands/brpoplpush">BRPOPLPUSH</a> generate an <code>rpop</code> event and an <code>lpush</code> event. In both cases the order is guaranteed (the <code>lpush</code> event will always be delivered after the <code>rpop</code> event). Additionally a <code>del</code> event will be generated if the resulting list is zero length and the key is removed.</li>
+        <li><a href="hset.htm" tppabs="http://redis.io/commands/hset">HSET</a>, <a href="hsetnx.htm" tppabs="http://redis.io/commands/hsetnx">HSETNX</a> and <a href="hmset.htm" tppabs="http://redis.io/commands/hmset">HMSET</a> all generate a single <code>hset</code> event.</li>
+        <li><a href="hincrby.htm" tppabs="http://redis.io/commands/hincrby">HINCRBY</a> generates an <code>hincrby</code> event.</li>
+        <li><a href="hincrbyfloat.htm" tppabs="http://redis.io/commands/hincrbyfloat">HINCRBYFLOAT</a> generates an <code>hincrbyfloat</code> event.</li>
+        <li><a href="hdel.htm" tppabs="http://redis.io/commands/hdel">HDEL</a> generates a single <code>hdel</code> event, and an additional <code>del</code> event if the resulting hash is empty and the key is removed.</li>
+        <li><a href="sadd.htm" tppabs="http://redis.io/commands/sadd">SADD</a> generates a single <code>sadd</code> event, even in the variadic case.</li>
+        <li><a href="srem.htm" tppabs="http://redis.io/commands/srem">SREM</a> generates a single <code>srem</code> event, and an additional <code>del</code> event if the resulting set is empty and the key is removed.</li>
+        <li><a href="smove.htm" tppabs="http://redis.io/commands/smove">SMOVE</a> generates an <code>srem</code> event for the source key, and an <code>sadd</code> event for the destination key.</li>
+        <li><a href="spop.htm" tppabs="http://redis.io/commands/spop">SPOP</a> generates an <code>spop</code> event, and an additional <code>del</code> event if the resulting set is empty and the key is removed.</li>
+        <li><a href="sinterstore.htm" tppabs="http://redis.io/commands/sinterstore">SINTERSTORE</a>, <a href="sunionstore.htm" tppabs="http://redis.io/commands/sunionstore">SUNIONSTORE</a>, <a href="sdiffstore.htm" tppabs="http://redis.io/commands/sdiffstore">SDIFFSTORE</a> generate <code>sinterstore</code>, <code>sunionostore</code>, <code>sdiffstore</code> events respectively. In the speical case the resulting set is empty, and the key where the result is stored already exists, a <code>del</code> event is generated since the key is removed.</li>
+        <li><code>ZINCR</code> generates a <code>zincr</code> event.</li>
+        <li><a href="zadd.htm" tppabs="http://redis.io/commands/zadd">ZADD</a> generates a single <code>zadd</code> event even when multiple elements are added.</li>
+        <li><a href="zrem.htm" tppabs="http://redis.io/commands/zrem">ZREM</a> generates a single <code>zrem</code> event even when multiple elements are deleted. When the resulting sorted set is empty and the key is generated, an additional <code>del</code> event is generated.</li>
+        <li><code>ZREMBYSCORE</code> generates a single <code>zrembyscore</code> event. When the resulting sorted set is empty and the key is generated, an additional <code>del</code> event is generated.</li>
+        <li><code>ZREMBYRANK</code> generates a single <code>zrembyrank</code> event. When the resulting sorted set is empty and the key is generated, an additional <code>del</code> event is generated.</li>
+        <li><a href="zinterstore.htm" tppabs="http://redis.io/commands/zinterstore">ZINTERSTORE</a> and <a href="zunionstore.htm" tppabs="http://redis.io/commands/zunionstore">ZUNIONSTORE</a> respectively generate <code>zinterstore</code> and <code>zunionstore</code> events. In the speical case the resulting sorted set is empty, and the key where the result is stored already exists, a <code>del</code> event is generated since the key is removed.</li>
+        <li>Every time a key with a time to live associated is removed from the data set because it expired, an <code>expired</code> event is generated.</li>
+        <li>Every time a key is evicted from the data set in order to free memory as a result of the <code>maxmemory</code> policy, an <code>evicted</code> event is generated.</li>
+        </ul>
+        
+        <p><strong>IMPORTANT</strong> all the commands generate events only if the target key is really modified. For instance an <a href="srem.htm" tppabs="http://redis.io/commands/srem">SREM</a> deleting a non-existing element from a Set will not actually change the value of the key, so no event will be generated.</p>
+        
+        <p>If in doubt about how events are generated for a given command, the simplest
+        thing to do is to watch yourself:</p>
+        
+        <pre><code>$ redis-cli config set notify-keyspace-events KEA&#x000A;$ redis-cli --csv psubscribe &#39;__key*__:*&#39;&#x000A;Reading messages... (press Ctrl-C to quit)&#x000A;&quot;psubscribe&quot;,&quot;__key*__:*&quot;,1&#x000A;</code></pre>
+        
+        <p>At this point use <code>redis-cli</code> in another terminal to send commands to the
+        Redis server and watch the events generated:</p>
+        
+        <pre><code>&quot;pmessage&quot;,&quot;__key*__:*&quot;,&quot;__keyspace@0__:foo&quot;,&quot;set&quot;&#x000A;&quot;pmessage&quot;,&quot;__key*__:*&quot;,&quot;__keyevent@0__:set&quot;,&quot;foo&quot;&#x000A;...&#x000A;</code></pre>
+        
+        <h2>Timing of expired events</h2>
+        
+        <p>Keys with a time to live associated are expired by Redis in two ways:</p>
+        
+        <ul>
+        <li>When the key is accessed by a command and is found to be expired.</li>
+        <li>Via a background system that looks for expired keys in background, incrementally, in order to be able to also collect keys that are never accessed.</li>
+        </ul>
+        
+        <p>The <code>expired</code> events are generated when a key is accessed and is found to be expired by one of the above systems, as a result there are no guarantees that the Redis server will be able to generate the <code>expired</code> event at the time the key time to live reaches the value of zero.</p>
+        
+        <p>If no command targets the key constantly, and there are many keys with a TTL associated, there can be a significant delay between the time the key time to live drops to zero, and the time the <code>expired</code> event is generated.</p>
+        
+        <p>Basically <code>expired</code> events <strong>are generated when the Redis server deletes the key</strong> and not when the time to live theorically reaches the value of zero.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

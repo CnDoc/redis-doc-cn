@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Redis Signals Handling â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics signals'>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Redis Signals Handling</h1>
+        
+        <p>This document provides information about how Redis reacts to the reception
+        of differe POSIX signals such as <code>SIGTERM</code>, <code>SIGSEGV</code> and so forth.</p>
+        
+        <p>The information contained in this document is <strong>only applicable to Redis version 2.6 or greater</strong>.</p>
+        
+        <h2>Handling of SIGTERM</h2>
+        
+        <p>The <code>SIGTERM</code> signals tells Redis to shutdown gracefully. When this signal is
+        received the server does not actually exits as a result, but it schedules
+        a shutdown very similar to the one performed when the <a href="shutdown.htm" tppabs="http://redis.io/commands/shutdown">SHUTDOWN</a> command is
+        called. The scheduled shutdown starts ASAP, specifically as long as the
+        current command in execution terminates (if any), with a possible additional
+        delay of 0.1 seconds or less.</p>
+        
+        <p>In case the server is blocked by a Lua script that is taking too much time,
+        if the script is killable with <code>SCRIPT KILL</code> the scheduled shutdown will be
+        executed just after the script is killed, or if terminates spontaneously.</p>
+        
+        <p>The Shutdown performed in this condition includes the following actions:</p>
+        
+        <ul>
+        <li>If there is a background child saving the RDB file or performing an AOF rewrite, the child is killed.</li>
+        <li>If the AOF is active, Redis calls the <code>fsync</code> system call on the AOF file descriptor in order to flush the buffers on disk.</li>
+        <li>If Redis is configured to persist on disk using RDB files, a synchronous (blocking) save is performed. Since the save is performed in a synchronous way no additional memory is used.</li>
+        <li>If the server is daemonized, the pid file is removed.</li>
+        <li>If the Unix domain socket is enabled, it gets removed.</li>
+        <li>The server exits with an exit code of zero.</li>
+        </ul>
+        
+        <p>In case the RDB file can&#39;t be saved, the shutdown fails, and the server continues to run in order to ensure no data loss. Since Redis 2.6.11 no further attempt to shut down will be made unless a new <code>SIGTERM</code> will be received or the <a href="shutdown.htm" tppabs="http://redis.io/commands/shutdown">SHUTDOWN</a> command issued.</p>
+        
+        <h2>Handling of SIGSEGV, SIGBUS, SIGFPE and SIGILL</h2>
+        
+        <p>The following follow signals are handled as a Redis crash:</p>
+        
+        <ul>
+        <li>SIGSEGV</li>
+        <li>SIGBUS</li>
+        <li>SIGFPE</li>
+        <li>SIGILL</li>
+        </ul>
+        
+        <p>One one of these signals is trapped, Redis aborts any current operation and performs the following actions:</p>
+        
+        <ul>
+        <li>A bug report is produced on the log file. This includes a stack trace, dump of registers, and information about the state of clients.</li>
+        <li>Since Redis 2.8 (currently a development version) a fast memory test is performed as a first check of the reliability of the crashing system.</li>
+        <li>If the server was daemonized, the pid file is removed.</li>
+        <li>Finally the server unregisters its own signal handler for the received signal, and sends the same signal again to itself, in order to make sure that the default action is performed, for instance dumping the core on the file system.</li>
+        </ul>
+        
+        <h2>What happens when a child process gets killed</h2>
+        
+        <p>When the child performing the Append Only File rewrite gets killed by a signal,
+        Redis handles this as an error and discards the (probably partial or corrupted)
+        AOF file. The rewrite will be re-triggered again later.</p>
+        
+        <p>When the child performing an RDB save is killed Redis will handle the
+        condition as a more severe error, because while the effect of a lack of
+        AOF file rewrite is a the AOF file enlargement, the effect of failed RDB file
+        creation is lack of durability.</p>
+        
+        <p>As a result of the child producing the RDB file being killed by a signal,
+        or when the child exits with an error (non zero exit code), Redis enters
+        a special error condition where no further write command is accepted.</p>
+        
+        <ul>
+        <li>Redis will continue to reply to read commands.</li>
+        <li>Redis will reply to all write commands with a <code>MISCONFIG</code> error.</li>
+        </ul>
+        
+        <p>This error condition is cleared only once it will be possible to create
+        an RDB file with success.</p>
+        
+        <h2>Killing the RDB file without triggering an error condition</h2>
+        
+        <p>However sometimes the user may want to kill the RDB saving child without
+        generating an error. Since Redis version 2.6.10 this can be done using the
+        special signal <code>SIGUSR1</code> that is handled in a special way:
+        it kills the child process as any other signal, but the parent process will
+        not detect this as a critical error and will continue to serve write
+        requests as usually.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

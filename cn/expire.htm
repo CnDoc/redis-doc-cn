@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      EXPIRE â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>EXPIRE</span>
+        <span class='arg'>key</span>
+        <span class='arg'>seconds</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href="del.htm" tppabs="http://redis.io/commands/del">
+                DEL
+              </a>
+            </li>
+            <li>
+              <a href="dump.htm" tppabs="http://redis.io/commands/dump">
+                DUMP
+              </a>
+            </li>
+            <li>
+              <a href="exists.htm" tppabs="http://redis.io/commands/exists">
+                EXISTS
+              </a>
+            </li>
+            <li>
+              <a href="expire.htm" tppabs="http://redis.io/commands/expire">
+                <strong>EXPIRE</strong>
+              </a>
+            </li>
+            <li>
+              <a href="expireat.htm" tppabs="http://redis.io/commands/expireat">
+                EXPIREAT
+              </a>
+            </li>
+            <li>
+              <a href="keys.htm" tppabs="http://redis.io/commands/keys">
+                KEYS
+              </a>
+            </li>
+            <li>
+              <a href="migrate.htm" tppabs="http://redis.io/commands/migrate">
+                MIGRATE
+              </a>
+            </li>
+            <li>
+              <a href="move.htm" tppabs="http://redis.io/commands/move">
+                MOVE
+              </a>
+            </li>
+            <li>
+              <a href="object.htm" tppabs="http://redis.io/commands/object">
+                OBJECT
+              </a>
+            </li>
+            <li>
+              <a href="persist.htm" tppabs="http://redis.io/commands/persist">
+                PERSIST
+              </a>
+            </li>
+            <li>
+              <a href="pexpire.htm" tppabs="http://redis.io/commands/pexpire">
+                PEXPIRE
+              </a>
+            </li>
+            <li>
+              <a href="pexpireat.htm" tppabs="http://redis.io/commands/pexpireat">
+                PEXPIREAT
+              </a>
+            </li>
+            <li>
+              <a href="pttl.htm" tppabs="http://redis.io/commands/pttl">
+                PTTL
+              </a>
+            </li>
+            <li>
+              <a href="randomkey.htm" tppabs="http://redis.io/commands/randomkey">
+                RANDOMKEY
+              </a>
+            </li>
+            <li>
+              <a href="rename.htm" tppabs="http://redis.io/commands/rename">
+                RENAME
+              </a>
+            </li>
+            <li>
+              <a href="renamenx.htm" tppabs="http://redis.io/commands/renamenx">
+                RENAMENX
+              </a>
+            </li>
+            <li>
+              <a href="restore.htm" tppabs="http://redis.io/commands/restore">
+                RESTORE
+              </a>
+            </li>
+            <li>
+              <a href="scan.htm" tppabs="http://redis.io/commands/scan">
+                SCAN
+              </a>
+            </li>
+            <li>
+              <a href="sort.htm" tppabs="http://redis.io/commands/sort">
+                SORT
+              </a>
+            </li>
+            <li>
+              <a href="ttl.htm" tppabs="http://redis.io/commands/ttl">
+                TTL
+              </a>
+            </li>
+            <li>
+              <a href="type.htm" tppabs="http://redis.io/commands/type">
+                TYPE
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.0.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(1)</p>
+        </div>
+        <p>Set a timeout on <code>key</code>.
+        After the timeout has expired, the key will automatically be deleted.
+        A key with an associated timeout is often said to be <em>volatile</em> in Redis
+        terminology.</p>
+        
+        <p>The timeout is cleared only when the key is removed using the <a href="del.htm" tppabs="http://redis.io/commands/del">DEL</a> command or
+        overwritten using the <a href="set.htm" tppabs="http://redis.io/commands/set">SET</a> or <a href="getset.htm" tppabs="http://redis.io/commands/getset">GETSET</a> commands.
+        This means that all the operations that conceptually <em>alter</em> the value stored at
+        the key without replacing it with a new one will leave the timeout untouched.
+        For instance, incrementing the value of a key with <a href="incr.htm" tppabs="http://redis.io/commands/incr">INCR</a>, pushing a new value
+        into a list with <a href="lpush.htm" tppabs="http://redis.io/commands/lpush">LPUSH</a>, or altering the field value of a hash with <a href="hset.htm" tppabs="http://redis.io/commands/hset">HSET</a> are
+        all operations that will leave the timeout untouched.</p>
+        
+        <p>The timeout can also be cleared, turning the key back into a persistent key,
+        using the <a href="persist.htm" tppabs="http://redis.io/commands/persist">PERSIST</a> command.</p>
+        
+        <p>If a key is renamed with <a href="rename.htm" tppabs="http://redis.io/commands/rename">RENAME</a>, the associated time to live is transferred to
+        the new key name.</p>
+        
+        <p>If a key is overwritten by <a href="rename.htm" tppabs="http://redis.io/commands/rename">RENAME</a>, like in the case of an existing key <code>Key_A</code>
+        that is overwritten by a call like <code>RENAME Key_B Key_A</code>, it does not matter if
+        the original <code>Key_A</code> had a timeout associated or not, the new key <code>Key_A</code> will
+        inherit all the characteristics of <code>Key_B</code>.</p>
+        
+        <h2>Refreshing expires</h2>
+        
+        <p>It is possible to call <a href="expire.htm" tppabs="http://redis.io/commands/expire">EXPIRE</a> using as argument a key that already has an
+        existing expire set.
+        In this case the time to live of a key is <em>updated</em> to the new value.
+        There are many useful applications for this, an example is documented in the
+        <em>Navigation session</em> pattern section below.</p>
+        
+        <h2>Differences in Redis prior 2.1.3</h2>
+        
+        <p>In Redis versions prior <strong>2.1.3</strong> altering a key with an expire set using a
+        command altering its value had the effect of removing the key entirely.
+        This semantics was needed because of limitations in the replication layer that
+        are now fixed.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="protocol.htm#integer-reply" tppabs="http://redis.io/topics/protocol#integer-reply">Integer reply</a>, specifically:</p>
+        
+        <ul>
+        <li><code>1</code> if the timeout was set.</li>
+        <li><code>0</code> if <code>key</code> does not exist or the timeout could not be set.</li>
+        </ul>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='b71a06e249a53253943c4eab120dc4e0'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SET mykey &quot;Hello&quot;</span>
+          <pre>OK</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>EXPIRE mykey 10</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>TTL mykey</span>
+          <pre>(integer) 10</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SET mykey &quot;Hello World&quot;</span>
+          <pre>OK</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>TTL mykey</span>
+          <pre>(integer) -1</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+        
+        
+        <h2>Pattern: Navigation session</h2>
+        
+        <p>Imagine you have a web service and you are interested in the latest N pages
+        <em>recently</em> visited by your users, such that each adjacent page view was not
+        performed more than 60 seconds after the previous.
+        Conceptually you may think at this set of page views as a <em>Navigation session</em>
+        if your user, that may contain interesting information about what kind of
+        products he or she is looking for currently, so that you can recommend related
+        products.</p>
+        
+        <p>You can easily model this pattern in Redis using the following strategy: every
+        time the user does a page view you call the following commands:</p>
+        
+        <pre><code>MULTI&#x000A;RPUSH pagewviews.user:&lt;userid&gt; http://.....&#x000A;EXPIRE pagewviews.user:&lt;userid&gt; 60&#x000A;EXEC&#x000A;</code></pre>
+        
+        <p>If the user will be idle more than 60 seconds, the key will be deleted and only
+        subsequent page views that have less than 60 seconds of difference will be
+        recorded.</p>
+        
+        <p>This pattern is easily modified to use counters using <a href="incr.htm" tppabs="http://redis.io/commands/incr">INCR</a> instead of lists
+        using <a href="rpush.htm" tppabs="http://redis.io/commands/rpush">RPUSH</a>.</p>
+        
+        <h1>Appendix: Redis expires</h1>
+        
+        <h2>Keys with an expire</h2>
+        
+        <p>Normally Redis keys are created without an associated time to live.
+        The key will simply live forever, unless it is removed by the user in an
+        explicit way, for instance using the <a href="del.htm" tppabs="http://redis.io/commands/del">DEL</a> command.</p>
+        
+        <p>The <a href="expire.htm" tppabs="http://redis.io/commands/expire">EXPIRE</a> family of commands is able to associate an expire to a given key,
+        at the cost of some additional memory used by the key.
+        When a key has an expire set, Redis will make sure to remove the key when the
+        specified amount of time elapsed.</p>
+        
+        <p>The key time to live can be updated or entirely removed using the <a href="expire.htm" tppabs="http://redis.io/commands/expire">EXPIRE</a> and
+        <a href="persist.htm" tppabs="http://redis.io/commands/persist">PERSIST</a> command (or other strictly related commands).</p>
+        
+        <h2>Expire accuracy</h2>
+        
+        <p>In Redis 2.4 the expire might not be pin-point accurate, and it could be between
+        zero to one seconds out.</p>
+        
+        <p>Since Redis 2.6 the expire error is from 0 to 1 milliseconds.</p>
+        
+        <h2>Expires and persistence</h2>
+        
+        <p>Keys expiring information is stored as absolute Unix timestamps (in milliseconds
+        in case of Redis version 2.6 or greater).
+        This means that the time is flowing even when the Redis instance is not active.</p>
+        
+        <p>For expires to work well, the computer time must be taken stable.
+        If you move an RDB file from two computers with a big desync in their clocks,
+        funny things may happen (like all the keys loaded to be expired at loading
+        time).</p>
+        
+        <p>Even running instances will always check the computer clock, so for instance if
+        you set a key with a time to live of 1000 seconds, and then set your computer
+        time 2000 seconds in the future, the key will be expired immediately, instead of
+        lasting for 1000 seconds.</p>
+        
+        <h2>How Redis expires keys</h2>
+        
+        <p>Redis keys are expired in two ways: a passive way, and an active way.</p>
+        
+        <p>A key is actively expired simply when some client tries to access it, and the
+        key is found to be timed out.</p>
+        
+        <p>Of course this is not enough as there are expired keys that will never be
+        accessed again.
+        This keys should be expired anyway, so periodically Redis test a few keys at
+        random among keys with an expire set.
+        All the keys that are already expired are deleted from the keyspace.</p>
+        
+        <p>Specifically this is what Redis does 10 times per second:</p>
+        
+        <ol>
+        <li>Test 100 random keys from the set of keys with an associated expire.</li>
+        <li>Delete all the keys found expired.</li>
+        <li>If more than 25 keys were expired, start again from step 1.</li>
+        </ol>
+        
+        <p>This is a trivial probabilistic algorithm, basically the assumption is that our
+        sample is representative of the whole key space, and we continue to expire until
+        the percentage of keys that are likely to be expired is under 25%</p>
+        
+        <p>This means that at any given moment the maximum amount of keys already expired
+        that are using memory is at max equal to max amount of write operations per
+        second divided by 4.</p>
+        
+        <h2>How expires are handled in the replication link and AOF file</h2>
+        
+        <p>In order to obtain a correct behavior without sacrificing consistency, when a
+        key expires, a <a href="del.htm" tppabs="http://redis.io/commands/del">DEL</a> operation is synthesized in both the AOF file and gains all
+        the attached slaves.
+        This way the expiration process is centralized in the master instance, and there
+        is no chance of consistency errors.</p>
+        
+        <p>However while the slaves connected to a master will not expire keys
+        independently (but will wait for the <a href="del.htm" tppabs="http://redis.io/commands/del">DEL</a> coming from the master), they&#39;ll
+        still take the full state of the expires existing in the dataset, so when a
+        slave is elected to a master it will be able to expire the keys independently,
+        fully acting as a master.</p>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_expire';
+          var disqus_url = 'expire.htm'/*tpa=http://redis.io/commands/expire*/;
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href="javascript:if(confirm('http://disqus.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://disqus.com/'" tppabs="http://disqus.com/">
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

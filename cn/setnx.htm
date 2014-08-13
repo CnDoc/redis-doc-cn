@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href="styles.css-1333128600.css" tppabs="http://redis.io/styles.css?1333128600" rel='stylesheet' type='text/css' />
+    <link href='/images/favicon.png' rel='shortcut icon' />
+    <link href='/opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src="jquery.min.js" tppabs="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script async='async' defer='defer' src="app.js-1375789679" tppabs="http://redis.io/app.js?1375789679"></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      SETNX â€“ Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www/') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''>
+    <header>
+      <div class='container'>
+        <a href="index.htm" tppabs="http://redis.io/">
+          <img alt='Redis' height='30' src="redis.png" tppabs="http://redis.io/images/redis.png" width='93' />
+        </a>
+        <nav>
+          <a href="commands.htm" tppabs="http://redis.io/commands">Commands</a>
+          <a href="clients.htm" tppabs="http://redis.io/clients">Clients</a>
+          <a href="documentation.htm" tppabs="http://redis.io/documentation">Documentation</a>
+          <a href="community.htm" tppabs="http://redis.io/community">Community</a>
+          <a href="download.htm" tppabs="http://redis.io/download">Download</a>
+          <a href="javascript:if(confirm('https://github.com/antirez/redis/issues  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis/issues'" tppabs="https://github.com/antirez/redis/issues">Issues</a>
+          <a href="support.htm" tppabs="http://redis.io/support">Support</a>
+          <a href="license.htm" tppabs="http://redis.io/topics/license">License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>SETNX</span>
+        <span class='arg'>key</span>
+        <span class='arg'>value</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href="append.htm" tppabs="http://redis.io/commands/append">
+                APPEND
+              </a>
+            </li>
+            <li>
+              <a href="bitcount.htm" tppabs="http://redis.io/commands/bitcount">
+                BITCOUNT
+              </a>
+            </li>
+            <li>
+              <a href="bitop.htm" tppabs="http://redis.io/commands/bitop">
+                BITOP
+              </a>
+            </li>
+            <li>
+              <a href="bitpos.htm" tppabs="http://redis.io/commands/bitpos">
+                BITPOS
+              </a>
+            </li>
+            <li>
+              <a href="decr.htm" tppabs="http://redis.io/commands/decr">
+                DECR
+              </a>
+            </li>
+            <li>
+              <a href="decrby.htm" tppabs="http://redis.io/commands/decrby">
+                DECRBY
+              </a>
+            </li>
+            <li>
+              <a href="get.htm" tppabs="http://redis.io/commands/get">
+                GET
+              </a>
+            </li>
+            <li>
+              <a href="getbit.htm" tppabs="http://redis.io/commands/getbit">
+                GETBIT
+              </a>
+            </li>
+            <li>
+              <a href="getrange.htm" tppabs="http://redis.io/commands/getrange">
+                GETRANGE
+              </a>
+            </li>
+            <li>
+              <a href="getset.htm" tppabs="http://redis.io/commands/getset">
+                GETSET
+              </a>
+            </li>
+            <li>
+              <a href="incr.htm" tppabs="http://redis.io/commands/incr">
+                INCR
+              </a>
+            </li>
+            <li>
+              <a href="incrby.htm" tppabs="http://redis.io/commands/incrby">
+                INCRBY
+              </a>
+            </li>
+            <li>
+              <a href="incrbyfloat.htm" tppabs="http://redis.io/commands/incrbyfloat">
+                INCRBYFLOAT
+              </a>
+            </li>
+            <li>
+              <a href="mget.htm" tppabs="http://redis.io/commands/mget">
+                MGET
+              </a>
+            </li>
+            <li>
+              <a href="mset.htm" tppabs="http://redis.io/commands/mset">
+                MSET
+              </a>
+            </li>
+            <li>
+              <a href="msetnx.htm" tppabs="http://redis.io/commands/msetnx">
+                MSETNX
+              </a>
+            </li>
+            <li>
+              <a href="psetex.htm" tppabs="http://redis.io/commands/psetex">
+                PSETEX
+              </a>
+            </li>
+            <li>
+              <a href="set.htm" tppabs="http://redis.io/commands/set">
+                SET
+              </a>
+            </li>
+            <li>
+              <a href="setbit.htm" tppabs="http://redis.io/commands/setbit">
+                SETBIT
+              </a>
+            </li>
+            <li>
+              <a href="setex.htm" tppabs="http://redis.io/commands/setex">
+                SETEX
+              </a>
+            </li>
+            <li>
+              <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">
+                <strong>SETNX</strong>
+              </a>
+            </li>
+            <li>
+              <a href="setrange.htm" tppabs="http://redis.io/commands/setrange">
+                SETRANGE
+              </a>
+            </li>
+            <li>
+              <a href="strlen.htm" tppabs="http://redis.io/commands/strlen">
+                STRLEN
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.0.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(1)</p>
+        </div>
+        <p>Set <code>key</code> to hold string <code>value</code> if <code>key</code> does not exist.
+        In that case, it is equal to <a href="set.htm" tppabs="http://redis.io/commands/set">SET</a>.
+        When <code>key</code> already holds a value, no operation is performed.
+        <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">SETNX</a> is short for &quot;<strong>SET</strong> if <strong>N</strong> ot e <strong>X</strong> ists&quot;.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="protocol.htm#integer-reply" tppabs="http://redis.io/topics/protocol#integer-reply">Integer reply</a>, specifically:</p>
+        
+        <ul>
+        <li><code>1</code> if the key was set</li>
+        <li><code>0</code> if the key was not set</li>
+        </ul>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='851aa443353a6decaafbab43614d620a'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SETNX mykey &quot;Hello&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SETNX mykey &quot;World&quot;</span>
+          <pre>(integer) 0</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>GET mykey</span>
+          <pre>"Hello"</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+        
+        
+        <h2>Design pattern: Locking with <code>SETNX</code></h2>
+        
+        <p><strong>NOTE:</strong> Starting with Redis 2.6.12 it is possible to create a much simpler locking primitive using the <a href="set.htm" tppabs="http://redis.io/commands/set">SET</a> command to acquire the lock, and a simple Lua script to release the lock. The pattern is documented in the <a href="set.htm" tppabs="http://redis.io/commands/set">SET</a> command page.</p>
+        
+        <p>The old <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">SETNX</a> based pattern is documented below for historical reasons.</p>
+        
+        <p><a href="setnx.htm" tppabs="http://redis.io/commands/setnx">SETNX</a> can be used as a locking primitive.
+        For example, to acquire the lock of the key <code>foo</code>, the client could try the
+        following:</p>
+        
+        <pre><code>SETNX lock.foo &lt;current Unix time + lock timeout + 1&gt;&#x000A;</code></pre>
+        
+        <p>If <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">SETNX</a> returns <code>1</code> the client acquired the lock, setting the <code>lock.foo</code> key
+        to the Unix time at which the lock should no longer be considered valid.
+        The client will later use <code>DEL lock.foo</code> in order to release the lock.</p>
+        
+        <p>If <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">SETNX</a> returns <code>0</code> the key is already locked by some other client.
+        We can either return to the caller if it&#39;s a non blocking lock, or enter a loop
+        retrying to hold the lock until we succeed or some kind of timeout expires.</p>
+        
+        <h3>Handling deadlocks</h3>
+        
+        <p>In the above locking algorithm there is a problem: what happens if a client
+        fails, crashes, or is otherwise not able to release the lock?
+        It&#39;s possible to detect this condition because the lock key contains a UNIX
+        timestamp.
+        If such a timestamp is equal to the current Unix time the lock is no longer
+        valid.</p>
+        
+        <p>When this happens we can&#39;t just call <a href="del.htm" tppabs="http://redis.io/commands/del">DEL</a> against the key to remove the lock
+        and then try to issue a <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">SETNX</a>, as there is a race condition here, when
+        multiple clients detected an expired lock and are trying to release it.</p>
+        
+        <ul>
+        <li>C1 and C2 read <code>lock.foo</code> to check the timestamp, because they both received
+        <code>0</code> after executing <a href="setnx.htm" tppabs="http://redis.io/commands/setnx">SETNX</a>, as the lock is still held by C3 that crashed
+        after holding the lock.</li>
+        <li>C1 sends <code>DEL lock.foo</code></li>
+        <li>C1 sends <code>SETNX lock.foo</code> and it succeeds</li>
+        <li>C2 sends <code>DEL lock.foo</code></li>
+        <li>C2 sends <code>SETNX lock.foo</code> and it succeeds</li>
+        <li><strong>ERROR</strong>: both C1 and C2 acquired the lock because of the race condition.</li>
+        </ul>
+        
+        <p>Fortunately, it&#39;s possible to avoid this issue using the following algorithm.
+        Let&#39;s see how C4, our sane client, uses the good algorithm:</p>
+        
+        <ul>
+        <li><p>C4 sends <code>SETNX lock.foo</code> in order to acquire the lock</p></li>
+        <li><p>The crashed client C3 still holds it, so Redis will reply with <code>0</code> to C4.</p></li>
+        <li><p>C4 sends <code>GET lock.foo</code> to check if the lock expired.
+        If it is not, it will sleep for some time and retry from the start.</p></li>
+        <li><p>Instead, if the lock is expired because the Unix time at <code>lock.foo</code> is older
+        than the current Unix time, C4 tries to perform:</p>
+        
+        <pre><code>GETSET lock.foo &lt;current Unix timestamp + lock timeout + 1&gt;&#x000A;</code></pre></li>
+        <li><p>Because of the <a href="getset.htm" tppabs="http://redis.io/commands/getset">GETSET</a> semantic, C4 can check if the old value stored at
+        <code>key</code> is still an expired timestamp.
+        If it is, the lock was acquired.</p></li>
+        <li><p>If another client, for instance C5, was faster than C4 and acquired the lock
+        with the <a href="getset.htm" tppabs="http://redis.io/commands/getset">GETSET</a> operation, the C4 <a href="getset.htm" tppabs="http://redis.io/commands/getset">GETSET</a> operation will return a non
+        expired timestamp.
+        C4 will simply restart from the first step.
+        Note that even if C4 set the key a bit a few seconds in the future this is
+        not a problem.</p></li>
+        </ul>
+        
+        <p><strong>Important note</strong>: In order to make this locking algorithm more robust, a
+        client holding a lock should always check the timeout didn&#39;t expire before
+        unlocking the key with <a href="del.htm" tppabs="http://redis.io/commands/del">DEL</a> because client failures can be complex, not just
+        crashing but also blocking a lot of time against some operations and trying
+        to issue <a href="del.htm" tppabs="http://redis.io/commands/del">DEL</a> after a lot of time (when the LOCK is already held by another
+        client).</p>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_setnx';
+          var disqus_url = 'setnx.htm'/*tpa=http://redis.io/commands/setnx*/;
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href="javascript:if(confirm('http://disqus.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://disqus.com/'" tppabs="http://disqus.com/">
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="javascript:if(confirm('https://github.com/antirez/redis-io  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='https://github.com/antirez/redis-io'" tppabs="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="javascript:if(confirm('http://citrusbyte.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://citrusbyte.com/'" tppabs="http://citrusbyte.com/">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="javascript:if(confirm('http://www.carlosprioglio.com/  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.carlosprioglio.com/'" tppabs="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.htm" tppabs="http://redis.io/topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href="javascript:if(confirm('http://www.gopivotal.com/products/redis  \n\n¸ÃÎÄ¼þÎÞ·¨ÓÃ Teleport Ultra ÏÂÔØ, ÒòÎª ËüÊÇÒ»¸öÓò»òÂ·¾¶Íâ²¿±»ÉèÖÃÎªËüµÄÆôÊ¼µØÖ·µÄµØÖ·¡£  \n\nÄãÏëÔÚ·þÎñÆ÷ÉÏ´ò¿ªËü?'))window.location='http://www.gopivotal.com/products/redis'" tppabs="http://www.gopivotal.com/products/redis">
+          <img alt='Redis Support' height='25' src="pivotal.png" tppabs="http://redis.io/images/pivotal.png" title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="l.js-c=20bb9c026e" tppabs="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>
