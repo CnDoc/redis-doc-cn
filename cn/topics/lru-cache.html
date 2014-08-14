@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Using Redis as an LRU cache – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics lru-cache'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/topics/lru-cache.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/topics/lru-cache.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Using Redis as an LRU cache</h1>
+        
+        <p>When Redis is used as a cache, sometimes it is handy to let it automatically
+        evict old data as you add new one. This behavior is very well known in the
+        community of developers, since it is the default behavior of the popular
+        <em>memcached</em> system.</p>
+        
+        <p>LRU is actually only one of the supported eviction methods. This page covers
+        the more general topic of the Redis <code>maxmemory</code> directive that is used in
+        order to limit the memory usage to a fixed amount, and it also covers in
+        depth the LRU algorithm used by Redis, that is actually an approximation of
+        the exact LRU.</p>
+        
+        <h2>Maxmemory configuration directive</h2>
+        
+        <p>The <code>maxmemory</code> configuration directive is used in order to configure Redis
+        to use a specified amount of memory for the data set. It is possible to
+        set the configuration directive using the <code>redis.conf</code> file, or later using
+        the <code>CONFIG SET</code> command at runtime.</p>
+        
+        <p>For example in order to configure a memory limit of 100 megabytes, the
+        following directive can be used inside the <code>redis.conf</code> file.</p>
+        
+        <pre><code>maxmemory 100mb&#x000A;</code></pre>
+        
+        <p>Setting <code>maxmemory</code> to zero results into no memory limits. This is the
+        default behavior for 64 bit systems, while 32 bit systems use an implicit
+        memory limit of 3GB.</p>
+        
+        <p>When the specified amount of memory is reached, it is possible to select
+        among different behaviors, called <strong>policies</strong>.
+        Redis can just return errors for commands that could result in more memory
+        being used, or it can evict some old data in order to return back to the
+        specified limit every time new data is added.</p>
+        
+        <h2>Eviction policies</h2>
+        
+        <p>The exact behavior Redis follows when the <code>maxmemory</code> limit is reached is
+        configured using the <code>maxmemory-policy</code> configuration directive.</p>
+        
+        <p>The following policies are available:</p>
+        
+        <ul>
+        <li><strong>noeviction</strong>: return errors when the memory limit was reached and the client is trying to execute commands that could result in more memory to be used (most write commands, but <a href="../commands/del.html">DEL</a> and a few more exceptions).</li>
+        <li><strong>allkeys-lru</strong>: evict keys trying to remove the less recently used (LRU) keys first, in order to make space for the new data added.</li>
+        <li><strong>volatile-lru</strong>: evict keys trying to remove the less recently used (LRU) keys first, but only among keys that have an <strong>expire set</strong>, in order to make space for the new data added.</li>
+        <li><strong>allkeys-random</strong>: evict random keys in order to make space for the new data added.</li>
+        <li><strong>volatile-random</strong>: evict random keys in order to make space for the new data added, but only evict keys with an <strong>expire set</strong>.</li>
+        <li><strong>volatile-ttl</strong>: In order to make space for the new data, evict only keys with an <strong>expire set</strong>, and try to evict keys with a shorter time to live (TTL) first.</li>
+        </ul>
+        
+        <p>The policies <strong>volatile-lru</strong>, <strong>volatile-random</strong> and <strong>volatile-ttl</strong> behave like <strong>noeviction</strong> if there are no keys to evict matching the prerequisites.</p>
+        
+        <p>To pick the right eviction policy is important depending on the access pattern 
+        of your application, however you can reconfigure the policy at runtime while 
+        the application is running, and monitor the number of cache misses and hits 
+        using the Redis <a href="../commands/info.html">INFO</a> output in order to tune your setup.</p>
+        
+        <p>In general as a rule of thumb:</p>
+        
+        <ul>
+        <li>Use the <strong>allkeys-lru</strong> policy when you expect a power-law distribution in the popularity of your requests, that is, you expect that a subset of elements will be accessed far more often than the rest. <strong>This is a good pick if you are unsure</strong>.</li>
+        <li>Use the <strong>allkeys-random</strong> if you have a cyclic access where all the keys are scanned continuously, or when you expect the distribution to be normal (all elements likely accessed with the same probability).</li>
+        <li>Use the <strong>volatile-ttl</strong> if you want to be able to provide hints to Redis about what are good candidate for expiration by using different TTL values when you create your cache objects.</li>
+        </ul>
+        
+        <p>The <strong>allkeys-lru</strong> and <strong>volatile-random</strong> policies are mainly useful when you want to use a single instance for both caching and to have a set of persistent keys. However it is usually a better idea to run two Redis instances to solve such a problem.</p>
+        
+        <p>It is also worth to note that setting an expire to a key costs memory, so using a policy like <strong>allkeys-lru</strong> is more memory efficient since there is no need to set an expire for the key to be evicted under memory pressure.</p>
+        
+        <h2>How the eviction process works</h2>
+        
+        <p>It is important to understand that the eviction process works like this:</p>
+        
+        <ul>
+        <li>A client runs a new command, resulting in more data added.</li>
+        <li>Redis checks the memory usage, and if it is greater than the <code>maxmemory</code> limit , it evicts keys according to the policy.</li>
+        <li>A new command is executed, and so forth.</li>
+        </ul>
+        
+        <p>So we continuously cross the boundaries of the memory limit, by going over it, and then by evicting keys to return back under the limits.</p>
+        
+        <p>If a command results in a lot of memory being used (like a big set intersection stored into a new key) for some time the memory limit can be surpassed by a noticeable amount.</p>
+        
+        <h2>Approximated LRU algorithm</h2>
+        
+        <p>Redis LRU algorithm is not an exact implementation. This means that Redis is
+        not able to pick the <em>best candidate</em> for eviction, that is, the access that
+        was accessed the most in the past. Instead it will try to run an approximation
+        of the LRU algorithm, by sampling a small number of keys, and evicting the
+        one that is the best (with the oldest access time) among the sampled keys.</p>
+        
+        <p>However since Redis 3.0 (that is currently in beta) the algorithm was improved
+        to also take a pool of good candidates for eviction. This improved the
+        performance of the algorithm, making it able to approximate more closely the
+        behavior of a real LRU algorithm.</p>
+        
+        <p>What is important about the Redis LRU algorithm is that you <strong>are able to tune</strong> the precision of the algorithm by changing the number of samples to check for every eviction. This parameter is controlled by the following configuration directive:</p>
+        
+        <pre><code>maxmemory-samples 5&#x000A;</code></pre>
+        
+        <p>The reason why Redis does not use a true LRU implementation is because it
+        costs more memory. However the approximation is virtually equivalent for the
+        application using Redis. The following is a graphical comparison of how
+        the LRU approximation used by Redis compares with true LRU.</p>
+        
+        <p><img src="../images/redisdoc/lru_comparison.png" alt="LRU comparison"></p>
+        
+        <p>The test to generate the above graphs filled a Redis server with a given number of keys. The keys were accessed from the first to the last, so that the first keys are the best candidates for eviction using an LRU algorithm. Later more 50% of keys are added, in order to force half of the old keys to be evicted.</p>
+        
+        <p>You can see three kind of dots in the graphs, forming three distinct bands.</p>
+        
+        <ul>
+        <li>The light gray band are objects that were evicted.</li>
+        <li>The gray band are objects that were not evicted.</li>
+        <li>The green band are objects that were added.</li>
+        </ul>
+        
+        <p>In a theoretical LRU implementation we expect that, among the old keys, the first half will be expired. The Redis LRU algorithm will instead only <em>probabilistically</em> expire the older keys.</p>
+        
+        <p>As you can see Redis 3.0 does a better job with 5 samples compared to Redis 2.8, however most objects that are among the latest accessed are still retained by Redis 2.8. Using a sample size of 10 in Redis 3.0 the approximation is very close to the theoretical performance of Redis 3.0.</p>
+        
+        <p>Note that LRU is just a model to predict how likely a given key will be accessed in the future. Moreover, if your data access pattern closely
+        resembles the power law, most of the accesses will be in the set of keys that
+        the LRU approximated algorithm will be able to handle well.</p>
+        
+        <p>In simulations we found that using a power law access pattern, the difference between true LRU and Redis approximation were minimal or non-existent.</p>
+        
+        <p>However you can raise the sample size to 10 at the cost of some additional CPU
+        usage in order to closely approximate true LRU, and check if this makes a
+        difference in your cache misses rate.</p>
+        
+        <p>To experiment in production with different values for the sample size by using
+        the <code>CONFIG SET maxmemory-samples &lt;count&gt;</code> command, is very simple.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

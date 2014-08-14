@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Redis configuration – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics config'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/topics/config.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/topics/config.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Redis configuration</h1>
+        
+        <p>Redis is able to start without a configuration file using a built-in default
+        configuration, however this setup is only recommended for testing and
+        development purposes.</p>
+        
+        <p>The proper way to configure Redis is by providing a Redis configuration file,
+        usually called <code>redis.conf</code>.</p>
+        
+        <p>The <code>redis.conf</code> file contains a number of directives that have a very simple
+        format:</p>
+        
+        <pre><code>keyword argument1 argument2 ... argumentN&#x000A;</code></pre>
+        
+        <p>This is an example of configuration directive:</p>
+        
+        <pre><code>slaveof 127.0.0.1 6380&#x000A;</code></pre>
+        
+        <p>It is possible to provide strings containing spaces as arguments using
+        quotes, as in the following example:</p>
+        
+        <pre><code>requirepass &quot;hello world&quot;&#x000A;</code></pre>
+        
+        <p>The list of configuration directives, and their meaning and intended usage
+        is available in the self documented example redis.conf shipped into the
+        Redis distribution.</p>
+        
+        <ul>
+        <li>The self documented <a href="https://raw.github.com/antirez/redis/2.6/redis.conf">redis.conf for Redis 2.6</a>.</li>
+        <li>The self documented <a href="https://raw.github.com/antirez/redis/2.4/redis.conf">redis.conf for Redis 2.4</a>.</li>
+        </ul>
+        
+        <h2>Passing arguments via the command line</h2>
+        
+        <p>Since Redis 2.6 it is possible to also pass Redis configuration parameters
+        using the command line directly. This is very useful for testing purposes.
+        The following is an example that stats a new Redis instance using port 6380
+        as a slave of the instance running at 127.0.0.1 port 6379.</p>
+        
+        <pre><code>./redis-server --port 6380 --slaveof 127.0.0.1 6379&#x000A;</code></pre>
+        
+        <p>The format of the arguments passed via the command line is exactly the same
+        as the one used in the redis.conf file, with the exception that the keyword
+        is prefixed with <code>--</code>.</p>
+        
+        <p>Note that internally this generates an in-memory temporary config file
+        (possibly concatenating the config file passed by the user if any) where
+        arguments are translated into the format of redis.conf.</p>
+        
+        <h2>Changing Redis configuration while the server is running</h2>
+        
+        <p>It is possible to reconfigure Redis on the fly without stopping and restarting
+        the service, or querying the current configuration programmatically using the
+        special commands <a href="../commands/config-set.html">CONFIG SET</a> and
+        <a href="../commands/config-get.html">CONFIG GET</a></p>
+        
+        <p>Not all the configuration directives are supported in this way, but most
+        are supported as expected. Please refer to the
+        <a href="../commands/config-set.html">CONFIG SET</a> and <a href="../commands/config-get.html">CONFIG GET</a>
+        pages for more information.</p>
+        
+        <p>Note that modifying the configuration on the fly <strong>has no effects on the
+        redis.conf file</strong> so at the next restart of Redis the old configuration will
+        be used instead.</p>
+        
+        <p>Make sure to also modify the <code>redis.conf</code> file accordingly to the configuration
+        you set using <a href="../commands/config-set.html">CONFIG SET</a>.
+        There are plans to provide a <code>CONFIG REWRITE</code>
+        command that will be able to run the <code>redis.conf</code> file rewriting the
+        configuration accordingly to the current server configuration, without modifying
+        the comments and the structure of the current file.</p>
+        
+        <h2>Configuring Redis as a cache</h2>
+        
+        <p>If you plan to use Redis just as a cache where every key will have an
+        expire set, you may consider using the following configuration instead
+        (assuming a max memory limit of 2 megabytes as an example):</p>
+        
+        <pre><code>maxmemory 2mb&#x000A;maxmemory-policy allkeys-lru&#x000A;</code></pre>
+        
+        <p>In this configuration there is no need for the application to set a
+        time to live for keys using the <a href="../commands/expire.html">EXPIRE</a> command (or equivalent) since
+        all the keys will be evicted using an approximated LRU algorithm as long
+        as we hit the 2 megabyte memory limit.</p>
+        
+        <p>Basically in this configuration Redis acts in a similar way to memcached.
+        We have more extensive documentation about <a href="lru-cache.html">using Redis as an LRU cache</a>.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Transactions – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics transactions'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/topics/transactions.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/topics/transactions.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='../commands/discard.html'>DISCARD</a>
+            </li>
+            <li>
+              <a href='../commands/exec.html'>EXEC</a>
+            </li>
+            <li>
+              <a href='../commands/multi.html'>MULTI</a>
+            </li>
+            <li>
+              <a href='../commands/unwatch.html'>UNWATCH</a>
+            </li>
+            <li>
+              <a href='../commands/watch.html'>WATCH</a>
+            </li>
+          </ul>
+        </aside>
+        <h1>Transactions</h1>
+        
+        <p><a href="../commands/multi.html">MULTI</a>, <a href="../commands/exec.html">EXEC</a>, <a href="../commands/discard.html">DISCARD</a> and <a href="../commands/watch.html">WATCH</a> are the foundation of
+        transactions in Redis.  They allow the execution of a group of commands
+        in a single step, with two important guarantees:</p>
+        
+        <ul>
+        <li><p>All the commands in a transaction are serialized and executed
+        sequentially. It can never happen that a request issued by another
+        client is served <strong>in the middle</strong> of the execution of a Redis
+        transaction. This guarantees that the commands are executed as a single
+        isolated operation.</p></li>
+        <li><p>Either all of the commands or none are processed, so a Redis
+        transaction is also atomic. The <a href="../commands/exec.html">EXEC</a> command
+        triggers the execution of all the commands in the transaction, so
+        if a client loses the connection to the server in the context of a
+        transaction before calling the <a href="../commands/multi.html">MULTI</a> command none of the operations
+        are performed, instead if the <a href="../commands/exec.html">EXEC</a> command is called, all the
+        operations are performed. When using the
+        <a href="persistence.html#append-only-file">append-only file</a> Redis makes sure
+        to use a single write(2) syscall to write the transaction on disk.
+        However if the Redis server crashes or is killed by the system administrator
+        in some hard way it is possible that only a partial number of operations
+        are registered. Redis will detect this condition at restart, and will exit with an error. Using the <code>redis-check-aof</code> tool it is possible to fix the
+        append only file that will remove the partial transaction so that the
+        server can start again.</p></li>
+        </ul>
+        
+        <p>Starting with version 2.2, Redis allows for an extra guarantee to the
+        above two, in the form of optimistic locking in a way very similar to a
+        check-and-set (CAS) operation.
+        This is documented <a href="transactions.html#cas">later</a> on this page.</p>
+        
+        <h2>Usage</h2>
+        
+        <p>A Redis transaction is entered using the <a href="../commands/multi.html">MULTI</a> command. The command
+        always replies with <code>OK</code>. At this point the user can issue multiple
+        commands. Instead of executing these commands, Redis will queue
+        them. All the commands are executed once <a href="../commands/exec.html">EXEC</a> is called.</p>
+        
+        <p>Calling <a href="../commands/discard.html">DISCARD</a> instead will flush the transaction queue and will exit
+        the transaction.</p>
+        
+        <p>The following example increments keys <code>foo</code> and <code>bar</code> atomically.</p>
+        
+        <pre><code>&gt; MULTI&#x000A;OK&#x000A;&gt; INCR foo&#x000A;QUEUED&#x000A;&gt; INCR bar&#x000A;QUEUED&#x000A;&gt; EXEC&#x000A;1) (integer) 1&#x000A;2) (integer) 1&#x000A;</code></pre>
+        
+        <p>As it is possible to see from the session above, <a href="../commands/multi.html">MULTI</a> returns an
+        array of replies, where every element is the reply of a single command
+        in the transaction, in the same order the commands were issued.</p>
+        
+        <p>When a Redis connection is in the context of a <a href="../commands/multi.html">MULTI</a> request,
+        all commands will reply with the string <code>QUEUED</code> (sent as a Status Reply
+        from the point of view of the Redis protocol). A queued command is
+        simply scheduled for execution when <a href="../commands/exec.html">EXEC</a> is called.</p>
+        
+        <h2>Errors inside a transaction</h2>
+        
+        <p>During a transaction it is possible to encounter two kind of command errors:</p>
+        
+        <ul>
+        <li>A command may fail to be queued, so there may be an error before <a href="../commands/exec.html">EXEC</a> is called. For instance the command may be syntactically wrong (wrong number of arguments, wrong command name, ...), or there may be some critical condition like an out of memory condition (if the server is configured to have a memory limit using the <code>maxmemory</code> directive).</li>
+        <li>A command may fail <em>after</em> <a href="../commands/exec.html">EXEC</a> is called, for instance since we performed an operation against a key with the wrong value (like calling a list operation against a string value).</li>
+        </ul>
+        
+        <p>Clients used to sense the first kind of errors, happening before the <a href="../commands/exec.html">EXEC</a> call, by checking the return value of the queued command: if the command replies with QUEUED it was queued correctly, otherwise Redis returns an error. If there is an error while queueing a command, most clients will abort the transaction discarding it.</p>
+        
+        <p>However starting with Redis 2.6.5, the server will remember that there was an error during the accumulation of commands, and will refuse to execute the transaction returning also an error during <a href="../commands/exec.html">EXEC</a>, and discarding the transcation automatically.</p>
+        
+        <p>Before Redis 2.6.5 the behavior was to execute the transaction with just the subset of commands queued successfully in case the client called <a href="../commands/exec.html">EXEC</a> regardless of previous errors. The new behavior makes it much more simple to mix transactions with pipelining, so that the whole transaction can be sent at once, reading all the replies later at once.</p>
+        
+        <p>Errors happening <em>after</em> <a href="../commands/exec.html">EXEC</a> instead are not handled in a special way: all the other commands will be executed even if some command fails during the transaction.</p>
+        
+        <p>This is more clear on the protocol level. In the following example one
+        command will fail when executed even if the syntax is right:</p>
+        
+        <pre><code>Trying 127.0.0.1...&#x000A;Connected to localhost.&#x000A;Escape character is &#39;^]&#39;.&#x000A;MULTI&#x000A;+OK&#x000A;SET a 3&#x000A;abc&#x000A;+QUEUED&#x000A;LPOP a&#x000A;+QUEUED&#x000A;EXEC&#x000A;*2&#x000A;+OK&#x000A;-ERR Operation against a key holding the wrong kind of value&#x000A;</code></pre>
+        
+        <p><a href="../commands/exec.html">EXEC</a> returned two-element <a href="protocol.html#bulk-string-reply">Bulk string reply</a> where one is an <code>OK</code> code and
+        the other an <code>-ERR</code> reply. It&#39;s up to the client library to find a
+        sensible way to provide the error to the user.</p>
+        
+        <p>It&#39;s important to note that <strong>even when a command fails, all the other
+        commands in the queue are processed</strong> – Redis will <em>not</em> stop the
+        processing of commands.</p>
+        
+        <p>Another example, again using the wire protocol with <code>telnet</code>, shows how
+        syntax errors are reported ASAP instead:</p>
+        
+        <pre><code>MULTI&#x000A;+OK&#x000A;INCR a b c&#x000A;-ERR wrong number of arguments for &#39;incr&#39; command&#x000A;</code></pre>
+        
+        <p>This time due to the syntax error the bad <a href="../commands/incr.html">INCR</a> command is not queued
+        at all.</p>
+        
+        <h2>Why Redis does not support roll backs?</h2>
+        
+        <p>If you have a relational databases background, the fact that Redis commands
+        can fail during a transaction, but still Redis will execute the rest of the
+        transaction instead of rolling back, may look odd to you.</p>
+        
+        <p>However there are good opinions for this behavior:</p>
+        
+        <ul>
+        <li>Redis commands can fail only if called with a wrong syntax (and the problem is not detectable during the command queueing), or against keys holding the wrong data type: this means that in practical terms a failing command is the result of a programming errors, and a kind of error that is very likely to be detected during development, and not in production.</li>
+        <li>Redis is internally simplified and faster because it does not need the ability to roll back.</li>
+        </ul>
+        
+        <p>An argument against Redis point of view is that bugs happen, however it should be noted that in general the roll back does not save you from programming errors. For instance if a query increments a key by 2 instead of 1, or increments the wrong key, there is no way for a rollback mechanism to help. Given that no one can save the programmer from his errors, and that the kind of errors required for a Redis command to fail are unlikely to enter in production, we selected the simpler and faster approach of not supporting roll backs on errors.</p>
+        
+        <h2>Discarding the command queue</h2>
+        
+        <p><a href="../commands/discard.html">DISCARD</a> can be used in order to abort a transaction. In this case, no
+        commands are executed and the state of the connection is restored to
+        normal.</p>
+        
+        <pre><code>&gt; SET foo 1&#x000A;OK&#x000A;&gt; MULTI&#x000A;OK&#x000A;&gt; INCR foo&#x000A;QUEUED&#x000A;&gt; DISCARD&#x000A;OK&#x000A;&gt; GET foo&#x000A;&quot;1&quot;&#x000A;</code></pre>
+        
+        <p><a name="cas"></a></p>
+        
+        <h2>Optimistic locking using check-and-set</h2>
+        
+        <p><a href="../commands/watch.html">WATCH</a> is used to provide a check-and-set (CAS) behavior to Redis
+        transactions.</p>
+        
+        <p><code>WATCH</code>ed keys are monitored in order to detect changes against them. If
+        at least one watched key is modified before the <a href="../commands/exec.html">EXEC</a> command, the
+        whole transaction aborts, and <a href="../commands/exec.html">EXEC</a> returns a <a href="protocol.html#nil-reply">Null reply</a> to notify that
+        the transaction failed.</p>
+        
+        <p>For example, imagine we have the need to atomically increment the value
+        of a key by 1 (let&#39;s suppose Redis doesn&#39;t have <a href="../commands/incr.html">INCR</a>).</p>
+        
+        <p>The first try may be the following:</p>
+        
+        <pre><code>val = GET mykey&#x000A;val = val + 1&#x000A;SET mykey $val&#x000A;</code></pre>
+        
+        <p>This will work reliably only if we have a single client performing the
+        operation in a given time. If multiple clients try to increment the key
+        at about the same time there will be a race condition. For instance,
+        client A and B will read the old value, for instance, 10. The value will
+        be incremented to 11 by both the clients, and finally <a href="../commands/set.html">SET</a> as the value
+        of the key. So the final value will be 11 instead of 12.</p>
+        
+        <p>Thanks to <a href="../commands/watch.html">WATCH</a> we are able to model the problem very well:</p>
+        
+        <pre><code>WATCH mykey&#x000A;val = GET mykey&#x000A;val = val + 1&#x000A;MULTI&#x000A;SET mykey $val&#x000A;EXEC&#x000A;</code></pre>
+        
+        <p>Using the above code, if there are race conditions and another client
+        modifies the result of <code>val</code> in the time between our call to <a href="../commands/watch.html">WATCH</a> and
+        our call to <a href="../commands/exec.html">EXEC</a>, the transaction will fail.</p>
+        
+        <p>We just have to repeat the operation hoping this time we&#39;ll not get a
+        new race. This form of locking is called <em>optimistic locking</em> and is
+        a very powerful form of locking. In many use cases, multiple clients
+        will be accessing different keys, so collisions are unlikely – usually
+        there&#39;s no need to repeat the operation.</p>
+        
+        <h2><a href="../commands/watch.html">WATCH</a> explained</h2>
+        
+        <p>So what is <a href="../commands/watch.html">WATCH</a> really about? It is a command that will
+        make the <a href="../commands/exec.html">EXEC</a> conditional: we are asking Redis to perform
+        the transaction only if no other client modified any of the
+        <code>WATCH</code>ed keys. Otherwise the transaction is not entered at
+        all. (Note that if you <a href="../commands/watch.html">WATCH</a> a volatile key and Redis expires
+        the key after you <code>WATCH</code>ed it, <a href="../commands/exec.html">EXEC</a> will still work. <a href="http://code.google.com/p/redis/issues/detail?id=270">More on
+        this</a>.)</p>
+        
+        <p><a href="../commands/watch.html">WATCH</a> can be called multiple times. Simply all the <a href="../commands/watch.html">WATCH</a> calls will
+        have the effects to watch for changes starting from the call, up to
+        the moment <a href="../commands/exec.html">EXEC</a> is called. You can also send any number of keys to a
+        single <a href="../commands/watch.html">WATCH</a> call.</p>
+        
+        <p>When <a href="../commands/exec.html">EXEC</a> is called, all keys are <code>UNWATCH</code>ed, regardless of whether
+        the transaction was aborted or not.  Also when a client connection is
+        closed, everything gets <code>UNWATCH</code>ed.</p>
+        
+        <p>It is also possible to use the <a href="../commands/unwatch.html">UNWATCH</a> command (without arguments)
+        in order to flush all the watched keys. Sometimes this is useful as we
+        optimistically lock a few keys, since possibly we need to perform a
+        transaction to alter those keys, but after reading the current content
+        of the keys we don&#39;t want to proceed.  When this happens we just call
+        <a href="../commands/unwatch.html">UNWATCH</a> so that the connection can already be used freely for new
+        transactions.</p>
+        
+        <h3>Using <a href="../commands/watch.html">WATCH</a> to implement ZPOP</h3>
+        
+        <p>A good example to illustrate how <a href="../commands/watch.html">WATCH</a> can be used to create new
+        atomic operations otherwise not supported by Redis is to implement ZPOP,
+        that is a command that pops the element with the lower score from a
+        sorted set in an atomic way. This is the simplest implementation:</p>
+        
+        <pre><code>WATCH zset&#x000A;element = ZRANGE zset 0 0&#x000A;MULTI&#x000A;ZREM zset element&#x000A;EXEC&#x000A;</code></pre>
+        
+        <p>If <a href="../commands/exec.html">EXEC</a> fails (i.e. returns a <a href="protocol.html#nil-reply">Null reply</a>) we just repeat the operation.</p>
+        
+        <h2>Redis scripting and transactions</h2>
+        
+        <p>A <a href="../commands/eval.html">Redis script</a> is transactional by definition, so everything
+        you can do with a Redis transaction, you can also do with a script, and
+        usually the script will be both simpler and faster.</p>
+        
+        <p>This duplication is due to the fact that scripting was introduced in Redis 2.6
+        while transactions already existed long before. However we are unlikely to
+        remove the support for transactions in the short time because it seems
+        semantically opportune that even without resorting to Redis scripting it is
+        still possible to avoid race conditions, especially since the implementation
+        complexity of Redis transactions is minimal.</p>
+        
+        <p>However it is not impossible that in a non immediate future we&#39;ll see that the
+        whole user base is just using scripts. If this happens we may deprecate and
+        finally remove transactions.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

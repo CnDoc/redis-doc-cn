@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      OBJECT – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/commands/object.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/commands/object.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='../topics/license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>OBJECT</span>
+        <span class='arg'>subcommand</span>
+        <span class='arg'>[arguments [arguments ...]]</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='del.html'>
+                DEL
+              </a>
+            </li>
+            <li>
+              <a href='dump.html'>
+                DUMP
+              </a>
+            </li>
+            <li>
+              <a href='exists.html'>
+                EXISTS
+              </a>
+            </li>
+            <li>
+              <a href='expire.html'>
+                EXPIRE
+              </a>
+            </li>
+            <li>
+              <a href='expireat.html'>
+                EXPIREAT
+              </a>
+            </li>
+            <li>
+              <a href='keys.html'>
+                KEYS
+              </a>
+            </li>
+            <li>
+              <a href='migrate.html'>
+                MIGRATE
+              </a>
+            </li>
+            <li>
+              <a href='move.html'>
+                MOVE
+              </a>
+            </li>
+            <li>
+              <a href='object.html'>
+                <strong>OBJECT</strong>
+              </a>
+            </li>
+            <li>
+              <a href='persist.html'>
+                PERSIST
+              </a>
+            </li>
+            <li>
+              <a href='pexpire.html'>
+                PEXPIRE
+              </a>
+            </li>
+            <li>
+              <a href='pexpireat.html'>
+                PEXPIREAT
+              </a>
+            </li>
+            <li>
+              <a href='pttl.html'>
+                PTTL
+              </a>
+            </li>
+            <li>
+              <a href='randomkey.html'>
+                RANDOMKEY
+              </a>
+            </li>
+            <li>
+              <a href='rename.html'>
+                RENAME
+              </a>
+            </li>
+            <li>
+              <a href='renamenx.html'>
+                RENAMENX
+              </a>
+            </li>
+            <li>
+              <a href='restore.html'>
+                RESTORE
+              </a>
+            </li>
+            <li>
+              <a href='scan.html'>
+                SCAN
+              </a>
+            </li>
+            <li>
+              <a href='sort.html'>
+                SORT
+              </a>
+            </li>
+            <li>
+              <a href='ttl.html'>
+                TTL
+              </a>
+            </li>
+            <li>
+              <a href='type.html'>
+                TYPE
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 2.2.3.</strong></p>
+          <p><strong>Time complexity:</strong> O(1) for all the currently implemented subcommands.</p>
+        </div>
+        <p>The <a href="object.html">OBJECT</a> command allows to inspect the internals of Redis Objects associated
+        with keys.
+        It is useful for debugging or to understand if your keys are using the specially
+        encoded data types to save space.
+        Your application may also use the information reported by the <a href="object.html">OBJECT</a> command
+        to implement application level key eviction policies when using Redis as a
+        Cache.</p>
+        
+        <p>The <a href="object.html">OBJECT</a> command supports multiple sub commands:</p>
+        
+        <ul>
+        <li><code>OBJECT REFCOUNT &lt;key&gt;</code> returns the number of references of the value
+        associated with the specified key.
+        This command is mainly useful for debugging.</li>
+        <li><code>OBJECT ENCODING &lt;key&gt;</code> returns the kind of internal representation used in
+        order to store the value associated with a key.</li>
+        <li><code>OBJECT IDLETIME &lt;key&gt;</code> returns the number of seconds since the object stored
+        at the specified key is idle (not requested by read or write operations).
+        While the value is returned in seconds the actual resolution of this timer is
+        10 seconds, but may vary in future implementations.</li>
+        </ul>
+        
+        <p>Objects can be encoded in different ways:</p>
+        
+        <ul>
+        <li>Strings can be encoded as <code>raw</code> (normal string encoding) or <code>int</code> (strings
+        representing integers in a 64 bit signed interval are encoded in this way in
+        order to save space).</li>
+        <li>Lists can be encoded as <code>ziplist</code> or <code>linkedlist</code>.
+        The <code>ziplist</code> is the special representation that is used to save space for
+        small lists.</li>
+        <li>Sets can be encoded as <code>intset</code> or <code>hashtable</code>.
+        The <code>intset</code> is a special encoding used for small sets composed solely of
+        integers.</li>
+        <li>Hashes can be encoded as <code>zipmap</code> or <code>hashtable</code>.
+        The <code>zipmap</code> is a special encoding used for small hashes.</li>
+        <li>Sorted Sets can be encoded as <code>ziplist</code> or <code>skiplist</code> format.
+        As for the List type small sorted sets can be specially encoded using
+        <code>ziplist</code>, while the <code>skiplist</code> encoding is the one that works with sorted
+        sets of any size.</li>
+        </ul>
+        
+        <p>All the specially encoded types are automatically converted to the general type
+        once you perform an operation that makes it impossible for Redis to retain the
+        space saving encoding.</p>
+        
+        <h2>Return value</h2>
+        
+        <p>Different return values are used for different subcommands.</p>
+        
+        <ul>
+        <li>Subcommands <code>refcount</code> and <code>idletime</code> return integers.</li>
+        <li>Subcommand <code>encoding</code> returns a bulk reply.</li>
+        </ul>
+        
+        <p>If the object you try to inspect is missing, a null bulk reply is returned.</p>
+        
+        <h2>Examples</h2>
+        
+        <pre><code>redis&gt; lpush mylist &quot;Hello World&quot;&#x000A;(integer) 4&#x000A;redis&gt; object refcount mylist&#x000A;(integer) 1&#x000A;redis&gt; object encoding mylist&#x000A;&quot;ziplist&quot;&#x000A;redis&gt; object idletime mylist&#x000A;(integer) 10&#x000A;</code></pre>
+        
+        <p>In the following example you can see how the encoding changes once Redis is no
+        longer able to use the space saving encoding.</p>
+        
+        <pre><code>redis&gt; set foo 1000&#x000A;OK&#x000A;redis&gt; object encoding foo&#x000A;&quot;int&quot;&#x000A;redis&gt; append foo bar&#x000A;(integer) 7&#x000A;redis&gt; get foo&#x000A;&quot;1000bar&quot;&#x000A;redis&gt; object encoding foo&#x000A;&quot;raw&quot;&#x000A;</code></pre>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_object';
+          var disqus_url = 'http://redis.io/commands/object';
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href='http://disqus.com'>
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="../topics/sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

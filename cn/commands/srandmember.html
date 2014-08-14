@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      SRANDMEMBER – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/commands/srandmember.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/commands/srandmember.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='../topics/license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>SRANDMEMBER</span>
+        <span class='arg'>key</span>
+        <span class='arg'>[count]</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='sadd.html'>
+                SADD
+              </a>
+            </li>
+            <li>
+              <a href='scard.html'>
+                SCARD
+              </a>
+            </li>
+            <li>
+              <a href='sdiff.html'>
+                SDIFF
+              </a>
+            </li>
+            <li>
+              <a href='sdiffstore.html'>
+                SDIFFSTORE
+              </a>
+            </li>
+            <li>
+              <a href='sinter.html'>
+                SINTER
+              </a>
+            </li>
+            <li>
+              <a href='sinterstore.html'>
+                SINTERSTORE
+              </a>
+            </li>
+            <li>
+              <a href='sismember.html'>
+                SISMEMBER
+              </a>
+            </li>
+            <li>
+              <a href='smembers.html'>
+                SMEMBERS
+              </a>
+            </li>
+            <li>
+              <a href='smove.html'>
+                SMOVE
+              </a>
+            </li>
+            <li>
+              <a href='spop.html'>
+                SPOP
+              </a>
+            </li>
+            <li>
+              <a href='srandmember.html'>
+                <strong>SRANDMEMBER</strong>
+              </a>
+            </li>
+            <li>
+              <a href='srem.html'>
+                SREM
+              </a>
+            </li>
+            <li>
+              <a href='sscan.html'>
+                SSCAN
+              </a>
+            </li>
+            <li>
+              <a href='sunion.html'>
+                SUNION
+              </a>
+            </li>
+            <li>
+              <a href='sunionstore.html'>
+                SUNIONSTORE
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.0.0.</strong></p>
+          <p><strong>Time complexity:</strong> Without the count argument O(1), otherwise O(N) where N is the absolute value of the passed count.</p>
+        </div>
+        <p>When called with just the <code>key</code> argument, return a random element from the set value stored at <code>key</code>.</p>
+        
+        <p>Starting from Redis version 2.6, when called with the additional <code>count</code> argument, return an array of <code>count</code> <strong>distinct elements</strong> if <code>count</code> is positive. If called with a negative <code>count</code> the behavior changes and the command is allowed to return the <strong>same element multiple times</strong>. In this case the numer of returned elements is the absolute value of the specified <code>count</code>.</p>
+        
+        <p>When called with just the key argument, the operation is similar to <a href="spop.html">SPOP</a>, however while <a href="spop.html">SPOP</a> also removes the randomly selected element from the set, <a href="srandmember.html">SRANDMEMBER</a> will just return a random element without altering the original set in any way.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="../topics/protocol.html#bulk-string-reply">Bulk string reply</a>: without the additional <code>count</code> argument the command returns a Bulk Reply with the randomly selected element, or <code>nil</code> when <code>key</code> does not exist.
+        <a href="../topics/protocol.html#array-reply">Array reply</a>: when the additional <code>count</code> argument is passed the command returns an array of elements, or an empty array when <code>key</code> does not exist.</p>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='1576fe41aa5a5dd0035d380e976e952d'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SADD myset one two three</span>
+          <pre>(integer) 3</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SRANDMEMBER myset</span>
+          <pre>"two"</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SRANDMEMBER myset 2</span>
+          <pre>1) "one"&#x000A;2) "two"</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SRANDMEMBER myset -5</span>
+          <pre>1) "three"&#x000A;2) "two"&#x000A;3) "one"&#x000A;4) "three"&#x000A;5) "one"</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+        
+        
+        <h2>Specification of the behavior when count is passed</h2>
+        
+        <p>When a count argument is passed and is positive, the elements are returned
+        as if every selected element is removed from the set (like the extraction
+        of numbers in the game of Bingo). However elements are <strong>not removed</strong> from
+        the Set. So basically:</p>
+        
+        <ul>
+        <li>No repeated elements are returned.</li>
+        <li>If count is bigger than the number of elements inside the Set, the command will only return the whole set without additional elements.</li>
+        </ul>
+        
+        <p>When instead the count is negative, the behavior changes and the extraction happens as if you put the extracted element inside the bag again after every extraction, so repeated elements are possible, and the number of elements requested is always returned as we can repeat the same elements again and again, with the exception of an empty Set (non existing key) that will always produce an empty array as a result.</p>
+        
+        <h2>Distribution of returned elements</h2>
+        
+        <p>The distribution of the returned elements is far from perfect when the number of elements in the set is small, this is due to the fact that we used an approximated random element function that does not really guarantees good distribution.</p>
+        
+        <p>The algorithm used, that is implemented inside dict.c, samples the hash table buckets to find a non-empty one. Once a non empty bucket is found, since we use chaining in our hash table implementation, the number of elements inside the bucked is checked and a random element is selected.</p>
+        
+        <p>This means that if you have two non-empty buckets in the entire hash table, and one has three elements while one has just one, the element that is alone in its bucket will be returned with much higher probability.</p>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_srandmember';
+          var disqus_url = 'http://redis.io/commands/srandmember';
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href='http://disqus.com'>
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="../topics/sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Redis Mass Insertion – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics mass-insert'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/topics/mass-insert.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/topics/mass-insert.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Redis Mass Insertion</h1>
+        
+        <p>Sometimes Redis instances needs to be loaded with big amount of preexisting
+        or user generated data in a short amount of time, so that millions of keys
+        will be created as fast as possible.</p>
+        
+        <p>This is called a <em>mass insertion</em>, and the goal of this document is to
+        provide information about how to feed Redis with data as fast as possible.</p>
+        
+        <h2>Use the protocol, Luke</h2>
+        
+        <p>Using a normal Redis client to perform mass insertion is not a good idea
+        for a few reasons: the naive approach of sending one command after the other
+        is slow because you have to pay for the round trip time for every command.
+        It is possible to use pipelining, but for mass insertion of many records
+        you need to write new commands while you read replies at the same time to
+        make sure you are inserting as fast as possible.</p>
+        
+        <p>Only a small percentage of clients support non-blocking I/O, and not all the
+        clients are able to parse the replies in an efficient way in order to maximize
+        throughput. For all this reasons the preferred way to mass import data into
+        Redis is to generate a text file containing the Redis protocol, in raw format,
+        in order to call the commands needed to insert the required data.</p>
+        
+        <p>For instance if I need to generate a large data set where there are billions
+        of keys in the form: `keyN -&gt; ValueN&#39; I will create a file containing the
+        following commands in the Redis protocol format:</p>
+        
+        <pre><code>SET Key0 Value0&#x000A;SET Key1 Value1&#x000A;...&#x000A;SET KeyN ValueN&#x000A;</code></pre>
+        
+        <p>Once this file is created, the remaining action is to feed it to Redis
+        as fast as possible. In the past the way to do this was to use the
+        <code>netcat</code> with the following command:</p>
+        
+        <pre><code>(cat data.txt; sleep 10) | nc localhost 6379 &gt; /dev/null&#x000A;</code></pre>
+        
+        <p>However this is not a very reliable way to perform mass import because netcat
+        does not really know when all the data was transferred and can&#39;t check for
+        errors. In the unstable branch of Redis at github the <code>redis-cli</code> utility
+        supports a new mode called <strong>pipe mode</strong> that was designed in order to perform
+        mass insertion.</p>
+        
+        <p>Using the pipe mode the command to run looks like the following:</p>
+        
+        <pre><code>cat data.txt | redis-cli --pipe&#x000A;</code></pre>
+        
+        <p>That will produce an output similar to this:</p>
+        
+        <pre><code>All data transferred. Waiting for the last reply...&#x000A;Last reply received from server.&#x000A;errors: 0, replies: 1000000&#x000A;</code></pre>
+        
+        <p>The redis-cli utility will also make sure to only redirect errors received
+        from the Redis instance to the standard output.</p>
+        
+        <h2>Generating Redis Protocol</h2>
+        
+        <p>The Redis protocol is extremely simple to generate and parse, and is
+        <a href="protocol.html">Documented here</a>. However in order to generate protocol for
+        the goal of mass insertion you don&#39;t need to understand every detail of the
+        protocol, but just that every command is represented in the following way:</p>
+        
+        <pre><code>*&lt;args&gt;&lt;cr&gt;&lt;lf&gt;&#x000A;$&lt;len&gt;&lt;cr&gt;&lt;lf&gt;&#x000A;&lt;arg0&gt;&lt;cr&gt;&lt;lf&gt;&#x000A;&lt;arg1&gt;&lt;cr&gt;&lt;lf&gt;&#x000A;...&#x000A;&lt;argN&gt;&lt;cr&gt;&lt;lf&gt;&#x000A;</code></pre>
+        
+        <p>Where <code>&lt;cr&gt;</code> means &quot;\r&quot; (or ASCII character 13) and <code>&lt;lf&gt;</code> means &quot;\n&quot; (or ASCII character 10).</p>
+        
+        <p>For instance the command <strong>SET key value</strong> is represented by the following protocol:</p>
+        
+        <pre><code>*3&lt;cr&gt;&lt;lf&gt;&#x000A;$3&lt;cr&gt;&lt;lf&gt;&#x000A;SET&lt;cr&gt;&lt;lf&gt;&#x000A;$3&lt;cr&gt;&lt;lf&gt;&#x000A;key&lt;cr&gt;&lt;lf&gt;&#x000A;$5&lt;cr&gt;&lt;lf&gt;&#x000A;value&lt;cr&gt;&lt;lf&gt;&#x000A;</code></pre>
+        
+        <p>Or represented as a quoted string:</p>
+        
+        <pre><code>&quot;*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n&quot;&#x000A;</code></pre>
+        
+        <p>The file you need to generate for mass insertion is just composed of commands
+        represented in the above way, one after the other.</p>
+        
+        <p>The following Ruby function generates valid protocol:</p>
+        
+        <pre><code>def gen_redis_proto(*cmd)&#x000A;    proto = &quot;&quot;&#x000A;    proto &lt;&lt; &quot;*&quot;+cmd.length.to_s+&quot;\r\n&quot;&#x000A;    cmd.each{|arg|&#x000A;        proto &lt;&lt; &quot;$&quot;+arg.to_s.bytesize.to_s+&quot;\r\n&quot;&#x000A;        proto &lt;&lt; arg.to_s+&quot;\r\n&quot;&#x000A;    }&#x000A;    proto&#x000A;end&#x000A;&#x000A;puts gen_redis_proto(&quot;SET&quot;,&quot;mykey&quot;,&quot;Hello World!&quot;).inspect&#x000A;</code></pre>
+        
+        <p>Using the above function it is possible to easily generate the key value pairs
+        in the above example, with this program:</p>
+        
+        <pre><code>(0...1000).each{|n|&#x000A;    STDOUT.write(gen_redis_proto(&quot;SET&quot;,&quot;Key#{n}&quot;,&quot;Value#{n}&quot;))&#x000A;}&#x000A;</code></pre>
+        
+        <p>We can run the program directly in pipe to redis-cli in order to perform our
+        first mass import session.</p>
+        
+        <pre><code>$ ruby proto.rb | redis-cli --pipe&#x000A;All data transferred. Waiting for the last reply...&#x000A;Last reply received from server.&#x000A;errors: 0, replies: 1000&#x000A;</code></pre>
+        
+        <h2>How the pipe mode works under the hoods</h2>
+        
+        <p>The magic needed inside the pipe mode of redis-cli is to be as fast as netcat
+        and still be able to understand when the last reply was sent by the server
+        at the same time.</p>
+        
+        <p>This is obtained in the following way:</p>
+        
+        <ul>
+        <li>redis-cli --pipe tries to send data as fast as possible to the server.</li>
+        <li>At the same time it reads data when available, trying to parse it.</li>
+        <li>Once there is no more data to read from stdin, it sends a special <strong>ECHO</strong> command with a random 20 bytes string: we are sure this is the latest command sent, and we are sure we can match the reply checking if we receive the same 20 bytes as a bulk reply.</li>
+        <li>Once this special final command is sent, the code receiving replies starts to match replies with this 20 bytes. When the matching reply is reached it can exit with success.</li>
+        </ul>
+        
+        <p>Using this trick we don&#39;t need to parse the protocol we send to the server in order to understand how many commands we are sending, but just the replies.</p>
+        
+        <p>However while parsing the replies we take a counter of all the replies parsed so that at the end we are able to tell the user the amount of commands transferred to the server by the mass insert session.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

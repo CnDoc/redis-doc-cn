@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      TTL – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/commands/ttl.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/commands/ttl.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='../topics/license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>TTL</span>
+        <span class='arg'>key</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='del.html'>
+                DEL
+              </a>
+            </li>
+            <li>
+              <a href='dump.html'>
+                DUMP
+              </a>
+            </li>
+            <li>
+              <a href='exists.html'>
+                EXISTS
+              </a>
+            </li>
+            <li>
+              <a href='expire.html'>
+                EXPIRE
+              </a>
+            </li>
+            <li>
+              <a href='expireat.html'>
+                EXPIREAT
+              </a>
+            </li>
+            <li>
+              <a href='keys.html'>
+                KEYS
+              </a>
+            </li>
+            <li>
+              <a href='migrate.html'>
+                MIGRATE
+              </a>
+            </li>
+            <li>
+              <a href='move.html'>
+                MOVE
+              </a>
+            </li>
+            <li>
+              <a href='object.html'>
+                OBJECT
+              </a>
+            </li>
+            <li>
+              <a href='persist.html'>
+                PERSIST
+              </a>
+            </li>
+            <li>
+              <a href='pexpire.html'>
+                PEXPIRE
+              </a>
+            </li>
+            <li>
+              <a href='pexpireat.html'>
+                PEXPIREAT
+              </a>
+            </li>
+            <li>
+              <a href='pttl.html'>
+                PTTL
+              </a>
+            </li>
+            <li>
+              <a href='randomkey.html'>
+                RANDOMKEY
+              </a>
+            </li>
+            <li>
+              <a href='rename.html'>
+                RENAME
+              </a>
+            </li>
+            <li>
+              <a href='renamenx.html'>
+                RENAMENX
+              </a>
+            </li>
+            <li>
+              <a href='restore.html'>
+                RESTORE
+              </a>
+            </li>
+            <li>
+              <a href='scan.html'>
+                SCAN
+              </a>
+            </li>
+            <li>
+              <a href='sort.html'>
+                SORT
+              </a>
+            </li>
+            <li>
+              <a href='ttl.html'>
+                <strong>TTL</strong>
+              </a>
+            </li>
+            <li>
+              <a href='type.html'>
+                TYPE
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.0.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(1)</p>
+        </div>
+        <p>Returns the remaining time to live of a key that has a timeout.
+        This introspection capability allows a Redis client to check how many seconds a
+        given key will continue to be part of the dataset.</p>
+        
+        <p>In Redis 2.6 or older the command returns <code>-1</code> if the key does not exist or if the key exist but has no associated expire.</p>
+        
+        <p>Starting with Redis 2.8 the return value in case of error changed:</p>
+        
+        <ul>
+        <li>The command returns <code>-2</code> if the key does not exist.</li>
+        <li>The command returns <code>-1</code> if the key exists but has no associated expire.</li>
+        </ul>
+        
+        <p>See also the <a href="pttl.html">PTTL</a> command that returns the same information with milliseconds resolution (Only available in Redis 2.6 or greater).</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>: TTL in seconds, or a negative value in order to signal an error (see the description above).</p>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='128f1fd27f05a9cee521bbcb219e16c9'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SET mykey &quot;Hello&quot;</span>
+          <pre>OK</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>EXPIRE mykey 10</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>TTL mykey</span>
+          <pre>(integer) 10</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_ttl';
+          var disqus_url = 'http://redis.io/commands/ttl';
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href='http://disqus.com'>
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="../topics/sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>
