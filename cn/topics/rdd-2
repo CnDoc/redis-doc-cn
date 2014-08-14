@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css?1333128600' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js?1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Redis Design Draft 2 -- RDB version 7 info fields – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics rdd-2'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/topics/rdd-2" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands'>Commands</a>
+          <a href='../clients'>Clients</a>
+          <a href='../documentation'>Documentation</a>
+          <a href='../community'>Community</a>
+          <a href='../download'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support'>Support</a>
+          <a href='license'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Redis Design Draft 2 -- RDB version 7 info fields</h1>
+        
+        <ul>
+        <li>Author: Salvatore Sanfilippo <code>antirez@gmail.com</code></li>
+        <li>Github issue <a href="https://github.com/antirez/redis/issues/1048">#1048</a></li>
+        </ul>
+        
+        <h2>History of revisions</h2>
+        
+        <p>1.0, 10 April 2013 - Initial draft.</p>
+        
+        <h2>Overview</h2>
+        
+        <p>The Redis RDB format lacks a simple way to add info fields to an RDB file
+        without causing a backward compatibility issue even if the added meta data
+        is not required in order to load data from the RDB file.</p>
+        
+        <p>For example thanks to the info fields specified in this document it will
+        be possible to add to RDB informations like file creation time, Redis version
+        generating the file, and any other useful information, in a way that not
+        every field is required for an RDB version 7 file to be correctly processed.</p>
+        
+        <p>Also with minimal changes it will be possible to add RDB version 7 support to
+        Redis 2.6 without actually supporting the additional fields but just skipping
+        them when loading an RDB file.</p>
+        
+        <p>RDB info fields may have semantical meaning if needed, so that the presence
+        of the field may add information about the data set specified in the RDB
+        file format, however when an info field is required to be correctly decoded
+        in order to understand and load the data set content of the RDB file, the
+        RDB file format must be increased so that previous versions of Redis will not
+        attempt to load it.</p>
+        
+        <p>However currently the info fields are designed to only hold additional
+        informations that are not useful to load the dataset, but can better specify
+        how the RDB file was created.</p>
+        
+        <h2>Info fields representation</h2>
+        
+        <p>The RDB format 6 has the following layout:</p>
+        
+        <ul>
+        <li>A 9 bytes magic &quot;REDIS0006&quot;</li>
+        <li>key-value pairs</li>
+        <li>An EOF opcode</li>
+        <li>CRC64 checksum</li>
+        </ul>
+        
+        <p>The proposal for RDB format 7 is to add the optional fields immediately
+        after the first 9 bytes magic, so that the new format will be:</p>
+        
+        <ul>
+        <li>A 9 bytes magic &quot;REDIS0007&quot;</li>
+        <li>Info field 1</li>
+        <li>Info field 2</li>
+        <li>...</li>
+        <li>Info field N</li>
+        <li>Info field end-of-fields</li>
+        <li>key-value pairs</li>
+        <li>An EOF opcode</li>
+        <li>CRC64 checksum</li>
+        </ul>
+        
+        <p>Every single info field has the following structure:</p>
+        
+        <ul>
+        <li>A 16 bit identifier</li>
+        <li>A 64 bit data length</li>
+        <li>A data section of the exact length as specified</li>
+        </ul>
+        
+        <p>Both the identifier and the data length are stored in little endian byte
+        ordering.</p>
+        
+        <p>The special identifier 0 means that there are no other info fields, and that
+        the remaining of the RDB file contains the key-value pairs.</p>
+        
+        <h2>Handling of info fields</h2>
+        
+        <p>A program can simply skip every info field it does not understand, as long
+        as the RDB version matches the one that it is capable to load.</p>
+        
+        <h2>Specification of info fields IDs and content.</h2>
+        
+        <h3>Info field 0 -- End of info fields</h3>
+        
+        <p>This just means there are no longer info fields to process.</p>
+        
+        <h3>Info field 1 -- Creation date</h3>
+        
+        <p>This field represents the unix time at which the RDB file was created.
+        The format of the unix time is a 64 bit little endian integer representing
+        seconds since 1th January 1970.</p>
+        
+        <h3>Info field 2 -- Redis version</h3>
+        
+        <p>This field represents a null-terminated string containing the Redis version
+        that generated the file, as displayed in the Redis version INFO field.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

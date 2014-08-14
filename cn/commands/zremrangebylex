@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css?1333128600' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js?1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      ZREMRANGEBYLEX – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/commands/zremrangebylex" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands'>Commands</a>
+          <a href='../clients'>Clients</a>
+          <a href='../documentation'>Documentation</a>
+          <a href='../community'>Community</a>
+          <a href='../download'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support'>Support</a>
+          <a href='../topics/license'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>ZREMRANGEBYLEX</span>
+        <span class='arg'>key</span>
+        <span class='arg'>min</span>
+        <span class='arg'>max</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='zadd'>
+                ZADD
+              </a>
+            </li>
+            <li>
+              <a href='zcard'>
+                ZCARD
+              </a>
+            </li>
+            <li>
+              <a href='zcount'>
+                ZCOUNT
+              </a>
+            </li>
+            <li>
+              <a href='zincrby'>
+                ZINCRBY
+              </a>
+            </li>
+            <li>
+              <a href='zinterstore'>
+                ZINTERSTORE
+              </a>
+            </li>
+            <li>
+              <a href='zlexcount'>
+                ZLEXCOUNT
+              </a>
+            </li>
+            <li>
+              <a href='zrange'>
+                ZRANGE
+              </a>
+            </li>
+            <li>
+              <a href='zrangebylex'>
+                ZRANGEBYLEX
+              </a>
+            </li>
+            <li>
+              <a href='zrangebyscore'>
+                ZRANGEBYSCORE
+              </a>
+            </li>
+            <li>
+              <a href='zrank'>
+                ZRANK
+              </a>
+            </li>
+            <li>
+              <a href='zrem'>
+                ZREM
+              </a>
+            </li>
+            <li>
+              <a href='zremrangebylex'>
+                <strong>ZREMRANGEBYLEX</strong>
+              </a>
+            </li>
+            <li>
+              <a href='zremrangebyrank'>
+                ZREMRANGEBYRANK
+              </a>
+            </li>
+            <li>
+              <a href='zremrangebyscore'>
+                ZREMRANGEBYSCORE
+              </a>
+            </li>
+            <li>
+              <a href='zrevrange'>
+                ZREVRANGE
+              </a>
+            </li>
+            <li>
+              <a href='zrevrangebyscore'>
+                ZREVRANGEBYSCORE
+              </a>
+            </li>
+            <li>
+              <a href='zrevrank'>
+                ZREVRANK
+              </a>
+            </li>
+            <li>
+              <a href='zscan'>
+                ZSCAN
+              </a>
+            </li>
+            <li>
+              <a href='zscore'>
+                ZSCORE
+              </a>
+            </li>
+            <li>
+              <a href='zunionstore'>
+                ZUNIONSTORE
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 2.8.9.</strong></p>
+          <p><strong>Time complexity:</strong> O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements removed by the operation.</p>
+        </div>
+        <p>When all the elements in a sorted set are inserted with the same score, in order to force lexicographical ordering, this command removes all elements in the sorted set stored at <code>key</code> between the lexicographical range specified by <code>min</code> and <code>max</code>.</p>
+        
+        <p>The meaining of <code>min</code> and <code>max</code> are the same of the <a href="zrangebylex">ZRANGEBYLEX</a> command. Similarly, this command actually returns the same elements that <a href="zrangebylex">ZRANGEBYLEX</a> would return if called with the same <code>min</code> and <code>max</code> arguments.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="../topics/protocol#integer-reply">Integer reply</a>: the number of elements removed.</p>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='8caf09cae2e96e15ab658eb4e1aa35dc'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZADD myzset 0 aaaa 0 b 0 c 0 d 0 e</span>
+          <pre>(integer) 5</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZADD myzset 0 foo 0 zap 0 zip 0 ALPHA 0 alpha</span>
+          <pre>(integer) 5</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZRANGE myzset 0 -1</span>
+          <pre>1) "ALPHA"&#x000A; 2) "aaaa"&#x000A; 3) "alpha"&#x000A; 4) "b"&#x000A; 5) "c"&#x000A; 6) "d"&#x000A; 7) "e"&#x000A; 8) "foo"&#x000A; 9) "zap"&#x000A;10) "zip"</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZREMRANGEBYLEX myzset [alpha [omega</span>
+          <pre>(integer) 6</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZRANGE myzset 0 -1</span>
+          <pre>1) "ALPHA"&#x000A;2) "aaaa"&#x000A;3) "zap"&#x000A;4) "zip"</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_zremrangebylex';
+          var disqus_url = 'http://redis.io/commands/zremrangebylex';
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href='http://disqus.com'>
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="../topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css?1333128600' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js?1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Redis Protocol specification – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics protocol'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/topics/protocol" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands'>Commands</a>
+          <a href='../clients'>Clients</a>
+          <a href='../documentation'>Documentation</a>
+          <a href='../community'>Community</a>
+          <a href='../download'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support'>Support</a>
+          <a href='license'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Redis Protocol specification</h1>
+        
+        <p>Redis clients communicate with the Redis server using a protocol called <strong>RESP</strong> (REdis Serialization Protocol). While the protocol was designed specifically for Redis, it can be used for other client-server software projects.</p>
+        
+        <p>RESP is a compromise between the following things:</p>
+        
+        <ul>
+        <li>Simple to implement.</li>
+        <li>Fast to parse.</li>
+        <li>Human readable.</li>
+        </ul>
+        
+        <p>RESP can serialize different data types like integers, strings, arrays. There is also a specific type for errors. Requests are sent from the client to the Redis server as arrays of strings representing the arguments of the command to execute. Redis replies with a command-specific data type.</p>
+        
+        <p>RESP is binary-safe and does not require processing of bulk data transferred from one process to another, because it uses prefixed-length to transfer bulk data.</p>
+        
+        <p>Note: the protocol outlined here is only used for client-server communication. Redis Cluster uses a different binary protocol in order to exchange messages between nodes.</p>
+        
+        <h2>Networking layer</h2>
+        
+        <p>A client connects to a Redis server creating a TCP connection to the port 6379.</p>
+        
+        <p>While RESP is technically non-TCP specific, in the context of Redis the protocol is only used with TCP connections (or equivalent stream oriented connections like Unix sockets).</p>
+        
+        <h2>Request-Response model</h2>
+        
+        <p>Redis accepts commands composed of different arguments.
+        Once a command is received, it is processed and a reply is sent back to the client.</p>
+        
+        <p>This is the simplest model possible, however there are two exceptions:</p>
+        
+        <ul>
+        <li>Redis supports pipelining (covered later in this document). So it is possible for clients to send multiple commands at once, and wait for replies later.</li>
+        <li>When a Redis client subscribes to a Pub/Sub channel, the protocol changes semantics and becomes a <em>push</em> protocol, that is, the client no longer requires to send commands, because the server will automatically send to the client new messages (for the channels the client is subscribed to) as soon as they are received.</li>
+        </ul>
+        
+        <p>Excluding the above two exceptions, the Redis protocol is a simple request-response protocol.</p>
+        
+        <h2>RESP protocol description</h2>
+        
+        <p>The RESP protocol was introduced in Redis 1.2, but it became the
+        standard way for talking with the Redis server in Redis 2.0.
+        This is the protocol you should implement in your Redis client.</p>
+        
+        <p>RESP is actually a serialization protocol that supports the following
+        data types: Simple Strings, Errors, Integers, Bulk Strings and Arrays.</p>
+        
+        <p>The way RESP is used in Redis as a request-response protocol is the
+        following:</p>
+        
+        <ul>
+        <li>Clients send commands to a Redis server as a RESP Array of Bulk Strings.</li>
+        <li>The server replies with one of the RESP types according to the command implementation.</li>
+        </ul>
+        
+        <p>In RESP, the type of some data depends on the first byte:</p>
+        
+        <ul>
+        <li>For <strong>Simple Strings</strong> the first byte of the reply is &quot;+&quot;</li>
+        <li>For <strong>Errors</strong> the first byte of the reply is &quot;-&quot;</li>
+        <li>For <strong>Integers</strong> the first byte of the reply is &quot;:&quot;</li>
+        <li>For <strong>Bulk Strings</strong> the first byte of the reply is &quot;$&quot;</li>
+        <li>For <strong>Arrays</strong> the first byte of the reply is &quot;<code>*</code>&quot;</li>
+        </ul>
+        
+        <p>Additionally RESP is able to represent a Null value using a special variation of Bulk Strings or Array as specified later.</p>
+        
+        <p>In RESP different parts of the protocol are always terminated with &quot;\r\n&quot; (CRLF).</p>
+        
+        <p><a name="simple-string-reply"></a></p>
+        
+        <h2>RESP Simple Strings</h2>
+        
+        <p>Simple Strings are encoded in the following way: a plus character, followed by a string that cannot contain a CR or LF character (no newlines are allowed), terminated by CRLF (that is &quot;\r\n&quot;).</p>
+        
+        <p>Simple Strings are used to transmit non binary safe strings with minimal overhead. For example many Redis commands reply with just &quot;OK&quot; on success, that as a RESP Simple String is encoded with the following 5 bytes:</p>
+        
+        <pre><code>&quot;+OK\r\n&quot;&#x000A;</code></pre>
+        
+        <p>In order to send binary-safe strings, RESP Bulk Strings are used instead.</p>
+        
+        <p>When Redis replies with a Simple String, a client library should return
+        to the caller a string composed of the first character after the &#39;+&#39;
+        up to the end of the string, excluding the final CRLF bytes.</p>
+        
+        <p><a name="error-reply"></a></p>
+        
+        <h2>RESP Errors</h2>
+        
+        <p>RESP has a specific data type for errors. Actually errors are exactly like
+        RESP Simple Strings, but the first character is a minus &#39;-&#39; character instead
+        of a plus. The real difference between Simple Strings and Errors in RESP is that
+        errors are treated by clients as exceptions, and the string that composes
+        the Error type is the error message itself.</p>
+        
+        <p>The basic format is:</p>
+        
+        <pre><code>&quot;-Error message\r\n&quot;&#x000A;</code></pre>
+        
+        <p>Error replies are only sent when something wrong happens, for instance if
+        you try to perform an operation against the wrong data type, or if the command
+        does not exist and so forth. An exception should be raised by the library
+        client when an Error Reply is received.</p>
+        
+        <p>The following are examples of error replies:</p>
+        
+        <pre><code>-ERR unknown command &#39;foobar&#39;&#x000A;-WRONGTYPE Operation against a key holding the wrong kind of value&#x000A;</code></pre>
+        
+        <p>The first word after the &quot;-&quot;, up to the first space or newline, represents
+        the kind of error returned. This is just a convention used by Redis and is not
+        part of the RESP Error format.</p>
+        
+        <p>For example, <code>ERR</code> is the generic error, while <code>WRONGTYPE</code> is a more specific
+        error that implies that the client tried to perform an operation against the
+        wrong data type. This is called an <strong>Error Prefix</strong> and is a way to allow
+        the client to understand the kind of error returned by the server without
+        to rely on the exact message given, that may change over the time.</p>
+        
+        <p>A client implementation may return different kind of exceptions for different
+        errors, or may provide a generic way to trap errors by directly providing
+        the error name to the caller as a string.</p>
+        
+        <p>However, such a feature should not be considered vital as it is rarely useful, and a limited client implementation may simply return a generic error condition, such as <code>false</code>.</p>
+        
+        <p><a name="integer-reply"></a></p>
+        
+        <h2>RESP Integers</h2>
+        
+        <p>This type is just a CRLF terminated string representing an integer,
+        prefixed by a &quot;:&quot; byte. For example &quot;:0\r\n&quot;, or &quot;:1000\r\n&quot; are integer
+        replies.</p>
+        
+        <p>Many Redis commands return RESP Integers, like <a href="../commands/incr">INCR</a>, <a href="../commands/llen">LLEN</a> and <a href="../commands/lastsave">LASTSAVE</a>.</p>
+        
+        <p>There is no special meaning for the returned integer, it is just an
+        incremental number for <a href="../commands/incr">INCR</a>, a UNIX time for <a href="../commands/lastsave">LASTSAVE</a> and so forth. However,
+        the returned integer is guaranteed to be in the range of a signed 64 bit
+        integer.</p>
+        
+        <p>Integer replies are also extensively used in order to return true or false.
+        For instance commands like <a href="../commands/exists">EXISTS</a> or <a href="../commands/sismember">SISMEMBER</a> will return 1 for true
+        and 0 for false.</p>
+        
+        <p>Other commands like <a href="../commands/sadd">SADD</a>, <a href="../commands/srem">SREM</a> and <a href="../commands/setnx">SETNX</a> will return 1 if the operation
+        was actually performed, 0 otherwise.</p>
+        
+        <p>The following commands will reply with an integer reply: <a href="../commands/setnx">SETNX</a>, <a href="../commands/del">DEL</a>,
+        <a href="../commands/exists">EXISTS</a>, <a href="../commands/incr">INCR</a>, <a href="../commands/incrby">INCRBY</a>, <a href="../commands/decr">DECR</a>, <a href="../commands/decrby">DECRBY</a>, <a href="../commands/dbsize">DBSIZE</a>, <a href="../commands/lastsave">LASTSAVE</a>,
+        <a href="../commands/renamenx">RENAMENX</a>, <a href="../commands/move">MOVE</a>, <a href="../commands/llen">LLEN</a>, <a href="../commands/sadd">SADD</a>, <a href="../commands/srem">SREM</a>, <a href="../commands/sismember">SISMEMBER</a>, <a href="../commands/scard">SCARD</a>.</p>
+        
+        <p><a name="nil-reply"></a>
+        <a name="bulk-string-reply"></a></p>
+        
+        <h2>RESP Bulk Strings</h2>
+        
+        <p>Bulk Strings are used in order to represent a single binary safe
+        string up to 512 MB in length.</p>
+        
+        <p>Bulk Strings are encoded in the following way:</p>
+        
+        <ul>
+        <li>A &quot;$&quot; byte followed by the number of bytes composing the string (a prefixed length), terminated by CRLF.</li>
+        <li>The actual string data.</li>
+        <li>A final CRLF.</li>
+        </ul>
+        
+        <p>So the string &quot;foobar&quot; is encoded as follows:</p>
+        
+        <pre><code>&quot;$6\r\nfoobar\r\n&quot;&#x000A;</code></pre>
+        
+        <p>When an empty string is just:</p>
+        
+        <pre><code>&quot;$0\r\n\r\n&quot;&#x000A;</code></pre>
+        
+        <p>RESP Bulk Strings can also be used in order to signal non-existence of a value
+        using a special format that is used to represent a Null value. In this special
+        format the length is -1, and there is no data, so a Null is represented as:</p>
+        
+        <pre><code>&quot;$-1\r\n&quot;&#x000A;</code></pre>
+        
+        <p>This is called a <strong>Null Bulk String</strong>.</p>
+        
+        <p>The client library API should not return an empty string, but a nil object,
+        when the server replies with a Null Bulk String.
+        For example a Ruby library should return &#39;nil&#39; while a C library should
+        return NULL (or set a special flag in the reply object), and so forth.</p>
+        
+        <p><a name="array-reply"></a></p>
+        
+        <h2>RESP Arrays</h2>
+        
+        <p>Clients send commands to the Redis server using RESP Arrays. Similarly
+        certain Redis commands returning collections of elements to the client
+        use RESP Arrays are reply type. An example is the <a href="../commands/lrange">LRANGE</a> command that
+        returns elements of a list.</p>
+        
+        <p>RESP Arrays are sent using the following format:</p>
+        
+        <ul>
+        <li>A <code>*</code> character as the first byte, followed by the number of elements in the array as a decimal number, followed by CRLF.</li>
+        <li>An additional RESP type for every element of the Array.</li>
+        </ul>
+        
+        <p>So an empty Array is just the following:</p>
+        
+        <pre><code>&quot;*0\r\n&quot;&#x000A;</code></pre>
+        
+        <p>While an array of two RESP Bulk Strings &quot;foo&quot; and &quot;bar&quot; is encoded as:</p>
+        
+        <pre><code>&quot;*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n&quot;&#x000A;</code></pre>
+        
+        <p>As you can see after the <code>*&lt;count&gt;CRLF</code> part prefixing the array, the other
+        data types composing the array are just concatenated one after the other.
+        For example an Array of three integers is encoded as follows:</p>
+        
+        <pre><code>&quot;*3\r\n:1\r\n:2\r\n:3\r\n&quot;&#x000A;</code></pre>
+        
+        <p>Arrays can contain mixed types, it&#39;s not necessary for the
+        elements to be of the same type. For instance, a list of four
+        integers and a bulk string can be encoded as the follows:</p>
+        
+        <pre><code>*5\r\n&#x000A;:1\r\n&#x000A;:2\r\n&#x000A;:3\r\n&#x000A;:4\r\n&#x000A;$6\r\n&#x000A;foobar\r\n&#x000A;</code></pre>
+        
+        <p>(The reply was split into multiple lines for clarity).</p>
+        
+        <p>The first line the server sent is <code>*5\r\n</code> in order to specify that five
+        replies will follow. Then every reply constituting the items of the
+        Multi Bulk reply are transmitted.</p>
+        
+        <p>The concept of Null Array exists as well, and is an alternative way to
+        specify a Null value (usually the Null Bulk String is used, but for historical
+        reasons we have two formats).</p>
+        
+        <p>For instance when the <a href="../commands/blpop">BLPOP</a> command times out, it returns a Null Array
+        that has a count of <code>-1</code> as in the following example:</p>
+        
+        <pre><code>&quot;*-1\r\n&quot;&#x000A;</code></pre>
+        
+        <p>A client library API should return a null object and not an empty Array when
+        Redis replies with a Null Array. This is necessary to distinguish
+        between an empty list and a different condition (for instance the timeout
+        condition of the <a href="../commands/blpop">BLPOP</a> command).</p>
+        
+        <p>Arrays of arrays are possible in RESP. For example an array of two arrays
+        is encoded as follows:</p>
+        
+        <pre><code>*2\r\n&#x000A;*3\r\n&#x000A;:1\r\n&#x000A;:2\r\n&#x000A;:3\r\n&#x000A;*2\r\n&#x000A;+Foo\r\n&#x000A;-Bar\r\n&#x000A;</code></pre>
+        
+        <p>(The format was split into multiple lines to make it easier to read).</p>
+        
+        <p>The above RESP data type encodes a two elements Array consisting of an Array that contains three Integers 1, 2, 3 and an array of a Simple String and an Error.</p>
+        
+        <h2>Null elements in Arrays</h2>
+        
+        <p>Single elements of an Array may be Null. This is used in Redis replies  in
+        order to signal that this elements are missing and not empty strings. This
+        can happen with the SORT command when used with the GET <em>pattern</em> option
+        when the specified key is missing. Example of an Array reply containing a
+        Null element:</p>
+        
+        <pre><code>*3\r\n&#x000A;$3\r\n&#x000A;foo\r\n&#x000A;$-1\r\n&#x000A;$3\r\n&#x000A;bar\r\n&#x000A;</code></pre>
+        
+        <p>The second element is a Null. The client library should return something
+        like this:</p>
+        
+        <pre><code>[&quot;foo&quot;,nil,&quot;bar&quot;]&#x000A;</code></pre>
+        
+        <p>Note that this is not an exception to what said in the previous sections, but
+        just an example to further specify the protocol.</p>
+        
+        <h2>Sending commands to a Redis Server</h2>
+        
+        <p>Now that you are familiar with the RESP serialization format, writing an
+        implementation of a Redis client library will be easy. We can further specify
+        how the interaction between the client and the server works:</p>
+        
+        <ul>
+        <li>A client sends to the Redis server a RESP Array consisting of just Bulk Strings.</li>
+        <li>A Redis server replies to clients sending any valid RESP data type as reply.</li>
+        </ul>
+        
+        <p>So for example a typical interaction could be the following.</p>
+        
+        <p>The client sends the command <strong>LLEN mylist</strong> in order to get the length of the list stored at key <em>mylist</em>, and the server replies with an Integer reply as in the following example (C: is the client, S: the server).</p>
+        
+        <pre><code>C: *2\r\n&#x000A;C: $4\r\n&#x000A;C: LLEN\r\n&#x000A;C: $6\r\n&#x000A;C: mylist\r\n&#x000A;&#x000A;S: :48293\r\n&#x000A;</code></pre>
+        
+        <p>As usually we separate different parts of the protocol with newlines for simplicity, but the actual interaction is the client sending <code>*2\r\n$4\r\nLLEN\r\n$6\r\nmylist\r\n</code> as a whole.</p>
+        
+        <h2>Multiple commands and pipelining</h2>
+        
+        <p>A client can use the same connection in order to issue multiple commands.
+        Pipelining is supported so multiple commands can be sent with a single
+        write operation by the client, without the need to read the server reply
+        of the previous command before issuing the next one.
+        All the replies can be read at the end.</p>
+        
+        <p>For more information please check our <a href="pipelining">page about Pipelining</a>.</p>
+        
+        <h2>Inline Commands</h2>
+        
+        <p>Sometimes you have only <code>telnet</code> in your hands and you need to send a command
+        to the Redis server. While the Redis protocol is simple to implement it is
+        not ideal to use in interactive sessions, and <code>redis-cli</code> may not always be
+        available. For this reason Redis also accepts commands in a special way that
+        is designed for humans, and is called the <strong>inline command</strong> format.</p>
+        
+        <p>The following is an example of a server/client chat using an inline command
+        (the server chat starts with S:, the client chat with C:)</p>
+        
+        <pre><code>C: PING&#x000A;S: +PONG&#x000A;</code></pre>
+        
+        <p>The following is another example of an inline command returning an integer:</p>
+        
+        <pre><code>C: EXISTS somekey&#x000A;S: :0&#x000A;</code></pre>
+        
+        <p>Basically you simply write space-separated arguments in a telnet session.
+        Since no command starts with <code>*</code> that is instead used in the unified request
+        protocol, Redis is able to detect this condition and parse your command.</p>
+        
+        <h2>High performance parser for the Redis protocol</h2>
+        
+        <p>While the Redis protocol is very human readable and easy to implement it can
+        be implemented with a performance similar to that of a binary protocol.</p>
+        
+        <p>RESP uses prefixed lengths to transfer bulk data, so there is
+        never need to scan the payload for special characters like it happens for
+        instance with JSON, nor to quote the payload that needs to be sent to the
+        server.</p>
+        
+        <p>The Bulk and Multi Bulk lengths can be be processed with code that performs
+        a single operation per character while at the same time scanning for the
+        CR character, like the following C code:</p>
+        
+        <pre><code>#include &lt;stdio.h&gt;&#x000A;&#x000A;int main(void) {&#x000A;    unsigned char *p = &quot;$123\r\n&quot;;&#x000A;    int len = 0;&#x000A;&#x000A;    p++;&#x000A;    while(*p != &#39;\r&#39;) {&#x000A;        len = (len*10)+(*p - &#39;0&#39;);&#x000A;        p++;&#x000A;    }&#x000A;&#x000A;    /* Now p points at &#39;\r&#39;, and the len is in bulk_len. */&#x000A;    printf(&quot;%d\n&quot;, len);&#x000A;    return 0;&#x000A;}&#x000A;</code></pre>
+        
+        <p>After the first CR is identified, it can be skipped along with the following
+        LF without any processing. Then the bulk data can be read using a single
+        read operation that does not inspect the payload in any way. Finally
+        the remaining the CR and LF character are discarded without any processing.</p>
+        
+        <p>While comparable in performance to a binary protocol the Redis protocol is
+        significantly simpler to implement in most very high level languages,
+        reducing the number of bugs in client software.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css?1333128600' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js?1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      SLOWLOG – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/commands/slowlog" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands'>Commands</a>
+          <a href='../clients'>Clients</a>
+          <a href='../documentation'>Documentation</a>
+          <a href='../community'>Community</a>
+          <a href='../download'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support'>Support</a>
+          <a href='../topics/license'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>SLOWLOG</span>
+        <span class='arg'>subcommand</span>
+        <span class='arg'>[argument]</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='bgrewriteaof'>
+                BGREWRITEAOF
+              </a>
+            </li>
+            <li>
+              <a href='bgsave'>
+                BGSAVE
+              </a>
+            </li>
+            <li>
+              <a href='client-getname'>
+                CLIENT GETNAME
+              </a>
+            </li>
+            <li>
+              <a href='client-kill'>
+                CLIENT KILL
+              </a>
+            </li>
+            <li>
+              <a href='client-list'>
+                CLIENT LIST
+              </a>
+            </li>
+            <li>
+              <a href='client-pause'>
+                CLIENT PAUSE
+              </a>
+            </li>
+            <li>
+              <a href='client-setname'>
+                CLIENT SETNAME
+              </a>
+            </li>
+            <li>
+              <a href='cluster-slots'>
+                CLUSTER SLOTS
+              </a>
+            </li>
+            <li>
+              <a href='command'>
+                COMMAND
+              </a>
+            </li>
+            <li>
+              <a href='command-count'>
+                COMMAND COUNT
+              </a>
+            </li>
+            <li>
+              <a href='command-getkeys'>
+                COMMAND GETKEYS
+              </a>
+            </li>
+            <li>
+              <a href='command-info'>
+                COMMAND INFO
+              </a>
+            </li>
+            <li>
+              <a href='config-get'>
+                CONFIG GET
+              </a>
+            </li>
+            <li>
+              <a href='config-resetstat'>
+                CONFIG RESETSTAT
+              </a>
+            </li>
+            <li>
+              <a href='config-rewrite'>
+                CONFIG REWRITE
+              </a>
+            </li>
+            <li>
+              <a href='config-set'>
+                CONFIG SET
+              </a>
+            </li>
+            <li>
+              <a href='dbsize'>
+                DBSIZE
+              </a>
+            </li>
+            <li>
+              <a href='debug-object'>
+                DEBUG OBJECT
+              </a>
+            </li>
+            <li>
+              <a href='debug-segfault'>
+                DEBUG SEGFAULT
+              </a>
+            </li>
+            <li>
+              <a href='flushall'>
+                FLUSHALL
+              </a>
+            </li>
+            <li>
+              <a href='flushdb'>
+                FLUSHDB
+              </a>
+            </li>
+            <li>
+              <a href='info'>
+                INFO
+              </a>
+            </li>
+            <li>
+              <a href='lastsave'>
+                LASTSAVE
+              </a>
+            </li>
+            <li>
+              <a href='monitor'>
+                MONITOR
+              </a>
+            </li>
+            <li>
+              <a href='role'>
+                ROLE
+              </a>
+            </li>
+            <li>
+              <a href='save'>
+                SAVE
+              </a>
+            </li>
+            <li>
+              <a href='shutdown'>
+                SHUTDOWN
+              </a>
+            </li>
+            <li>
+              <a href='slaveof'>
+                SLAVEOF
+              </a>
+            </li>
+            <li>
+              <a href='slowlog'>
+                <strong>SLOWLOG</strong>
+              </a>
+            </li>
+            <li>
+              <a href='sync'>
+                SYNC
+              </a>
+            </li>
+            <li>
+              <a href='time'>
+                TIME
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 2.2.12.</strong></p>
+        </div>
+        <p>This command is used in order to read and reset the Redis slow queries log.</p>
+        
+        <h2>Redis slow log overview</h2>
+        
+        <p>The Redis Slow Log is a system to log queries that exceeded a specified
+        execution time.
+        The execution time does not include I/O operations like talking with the client,
+        sending the reply and so forth, but just the time needed to actually execute the
+        command (this is the only stage of command execution where the thread is blocked
+        and can not serve other requests in the meantime).</p>
+        
+        <p>You can configure the slow log with two parameters: <em>slowlog-log-slower-than</em>
+        tells Redis what is the execution time, in microseconds, to exceed in order for
+        the command to get logged.
+        Note that a negative number disables the slow log, while a value of zero forces
+        the logging of every command.
+        <em>slowlog-max-len</em> is the length of the slow log.
+        The minimum value is zero.
+        When a new command is logged and the slow log is already at its maximum length,
+        the oldest one is removed from the queue of logged commands in order to make
+        space.</p>
+        
+        <p>The configuration can be done by editing <code>redis.conf</code> or while the server is
+        running using the <code>CONFIG GET</code> and <code>CONFIG SET</code> commands.</p>
+        
+        <h2>Reading the slow log</h2>
+        
+        <p>The slow log is accumulated in memory, so no file is written with information
+        about the slow command executions.
+        This makes the slow log remarkably fast at the point that you can enable the
+        logging of all the commands (setting the <em>slowlog-log-slower-than</em> config
+        parameter to zero) with minor performance hit.</p>
+        
+        <p>To read the slow log the <strong>SLOWLOG GET</strong> command is used, that returns every
+        entry in the slow log.
+        It is possible to return only the N most recent entries passing an additional
+        argument to the command (for instance <strong>SLOWLOG GET 10</strong>).</p>
+        
+        <p>Note that you need a recent version of redis-cli in order to read the slow log
+        output, since it uses some features of the protocol that were not formerly
+        implemented in redis-cli (deeply nested multi bulk replies).</p>
+        
+        <h2>Output format</h2>
+        
+        <pre><code>redis 127.0.0.1:6379&gt; slowlog get 2&#x000A;1) 1) (integer) 14&#x000A;   2) (integer) 1309448221&#x000A;   3) (integer) 15&#x000A;   4) 1) &quot;ping&quot;&#x000A;2) 1) (integer) 13&#x000A;   2) (integer) 1309448128&#x000A;   3) (integer) 30&#x000A;   4) 1) &quot;slowlog&quot;&#x000A;      2) &quot;get&quot;&#x000A;      3) &quot;100&quot;&#x000A;</code></pre>
+        
+        <p>Every entry is composed of four fields:</p>
+        
+        <ul>
+        <li>A unique progressive identifier for every slow log entry.</li>
+        <li>The unix timestamp at which the logged command was processed.</li>
+        <li>The amount of time needed for its execution, in microseconds.</li>
+        <li>The array composing the arguments of the command.</li>
+        </ul>
+        
+        <p>The entry&#39;s unique ID can be used in order to avoid processing slow log entries
+        multiple times (for instance you may have a script sending you an email alert
+        for every new slow log entry).</p>
+        
+        <p>The ID is never reset in the course of the Redis server execution, only a server
+        restart will reset it.</p>
+        
+        <h2>Obtaining the current length of the slow log</h2>
+        
+        <p>It is possible to get just the length of the slow log using the command
+        <strong>SLOWLOG LEN</strong>.</p>
+        
+        <h2>Resetting the slow log.</h2>
+        
+        <p>You can reset the slow log using the <strong>SLOWLOG RESET</strong> command.
+        Once deleted the information is lost forever.</p>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_slowlog';
+          var disqus_url = 'http://redis.io/commands/slowlog';
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href='http://disqus.com'>
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="../topics/sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

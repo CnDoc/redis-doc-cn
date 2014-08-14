@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css?1333128600' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js?1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Redis debugging guide – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics debugging'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/topics/debugging" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands'>Commands</a>
+          <a href='../clients'>Clients</a>
+          <a href='../documentation'>Documentation</a>
+          <a href='../community'>Community</a>
+          <a href='../download'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support'>Support</a>
+          <a href='license'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Redis debugging guide</h1>
+        
+        <p>Redis is developed with a great stress on stability: we do our best with
+        every release to make sure you&#39;ll experience a very stable product and no
+        crashes. However even with our best efforts it is impossible to avoid all
+        the critical bugs with 100% of success.</p>
+        
+        <p>When Redis crashes it produces a detailed report of what happened, however
+        sometimes looking at the crash report is not enough, nor it is possible for
+        the Redis core team to reproduce the issue independently: in this scenario we
+        need help from the user that is able to reproduce the issue.</p>
+        
+        <p>This little guide shows how to use GDB to provide all the informations the
+        Redis developers will need to track the bug more easily.</p>
+        
+        <h2>What is GDB?</h2>
+        
+        <p>GDB is the Gnu Debugger: a program that is able to inspect the internal state
+        of another program. Usually tracking and fixing a bug is an exercise in
+        gathering more informations about the state of the program at the moment the
+        bug happens, so GDB is an extremely useful tool.</p>
+        
+        <p>GDB can be used in two ways:</p>
+        
+        <ul>
+        <li>It can attach to a running program and inspect the state of it at runtime.</li>
+        <li>It can inspect the state of a program that already terminated using what is called a <em>core file</em>, that is, the image of the memory at the time the program was running.</li>
+        </ul>
+        
+        <p>From the point of view of investigating Redis bugs we need to use both this
+        GDB modes: the user able to reproduce the bug attaches GDB to his running Redis instance, and when the crash happens, he creates the <code>core</code> file that the in turn the developer will use to inspect the Redis internals at the time of the crash.</p>
+        
+        <p>This way the developer can perform all the inspections in his computer without the help of the user, and the user is free to restart Redis in the production environment.</p>
+        
+        <h2>Compiling Redis without optimizations</h2>
+        
+        <p>By default Redis is compiled with the <code>-O2</code> switch, this means that compiler
+        optimizations are enabled. This makes the Redis executable faster, but at the
+        same time it makes Redis (like any other program) harder to inspect using GDB.</p>
+        
+        <p>It is better to attach GDB to Redis compiled without optimizations using the
+        <code>make noopt</code> command to compile it (instead of just using the plain <code>make</code>
+        command). However if you have an already running Redis in production there is
+        no need to recompile and restart it if this is going to create problems on
+        your side. Even if by a lesser extent GDB still works against executables
+        compiled with optimizations.</p>
+        
+        <p>It is great if you make sure to recompile Redis with <code>make noopt</code> after the
+        first crash, so that the next time it will be simpler to track the issue.</p>
+        
+        <p>You should not be concerned with the loss of performances compiling Redis
+        without optimizations, it is very unlikely that this will cause problems in
+        your environment since it is usually just a matter of a small percentage
+        because Redis is not very CPU-bound (it does a lot of I/O to serve queries).</p>
+        
+        <h2>Attaching GDB to a running process</h2>
+        
+        <p>If you have an already running Redis server, you can attach GDB to it, so that
+        if Redis will crash it will be possible to both inspect the internals and
+        generate a <code>core dump</code> file.</p>
+        
+        <p>After you attach GDB to the Redis process it will continue running as usually without any loss of performance, so this is not a dangerous procedure.</p>
+        
+        <p>In order to attach GDB the first thing you need is the <em>process ID</em> of the running Redis instance (the <em>pid</em> of the process). You can easily obtain it using <code>redis-cli</code>:</p>
+        
+        <pre><code>$ redis-cli info | grep process_id&#x000A;process_id:58414&#x000A;</code></pre>
+        
+        <p>In the above example the process ID is <strong>58414</strong>.</p>
+        
+        <ul>
+        <li>Login into your Redis server.</li>
+        <li>(Optional but recommended) Start <strong>screen</strong> or <strong>tmux</strong> or any other program that will make sure that your GDB session will not be closed if your ssh connection will timeout. If you don&#39;t know what screen is do yourself a favour and <a href="http://www.linuxjournal.com/article/6340">Read this article</a></li>
+        <li><p>Attach GDB to the running Redis server typing:</p>
+        
+        <p>gdb <code>&lt;path-to-redis-executable&gt;</code> <code>&lt;pid&gt;</code></p>
+        
+        <p>For example: gdb /usr/local/bin/redis-server 58414</p></li>
+        </ul>
+        
+        <p>GDB will start and will attach to the running server printing something like the following:</p>
+        
+        <pre><code>Reading symbols for shared libraries + done&#x000A;0x00007fff8d4797e6 in epoll_wait ()&#x000A;(gdb)&#x000A;</code></pre>
+        
+        <ul>
+        <li><p>At this point GDB is attached but <strong>your Redis instance is blocked by GDB</strong>. In order to let the Redis instance continue the execution just type <strong>continue</strong> at the GDB prompt, and press enter.</p>
+        
+        <pre><code>(gdb) continue&#x000A;Continuing.&#x000A;</code></pre></li>
+        <li><p>Done! Now your Redis instance has GDB attached. You can wait for... the next crash :)</p></li>
+        <li><p>Now it&#39;s time to detach your screen / tmux session, if you are running GDB using it, pressing the usual <strong>Ctrl-a a</strong> key combination.</p></li>
+        </ul>
+        
+        <h2>After the crash</h2>
+        
+        <p>Redis has a command to simulate a segmentation fault (in other words a bad
+        crash) using the <code>DEBUG SEGFAULT</code> command (don&#39;t use it against a real production instance of course ;). So I&#39;ll use this command to crash my instance to show what happens in the GDB side:</p>
+        
+        <pre><code>(gdb) continue&#x000A;Continuing.&#x000A;&#x000A;Program received signal EXC_BAD_ACCESS, Could not access memory.&#x000A;Reason: KERN_INVALID_ADDRESS at address: 0xffffffffffffffff&#x000A;debugCommand (c=0x7ffc32005000) at debug.c:220&#x000A;220         *((char*)-1) = &#39;x&#39;;&#x000A;</code></pre>
+        
+        <p>As you can see GDB detected that Redis crashed, and was able to show me
+        even the file name and line number causing the crash. This is already much
+        better than the Redis crash report back trace (containing just function
+        names and binary offsets).</p>
+        
+        <h2>Obtaining the stack trace</h2>
+        
+        <p>The first thing to do is to obtain a full stack trace with GDB. This is as
+        simple as using the <strong>bt</strong> command: (that is a short for backtrace):</p>
+        
+        <pre><code>(gdb) bt&#x000A;#0  debugCommand (c=0x7ffc32005000) at debug.c:220&#x000A;#1  0x000000010d246d63 in call (c=0x7ffc32005000) at redis.c:1163&#x000A;#2  0x000000010d247290 in processCommand (c=0x7ffc32005000) at redis.c:1305&#x000A;#3  0x000000010d251660 in processInputBuffer (c=0x7ffc32005000) at networking.c:959&#x000A;#4  0x000000010d251872 in readQueryFromClient (el=0x0, fd=5, privdata=0x7fff76f1c0b0, mask=220924512) at networking.c:1021&#x000A;#5  0x000000010d243523 in aeProcessEvents (eventLoop=0x7fff6ce408d0, flags=220829559) at ae.c:352&#x000A;#6  0x000000010d24373b in aeMain (eventLoop=0x10d429ef0) at ae.c:397&#x000A;#7  0x000000010d2494ff in main (argc=1, argv=0x10d2b2900) at redis.c:2046&#x000A;</code></pre>
+        
+        <p>This shows the backtrace, but we also want to dump the processor registers using the <strong>info registers</strong> command:</p>
+        
+        <pre><code>(gdb) info registers&#x000A;rax            0x0  0&#x000A;rbx            0x7ffc32005000   140721147367424&#x000A;rcx            0x10d2b0a60  4515891808&#x000A;rdx            0x7fff76f1c0b0   140735188943024&#x000A;rsi            0x10d299777  4515796855&#x000A;rdi            0x0  0&#x000A;rbp            0x7fff6ce40730   0x7fff6ce40730&#x000A;rsp            0x7fff6ce40650   0x7fff6ce40650&#x000A;r8             0x4f26b3f7   1327936503&#x000A;r9             0x7fff6ce40718   140735020271384&#x000A;r10            0x81 129&#x000A;r11            0x10d430398  4517462936&#x000A;r12            0x4b7c04f8babc0  1327936503000000&#x000A;r13            0x10d3350a0  4516434080&#x000A;r14            0x10d42d9f0  4517452272&#x000A;r15            0x10d430398  4517462936&#x000A;rip            0x10d26cfd4  0x10d26cfd4 &lt;debugCommand+68&gt;&#x000A;eflags         0x10246  66118&#x000A;cs             0x2b 43&#x000A;ss             0x0  0&#x000A;ds             0x0  0&#x000A;es             0x0  0&#x000A;fs             0x0  0&#x000A;gs             0x0  0&#x000A;</code></pre>
+        
+        <p>Please <strong>make sure to include</strong> both this outputs in your bug report.</p>
+        
+        <h2>Obtaining the core file</h2>
+        
+        <p>The next step is to generate the core dump, that is the image of the memory of the running Redis process. This is performed using the <code>gcore</code> command:</p>
+        
+        <pre><code>(gdb) gcore&#x000A;Saved corefile core.58414&#x000A;</code></pre>
+        
+        <p>Now you have the core dump to send to the Redis developer, but <strong>it is important to understand</strong> that this happens to contain all the data that was inside the Redis instance at the time of the crash: Redis developers will make sure to don&#39;t share the content with any other, and will delete the file as soon as it is no longer used for debugging purposes, but you are warned that sending the core file you are sending your data.</p>
+        
+        <p>If there are sensible stuff in the data set we suggest sending the dump directly to Salvatore Sanfilippo (that is the guy writing this doc) at the email address <strong>antirez at gmail dot com</strong>.</p>
+        
+        <h2>What to send to developers</h2>
+        
+        <p>Finally you can send everything to the Redis core team:</p>
+        
+        <ul>
+        <li>The Redis executable you are using.</li>
+        <li>The stack trace produced by the <strong>bt</strong> command, and the registers dump.</li>
+        <li>The core file you generated with gdb.</li>
+        <li>Informations about the operating system and GCC version, and Redis version you are using.</li>
+        </ul>
+        
+        <h2>Thank you</h2>
+        
+        <p>Your help is extremely important! Many issues can only be tracked this way, thanks! It is also possible that helping Redis debugging you&#39;ll be among the winners of the next <a href="http://antirez.com/post/redis-moka-awards-2011.html">Redis Moka Award</a>.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>
