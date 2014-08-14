@@ -11,19 +11,6 @@
     <title>
       DEL – Redis
     </title>
-    <script type='text/javascript'>
-      //<![CDATA[
-         var _gaq = _gaq || [];
-         _gaq.push(['_setAccount', 'UA-20243082-1']);
-         _gaq.push(['_trackPageview']);
-        
-         (function() {
-           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-         })();
-      //]]>
-    </script>
   </head>
   <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 60px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 70px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/commands/del.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
     <header>
@@ -51,7 +38,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -162,17 +149,16 @@
           </ul>
         </aside>
         <div class='metadata'>
-          <p><strong>Available since 1.0.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(N) where N is the number of keys that will be removed. When a key to remove holds a value other than a string, the individual complexity for this key is O(M) where M is the number of elements in the list, set, sorted set or hash. Removing a single key that holds a string value is O(1).</p>
+          <p><strong>始于since 1.0.0.可用</strong></p>
+          <p><strong>时间复杂度:</strong>O(N)， N 为被删除的 key 的数量。删除单个字符串类型的 key ，时间复杂度为O(1)。删除单个列表、集合、有序集合或哈希表类型的 key ，时间复杂度为O(M)， M 为以上数据结构内的元素数量。</p>
         </div>
-        <p>Removes the specified keys.
-        A key is ignored if it does not exist.</p>
+        <p>删除给定的一个或多个 key 。不存在的 key 会被忽略。</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
-        <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>: The number of keys that were removed.</p>
+        <p><a href="../topics/protocol.html#integer-reply">返回Integer</a>: 被删除 key 的数量。</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='17b77a4a5991a475665642751e92c36b'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>
