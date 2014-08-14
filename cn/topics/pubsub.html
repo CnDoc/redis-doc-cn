@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Pub/Sub – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics pubsub'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/topics/pubsub.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='../commands/psubscribe.html'>PSUBSCRIBE</a>
+            </li>
+            <li>
+              <a href='../commands/publish.html'>PUBLISH</a>
+            </li>
+            <li>
+              <a href='../commands/pubsub.html'>PUBSUB</a>
+            </li>
+            <li>
+              <a href='../commands/punsubscribe.html'>PUNSUBSCRIBE</a>
+            </li>
+            <li>
+              <a href='../commands/subscribe.html'>SUBSCRIBE</a>
+            </li>
+            <li>
+              <a href='../commands/unsubscribe.html'>UNSUBSCRIBE</a>
+            </li>
+          </ul>
+        </aside>
+        <h1>Pub/Sub</h1>
+        
+        <p><a href="../commands/subscribe.html">SUBSCRIBE</a>, <a href="../commands/unsubscribe.html">UNSUBSCRIBE</a> and <a href="../commands/publish.html">PUBLISH</a>
+        implement the <a href="http://en.wikipedia.org/wiki/Publish/subscribe">Publish/Subscribe messaging
+        paradigm</a> where
+        (citing Wikipedia) senders (publishers) are not programmed to send
+        their messages to specific receivers (subscribers). Rather, published
+        messages are characterized into channels, without knowledge of what (if
+        any) subscribers there may be. Subscribers express interest in one or
+        more channels, and only receive messages that are of interest, without
+        knowledge of what (if any) publishers there are. This decoupling of
+        publishers and subscribers can allow for greater scalability and a more
+        dynamic network topology.</p>
+        
+        <p>For instance in order to subscribe to channels <code>foo</code> and <code>bar</code> the
+        client issues a <a href="../commands/subscribe.html">SUBSCRIBE</a> providing the names of the channels:</p>
+        
+        <pre><code>SUBSCRIBE foo bar&#x000A;</code></pre>
+        
+        <p>Messages sent by other clients to these channels will be pushed by Redis
+        to all the subscribed clients.</p>
+        
+        <p>A client subscribed to one or more channels should not issue commands,
+        although it can subscribe and unsubscribe to and from other channels.
+        The reply of the <a href="../commands/subscribe.html">SUBSCRIBE</a> and <a href="../commands/unsubscribe.html">UNSUBSCRIBE</a> operations are sent in
+        the form of messages, so that the client can just read a coherent stream
+        of messages where the first element indicates the type of message.</p>
+        
+        <h2>Format of pushed messages</h2>
+        
+        <p>A message is a <a href="protocol.html#array-reply">Array reply</a> with three elements.</p>
+        
+        <p>The first element is the kind of message:</p>
+        
+        <ul>
+        <li><p><code>subscribe</code>: means that we successfully subscribed to the channel
+        given as the second element in the reply. The third argument represents
+        the number of channels we are currently subscribed to.</p></li>
+        <li><p><code>unsubscribe</code>: means that we successfully unsubscribed from the
+        channel given as second element in the reply. The third argument
+        represents the number of channels we are currently subscribed to. When
+        the last argument is zero, we are no longer subscribed to any channel,
+        and the client can issue any kind of Redis command as we are outside the
+        Pub/Sub state.</p></li>
+        <li><p><code>message</code>: it is a message received as result of a <a href="../commands/publish.html">PUBLISH</a> command
+        issued by another client. The second element is the name of the
+        originating channel, and the third argument is the actual message
+        payload.</p></li>
+        </ul>
+        
+        <h2>Database &amp; Scoping</h2>
+        
+        <p>Pub/Sub has no relation to the key space.  It was made to not interfere with
+        it on any level, including database numbers.</p>
+        
+        <p>Publishing on db 10, will be heard on by a subscriber on db 1.</p>
+        
+        <p>If you need scoping of some kind, prefix the channels with the name of the
+        environment (test, staging, production, ...).</p>
+        
+        <h2>Wire protocol example</h2>
+        
+        <pre><code>SUBSCRIBE first second&#x000A;*3&#x000A;$9&#x000A;subscribe&#x000A;$5&#x000A;first&#x000A;:1&#x000A;*3&#x000A;$9&#x000A;subscribe&#x000A;$6&#x000A;second&#x000A;:2&#x000A;</code></pre>
+        
+        <p>At this point, from another client we issue a <a href="../commands/publish.html">PUBLISH</a> operation
+        against the channel named <code>second</code>:</p>
+        
+        <pre><code>&gt; PUBLISH second Hello&#x000A;</code></pre>
+        
+        <p>This is what the first client receives:</p>
+        
+        <pre><code>*3&#x000A;$7&#x000A;message&#x000A;$6&#x000A;second&#x000A;$5&#x000A;Hello&#x000A;</code></pre>
+        
+        <p>Now the client unsubscribes itself from all the channels using the
+        <a href="../commands/unsubscribe.html">UNSUBSCRIBE</a> command without additional arguments:</p>
+        
+        <pre><code>UNSUBSCRIBE&#x000A;*3&#x000A;$11&#x000A;unsubscribe&#x000A;$6&#x000A;second&#x000A;:1&#x000A;*3&#x000A;$11&#x000A;unsubscribe&#x000A;$5&#x000A;first&#x000A;:0&#x000A;</code></pre>
+        
+        <h2>Pattern-matching subscriptions</h2>
+        
+        <p>The Redis Pub/Sub implementation supports pattern matching. Clients may
+        subscribe to glob-style patterns in order to receive all the messages
+        sent to channel names matching a given pattern.</p>
+        
+        <p>For instance:</p>
+        
+        <pre><code>PSUBSCRIBE news.*&#x000A;</code></pre>
+        
+        <p>Will receive all the messages sent to the channel <code>news.art.figurative</code>,
+        <code>news.music.jazz</code>, etc.  All the glob-style patterns are valid, so
+        multiple wildcards are supported.</p>
+        
+        <pre><code>PUNSUBSCRIBE news.*&#x000A;</code></pre>
+        
+        <p>Will then unsubscribe the client from that pattern.  No other subscriptions
+        will be affected by this call.</p>
+        
+        <p>Messages received as a result of pattern matching are sent in a
+        different format:</p>
+        
+        <ul>
+        <li>The type of the message is <code>pmessage</code>: it is a message received
+        as result of a <a href="../commands/publish.html">PUBLISH</a> command issued by another client, matching
+        a pattern-matching subscription. The second element is the original
+        pattern matched, the third element is the name of the originating
+        channel, and the last element the actual message payload.</li>
+        </ul>
+        
+        <p>Similarly to <a href="../commands/subscribe.html">SUBSCRIBE</a> and <a href="../commands/unsubscribe.html">UNSUBSCRIBE</a>, <a href="../commands/psubscribe.html">PSUBSCRIBE</a> and
+        <a href="../commands/punsubscribe.html">PUNSUBSCRIBE</a> commands are acknowledged by the system sending a message
+        of type <code>psubscribe</code> and <code>punsubscribe</code> using the same format as the
+        <code>subscribe</code> and <code>unsubscribe</code> message format.</p>
+        
+        <h2>Messages matching both a pattern and a channel subscription</h2>
+        
+        <p>A client may receive a single message multiple times if it&#39;s subscribed
+        to multiple patterns matching a published message, or if it is
+        subscribed to both patterns and channels matching the message. Like in
+        the following example:</p>
+        
+        <pre><code>SUBSCRIBE foo&#x000A;PSUBSCRIBE f*&#x000A;</code></pre>
+        
+        <p>In the above example, if a message is sent to channel <code>foo</code>, the client
+        will receive two messages: one of type <code>message</code> and one of type
+        <code>pmessage</code>.</p>
+        
+        <h2>The meaning of the subscription count with pattern matching</h2>
+        
+        <p>In <code>subscribe</code>, <code>unsubscribe</code>, <code>psubscribe</code> and <code>punsubscribe</code>
+        message types, the last argument is the count of subscriptions still
+        active. This number is actually the total number of channels and
+        patterns the client is still subscribed to. So the client will exit
+        the Pub/Sub state only when this count drops to zero as a result of
+        unsubscription from all the channels and patterns.</p>
+        
+        <h2>Programming example</h2>
+        
+        <p>Pieter Noordhuis provided a great example using EventMachine
+        and Redis to create <a href="https://gist.github.com/348262">a multi user high performance web
+        chat</a>.</p>
+        
+        <h2>Client library implementation hints</h2>
+        
+        <p>Because all the messages received contain the original subscription
+        causing the message delivery (the channel in the case of message type,
+        and the original pattern in the case of pmessage type) client libraries
+        may bind the original subscription to callbacks (that can be anonymous
+        functions, blocks, function pointers), using an hash table.</p>
+        
+        <p>When a message is received an <span class="math">O(1) </span>lookup can be done in order to
+        deliver the message to the registered callback.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

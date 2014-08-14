@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Request/Response protocols and RTT – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics pipelining'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/topics/pipelining.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Request/Response protocols and RTT</h1>
+        
+        <p>Redis is a TCP server using the client-server model and what is called a <em>Request/Response</em> protocol.</p>
+        
+        <p>This means that usually a request is accomplished with the following steps:</p>
+        
+        <ul>
+        <li>The client sends a query to the server, and reads from the socket, usually in a blocking way, for the server response.</li>
+        <li>The server processes the command and sends the response back to the client.</li>
+        </ul>
+        
+        <p>So for instance a four commands sequence is something like this:</p>
+        
+        <ul>
+        <li><em>Client:</em> INCR X</li>
+        <li><em>Server:</em> 1</li>
+        <li><em>Client:</em> INCR X</li>
+        <li><em>Server:</em> 2</li>
+        <li><em>Client:</em> INCR X</li>
+        <li><em>Server:</em> 3</li>
+        <li><em>Client:</em> INCR X</li>
+        <li><em>Server:</em> 4</li>
+        </ul>
+        
+        <p>Clients and Servers are connected via a networking link. Such a link can be very fast (a loopback interface) or very slow (a connection established over the Internet with many hops between the two hosts). Whatever the network latency is, there is a time for the packets to travel from the client to the server, and back from the server to the client to carry the reply.</p>
+        
+        <p>This time is called RTT (Round Trip Time). It is very easy to see how this can affect the performances when a client needs to perform many requests in a row (for instance adding many elements to the same list, or populating a database with many keys). For instance if the RTT time is 250 milliseconds (in the case of a very slow link over the Internet), even if the server is able to process 100k requests per second, we&#39;ll be able to process at max four requests per second.</p>
+        
+        <p>If the interface used is a loopback interface, the RTT is much shorter (for instance my host reports 0,044 milliseconds pinging 127.0.0.1), but it is still a lot if you need to perform many writes in a row.</p>
+        
+        <p>Fortunately there is a way to improve this use cases.</p>
+        
+        <h2>Redis Pipelining</h2>
+        
+        <p>A Request/Response server can be implemented so that it is able to process new requests even if the client didn&#39;t already read the old responses. This way it is possible to send <em>multiple commands</em> to the server without waiting for the replies at all, and finally read the replies in a single step.</p>
+        
+        <p>This is called pipelining, and is a technique widely in use since many decades. For instance many POP3 protocol implementations already supported this feature, dramatically speeding up the process of downloading new emails from the server.</p>
+        
+        <p>Redis supports pipelining since the very early days, so whatever version you are running, you can use pipelining with Redis. This is an example using the raw netcat utility:</p>
+        
+        <pre><code>$ (echo -en &quot;PING\r\nPING\r\nPING\r\n&quot;; sleep 1) | nc localhost 6379&#x000A;+PONG&#x000A;+PONG&#x000A;+PONG&#x000A;</code></pre>
+        
+        <p>This time we are not paying the cost of RTT for every call, but just one time for the three commands.</p>
+        
+        <p>To be very explicit, with pipelining the order of operations of our very first example will be the following:</p>
+        
+        <ul>
+        <li><em>Client:</em> INCR X</li>
+        <li><em>Client:</em> INCR X</li>
+        <li><em>Client:</em> INCR X</li>
+        <li><em>Client:</em> INCR X</li>
+        <li><em>Server:</em> 1</li>
+        <li><em>Server:</em> 2</li>
+        <li><em>Server:</em> 3</li>
+        <li><em>Server:</em> 4</li>
+        </ul>
+        
+        <p><strong>IMPORTANT NOTE</strong>: while the client sends commands using pipelining, the server will be forced to queue the replies, using memory. So if you need to send many many commands with pipelining it&#39;s better to send this commands up to a given reasonable number, for instance 10k commands, read the replies, and send again other 10k commands and so forth. The speed will be nearly the same, but the additional memory used will be at max the amount needed to queue the replies for this 10k commands.</p>
+        
+        <h2>Some benchmark</h2>
+        
+        <p>In the following benchmark we&#39;ll use the Redis Ruby client, supporting pipelining, to test the speed improvement due to pipelining:</p>
+        
+        <pre><code>require &#39;rubygems&#39;&#x000A;require &#39;redis&#39;&#x000A;&#x000A;def bench(descr)&#x000A;    start = Time.now&#x000A;    yield&#x000A;    puts &quot;#{descr} #{Time.now-start} seconds&quot;&#x000A;end&#x000A;&#x000A;def without_pipelining&#x000A;    r = Redis.new&#x000A;    10000.times {&#x000A;        r.ping&#x000A;    }&#x000A;end&#x000A;&#x000A;def with_pipelining&#x000A;    r = Redis.new&#x000A;    r.pipelined {&#x000A;        10000.times {&#x000A;            r.ping&#x000A;        }&#x000A;    }&#x000A;end&#x000A;&#x000A;bench(&quot;without pipelining&quot;) {&#x000A;    without_pipelining&#x000A;}&#x000A;bench(&quot;with pipelining&quot;) {&#x000A;    with_pipelining&#x000A;}&#x000A;</code></pre>
+        
+        <p>Running the above simple script will provide this figures in my Mac OS X system, running over the loopback interface, where pipelining will provide the smallest improvement as the RTT is already pretty low:</p>
+        
+        <pre><code>without pipelining 1.185238 seconds&#x000A;with pipelining 0.250783 seconds&#x000A;</code></pre>
+        
+        <p>As you can see using pipelining we improved the transfer by a factor of five.</p>
+        
+        <h2>Pipelining VS Scripting</h2>
+        
+        <p>Using <a href="../commands/eval.html">Redis scripting</a> (available in Redis version 2.6 or greater) a number of use cases for pipelining can be addressed more efficiently using scripts that perform a lot of the work needed server side. A big advantage of scripting is that it is able to both read and write data with minimal latency, making operations like <em>read, compute, write</em> very fast (pipelining can&#39;t help in this scenario since the client needs the reply of the read command before it can call the write command).</p>
+        
+        <p>Sometimes the application may also want to send <a href="../commands/eval.html">EVAL</a> or <a href="../commands/evalsha.html">EVALSHA</a> commands in a pipeline. This is entirely possible and Redis explicitly supports it with the <a href="../commands/script-load.html">SCRIPT LOAD</a> command (it guarantees that <a href="../commands/evalsha.html">EVALSHA</a> can be called without the risk of failing).</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

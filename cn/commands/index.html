@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Command reference – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/commands/index.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='../topics/license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <section id='commands'>
+      <nav>
+        <a href='index.html#'>All</a>
+        <a href='index.html#generic'>Keys</a>
+        <a href='index.html#string'>Strings</a>
+        <a href='index.html#hash'>Hashes</a>
+        <a href='index.html#list'>Lists</a>
+        <a href='index.html#set'>Sets</a>
+        <a href='index.html#sorted_set'>Sorted Sets</a>
+        <a href='index.html#hyperloglog'>HyperLogLog</a>
+        <a href='index.html#pubsub'>Pub/Sub</a>
+        <a href='index.html#transactions'>Transactions</a>
+        <a href='index.html#scripting'>Scripting</a>
+        <a href='index.html#connection'>Connection</a>
+        <a href='index.html#server'>Server</a>
+      </nav>
+      <ul>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='append.html'>APPEND</a>
+            <span class='args'>
+              key
+              value
+            </span>
+          </span>
+          <span class='summary'>Append a value to a key</span>
+        </li>
+        <li data-group='connection'>
+          <span class='command'>
+            <a href='auth.html'>AUTH</a>
+            <span class='args'>
+              password
+            </span>
+          </span>
+          <span class='summary'>Authenticate to the server</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='bgrewriteaof.html'>BGREWRITEAOF</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Asynchronously rewrite the append-only file</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='bgsave.html'>BGSAVE</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Asynchronously save the dataset to disk</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='bitcount.html'>BITCOUNT</a>
+            <span class='args'>
+              key
+              start end [start end ...]
+            </span>
+          </span>
+          <span class='summary'>Count set bits in a string</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='bitop.html'>BITOP</a>
+            <span class='args'>
+              operation
+              destkey
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Perform bitwise operations between strings</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='bitpos.html'>BITPOS</a>
+            <span class='args'>
+              key
+              bit
+              [start]
+              [end]
+            </span>
+          </span>
+          <span class='summary'>Find first bit set or clear in a string</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='blpop.html'>BLPOP</a>
+            <span class='args'>
+              key [key ...]
+              timeout
+            </span>
+          </span>
+          <span class='summary'>Remove and get the first element in a list, or block until one is available</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='brpop.html'>BRPOP</a>
+            <span class='args'>
+              key [key ...]
+              timeout
+            </span>
+          </span>
+          <span class='summary'>Remove and get the last element in a list, or block until one is available</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='brpoplpush.html'>BRPOPLPUSH</a>
+            <span class='args'>
+              source
+              destination
+              timeout
+            </span>
+          </span>
+          <span class='summary'>Pop a value from a list, push it to another list and return it; or block until one is available</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='client-kill.html'>CLIENT KILL</a>
+            <span class='args'>
+              [ip:port]
+              [ID client-id]
+              [TYPE normal|slave|pubsub]
+              [ADDR ip:port]
+              [SKIPME yes/no]
+            </span>
+          </span>
+          <span class='summary'>Kill the connection of a client</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='client-list.html'>CLIENT LIST</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Get the list of client connections</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='client-getname.html'>CLIENT GETNAME</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Get the current connection name</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='client-pause.html'>CLIENT PAUSE</a>
+            <span class='args'>
+              timeout
+            </span>
+          </span>
+          <span class='summary'>Stop processing commands from clients for some time</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='client-setname.html'>CLIENT SETNAME</a>
+            <span class='args'>
+              connection-name
+            </span>
+          </span>
+          <span class='summary'>Set the current connection name</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='cluster-slots.html'>CLUSTER SLOTS</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Get array of Cluster slot to node mappings</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='command.html'>COMMAND</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Get array of Redis command details</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='command-count.html'>COMMAND COUNT</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Get total number of Redis commands</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='command-getkeys.html'>COMMAND GETKEYS</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Extract keys given a full Redis command</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='command-info.html'>COMMAND INFO</a>
+            <span class='args'>
+              command-name [command-name ...]
+            </span>
+          </span>
+          <span class='summary'>Get array of specific Redis command details</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='config-get.html'>CONFIG GET</a>
+            <span class='args'>
+              parameter
+            </span>
+          </span>
+          <span class='summary'>Get the value of a configuration parameter</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='config-rewrite.html'>CONFIG REWRITE</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Rewrite the configuration file with the in memory configuration</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='config-set.html'>CONFIG SET</a>
+            <span class='args'>
+              parameter
+              value
+            </span>
+          </span>
+          <span class='summary'>Set a configuration parameter to the given value</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='config-resetstat.html'>CONFIG RESETSTAT</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Reset the stats returned by INFO</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='dbsize.html'>DBSIZE</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Return the number of keys in the selected database</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='debug-object.html'>DEBUG OBJECT</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get debugging information about a key</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='debug-segfault.html'>DEBUG SEGFAULT</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Make the server crash</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='decr.html'>DECR</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Decrement the integer value of a key by one</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='decrby.html'>DECRBY</a>
+            <span class='args'>
+              key
+              decrement
+            </span>
+          </span>
+          <span class='summary'>Decrement the integer value of a key by the given number</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='del.html'>DEL</a>
+            <span class='args'>
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Delete a key</span>
+        </li>
+        <li data-group='transactions'>
+          <span class='command'>
+            <a href='discard.html'>DISCARD</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Discard all commands issued after MULTI</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='dump.html'>DUMP</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Return a serialized version of the value stored at the specified key.</span>
+        </li>
+        <li data-group='connection'>
+          <span class='command'>
+            <a href='echo.html'>ECHO</a>
+            <span class='args'>
+              message
+            </span>
+          </span>
+          <span class='summary'>Echo the given string</span>
+        </li>
+        <li data-group='scripting'>
+          <span class='command'>
+            <a href='eval.html'>EVAL</a>
+            <span class='args'>
+              script
+              numkeys
+              key [key ...]
+              arg [arg ...]
+            </span>
+          </span>
+          <span class='summary'>Execute a Lua script server side</span>
+        </li>
+        <li data-group='scripting'>
+          <span class='command'>
+            <a href='evalsha.html'>EVALSHA</a>
+            <span class='args'>
+              sha1
+              numkeys
+              key [key ...]
+              arg [arg ...]
+            </span>
+          </span>
+          <span class='summary'>Execute a Lua script server side</span>
+        </li>
+        <li data-group='transactions'>
+          <span class='command'>
+            <a href='exec.html'>EXEC</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Execute all commands issued after MULTI</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='exists.html'>EXISTS</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Determine if a key exists</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='expire.html'>EXPIRE</a>
+            <span class='args'>
+              key
+              seconds
+            </span>
+          </span>
+          <span class='summary'>Set a key's time to live in seconds</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='expireat.html'>EXPIREAT</a>
+            <span class='args'>
+              key
+              timestamp
+            </span>
+          </span>
+          <span class='summary'>Set the expiration for a key as a UNIX timestamp</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='flushall.html'>FLUSHALL</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Remove all keys from all databases</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='flushdb.html'>FLUSHDB</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Remove all keys from the current database</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='get.html'>GET</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get the value of a key</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='getbit.html'>GETBIT</a>
+            <span class='args'>
+              key
+              offset
+            </span>
+          </span>
+          <span class='summary'>Returns the bit value at offset in the string value stored at key</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='getrange.html'>GETRANGE</a>
+            <span class='args'>
+              key
+              start
+              end
+            </span>
+          </span>
+          <span class='summary'>Get a substring of the string stored at a key</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='getset.html'>GETSET</a>
+            <span class='args'>
+              key
+              value
+            </span>
+          </span>
+          <span class='summary'>Set the string value of a key and return its old value</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hdel.html'>HDEL</a>
+            <span class='args'>
+              key
+              field [field ...]
+            </span>
+          </span>
+          <span class='summary'>Delete one or more hash fields</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hexists.html'>HEXISTS</a>
+            <span class='args'>
+              key
+              field
+            </span>
+          </span>
+          <span class='summary'>Determine if a hash field exists</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hget.html'>HGET</a>
+            <span class='args'>
+              key
+              field
+            </span>
+          </span>
+          <span class='summary'>Get the value of a hash field</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hgetall.html'>HGETALL</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get all the fields and values in a hash</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hincrby.html'>HINCRBY</a>
+            <span class='args'>
+              key
+              field
+              increment
+            </span>
+          </span>
+          <span class='summary'>Increment the integer value of a hash field by the given number</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hincrbyfloat.html'>HINCRBYFLOAT</a>
+            <span class='args'>
+              key
+              field
+              increment
+            </span>
+          </span>
+          <span class='summary'>Increment the float value of a hash field by the given amount</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hkeys.html'>HKEYS</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get all the fields in a hash</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hlen.html'>HLEN</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get the number of fields in a hash</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hmget.html'>HMGET</a>
+            <span class='args'>
+              key
+              field [field ...]
+            </span>
+          </span>
+          <span class='summary'>Get the values of all the given hash fields</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hmset.html'>HMSET</a>
+            <span class='args'>
+              key
+              field value [field value ...]
+            </span>
+          </span>
+          <span class='summary'>Set multiple hash fields to multiple values</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hset.html'>HSET</a>
+            <span class='args'>
+              key
+              field
+              value
+            </span>
+          </span>
+          <span class='summary'>Set the string value of a hash field</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hsetnx.html'>HSETNX</a>
+            <span class='args'>
+              key
+              field
+              value
+            </span>
+          </span>
+          <span class='summary'>Set the value of a hash field, only if the field does not exist</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hvals.html'>HVALS</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get all the values in a hash</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='incr.html'>INCR</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Increment the integer value of a key by one</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='incrby.html'>INCRBY</a>
+            <span class='args'>
+              key
+              increment
+            </span>
+          </span>
+          <span class='summary'>Increment the integer value of a key by the given amount</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='incrbyfloat.html'>INCRBYFLOAT</a>
+            <span class='args'>
+              key
+              increment
+            </span>
+          </span>
+          <span class='summary'>Increment the float value of a key by the given amount</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='info.html'>INFO</a>
+            <span class='args'>
+              [section]
+            </span>
+          </span>
+          <span class='summary'>Get information and statistics about the server</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='keys.html'>KEYS</a>
+            <span class='args'>
+              pattern
+            </span>
+          </span>
+          <span class='summary'>Find all keys matching the given pattern</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='lastsave.html'>LASTSAVE</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Get the UNIX time stamp of the last successful save to disk</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='lindex.html'>LINDEX</a>
+            <span class='args'>
+              key
+              index
+            </span>
+          </span>
+          <span class='summary'>Get an element from a list by its index</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='linsert.html'>LINSERT</a>
+            <span class='args'>
+              key
+              BEFORE|AFTER
+              pivot
+              value
+            </span>
+          </span>
+          <span class='summary'>Insert an element before or after another element in a list</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='llen.html'>LLEN</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get the length of a list</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='lpop.html'>LPOP</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Remove and get the first element in a list</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='lpush.html'>LPUSH</a>
+            <span class='args'>
+              key
+              value [value ...]
+            </span>
+          </span>
+          <span class='summary'>Prepend one or multiple values to a list</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='lpushx.html'>LPUSHX</a>
+            <span class='args'>
+              key
+              value
+            </span>
+          </span>
+          <span class='summary'>Prepend a value to a list, only if the list exists</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='lrange.html'>LRANGE</a>
+            <span class='args'>
+              key
+              start
+              stop
+            </span>
+          </span>
+          <span class='summary'>Get a range of elements from a list</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='lrem.html'>LREM</a>
+            <span class='args'>
+              key
+              count
+              value
+            </span>
+          </span>
+          <span class='summary'>Remove elements from a list</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='lset.html'>LSET</a>
+            <span class='args'>
+              key
+              index
+              value
+            </span>
+          </span>
+          <span class='summary'>Set the value of an element in a list by its index</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='ltrim.html'>LTRIM</a>
+            <span class='args'>
+              key
+              start
+              stop
+            </span>
+          </span>
+          <span class='summary'>Trim a list to the specified range</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='mget.html'>MGET</a>
+            <span class='args'>
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Get the values of all the given keys</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='migrate.html'>MIGRATE</a>
+            <span class='args'>
+              host
+              port
+              key
+              destination-db
+              timeout
+              [COPY]
+              [REPLACE]
+            </span>
+          </span>
+          <span class='summary'>Atomically transfer a key from a Redis instance to another one.</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='monitor.html'>MONITOR</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Listen for all requests received by the server in real time</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='move.html'>MOVE</a>
+            <span class='args'>
+              key
+              db
+            </span>
+          </span>
+          <span class='summary'>Move a key to another database</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='mset.html'>MSET</a>
+            <span class='args'>
+              key value [key value ...]
+            </span>
+          </span>
+          <span class='summary'>Set multiple keys to multiple values</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='msetnx.html'>MSETNX</a>
+            <span class='args'>
+              key value [key value ...]
+            </span>
+          </span>
+          <span class='summary'>Set multiple keys to multiple values, only if none of the keys exist</span>
+        </li>
+        <li data-group='transactions'>
+          <span class='command'>
+            <a href='multi.html'>MULTI</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Mark the start of a transaction block</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='object.html'>OBJECT</a>
+            <span class='args'>
+              subcommand
+              [arguments [arguments ...]]
+            </span>
+          </span>
+          <span class='summary'>Inspect the internals of Redis objects</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='persist.html'>PERSIST</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Remove the expiration from a key</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='pexpire.html'>PEXPIRE</a>
+            <span class='args'>
+              key
+              milliseconds
+            </span>
+          </span>
+          <span class='summary'>Set a key's time to live in milliseconds</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='pexpireat.html'>PEXPIREAT</a>
+            <span class='args'>
+              key
+              milliseconds-timestamp
+            </span>
+          </span>
+          <span class='summary'>Set the expiration for a key as a UNIX timestamp specified in milliseconds</span>
+        </li>
+        <li data-group='hyperloglog'>
+          <span class='command'>
+            <a href='pfadd.html'>PFADD</a>
+            <span class='args'>
+              key
+              element [element ...]
+            </span>
+          </span>
+          <span class='summary'>Adds the specified elements to the specified HyperLogLog.</span>
+        </li>
+        <li data-group='hyperloglog'>
+          <span class='command'>
+            <a href='pfcount.html'>PFCOUNT</a>
+            <span class='args'>
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Return the approximated cardinality of the set(s) observed by the HyperLogLog at key(s).</span>
+        </li>
+        <li data-group='hyperloglog'>
+          <span class='command'>
+            <a href='pfmerge.html'>PFMERGE</a>
+            <span class='args'>
+              destkey
+              sourcekey [sourcekey ...]
+            </span>
+          </span>
+          <span class='summary'>Merge N different HyperLogLogs into a single one.</span>
+        </li>
+        <li data-group='connection'>
+          <span class='command'>
+            <a href='ping.html'>PING</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Ping the server</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='psetex.html'>PSETEX</a>
+            <span class='args'>
+              key
+              milliseconds
+              value
+            </span>
+          </span>
+          <span class='summary'>Set the value and expiration in milliseconds of a key</span>
+        </li>
+        <li data-group='pubsub'>
+          <span class='command'>
+            <a href='psubscribe.html'>PSUBSCRIBE</a>
+            <span class='args'>
+              pattern [pattern ...]
+            </span>
+          </span>
+          <span class='summary'>Listen for messages published to channels matching the given patterns</span>
+        </li>
+        <li data-group='pubsub'>
+          <span class='command'>
+            <a href='pubsub.html'>PUBSUB</a>
+            <span class='args'>
+              subcommand
+              [argument [argument ...]]
+            </span>
+          </span>
+          <span class='summary'>Inspect the state of the Pub/Sub subsystem</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='pttl.html'>PTTL</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get the time to live for a key in milliseconds</span>
+        </li>
+        <li data-group='pubsub'>
+          <span class='command'>
+            <a href='publish.html'>PUBLISH</a>
+            <span class='args'>
+              channel
+              message
+            </span>
+          </span>
+          <span class='summary'>Post a message to a channel</span>
+        </li>
+        <li data-group='pubsub'>
+          <span class='command'>
+            <a href='punsubscribe.html'>PUNSUBSCRIBE</a>
+            <span class='args'>
+              [pattern [pattern ...]]
+            </span>
+          </span>
+          <span class='summary'>Stop listening for messages posted to channels matching the given patterns</span>
+        </li>
+        <li data-group='connection'>
+          <span class='command'>
+            <a href='quit.html'>QUIT</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Close the connection</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='randomkey.html'>RANDOMKEY</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Return a random key from the keyspace</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='rename.html'>RENAME</a>
+            <span class='args'>
+              key
+              newkey
+            </span>
+          </span>
+          <span class='summary'>Rename a key</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='renamenx.html'>RENAMENX</a>
+            <span class='args'>
+              key
+              newkey
+            </span>
+          </span>
+          <span class='summary'>Rename a key, only if the new key does not exist</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='restore.html'>RESTORE</a>
+            <span class='args'>
+              key
+              ttl
+              serialized-value
+            </span>
+          </span>
+          <span class='summary'>Create a key using the provided serialized value, previously obtained using DUMP.</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='role.html'>ROLE</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Return the role of the instance in the context of replication</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='rpop.html'>RPOP</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Remove and get the last element in a list</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='rpoplpush.html'>RPOPLPUSH</a>
+            <span class='args'>
+              source
+              destination
+            </span>
+          </span>
+          <span class='summary'>Remove the last element in a list, append it to another list and return it</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='rpush.html'>RPUSH</a>
+            <span class='args'>
+              key
+              value [value ...]
+            </span>
+          </span>
+          <span class='summary'>Append one or multiple values to a list</span>
+        </li>
+        <li data-group='list'>
+          <span class='command'>
+            <a href='rpushx.html'>RPUSHX</a>
+            <span class='args'>
+              key
+              value
+            </span>
+          </span>
+          <span class='summary'>Append a value to a list, only if the list exists</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='sadd.html'>SADD</a>
+            <span class='args'>
+              key
+              member [member ...]
+            </span>
+          </span>
+          <span class='summary'>Add one or more members to a set</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='save.html'>SAVE</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Synchronously save the dataset to disk</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='scard.html'>SCARD</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get the number of members in a set</span>
+        </li>
+        <li data-group='scripting'>
+          <span class='command'>
+            <a href='script-exists.html'>SCRIPT EXISTS</a>
+            <span class='args'>
+              script [script ...]
+            </span>
+          </span>
+          <span class='summary'>Check existence of scripts in the script cache.</span>
+        </li>
+        <li data-group='scripting'>
+          <span class='command'>
+            <a href='script-flush.html'>SCRIPT FLUSH</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Remove all the scripts from the script cache.</span>
+        </li>
+        <li data-group='scripting'>
+          <span class='command'>
+            <a href='script-kill.html'>SCRIPT KILL</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Kill the script currently in execution.</span>
+        </li>
+        <li data-group='scripting'>
+          <span class='command'>
+            <a href='script-load.html'>SCRIPT LOAD</a>
+            <span class='args'>
+              script
+            </span>
+          </span>
+          <span class='summary'>Load the specified Lua script into the script cache.</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='sdiff.html'>SDIFF</a>
+            <span class='args'>
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Subtract multiple sets</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='sdiffstore.html'>SDIFFSTORE</a>
+            <span class='args'>
+              destination
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Subtract multiple sets and store the resulting set in a key</span>
+        </li>
+        <li data-group='connection'>
+          <span class='command'>
+            <a href='select.html'>SELECT</a>
+            <span class='args'>
+              index
+            </span>
+          </span>
+          <span class='summary'>Change the selected database for the current connection</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='set.html'>SET</a>
+            <span class='args'>
+              key
+              value
+              [EX seconds]
+              [PX milliseconds]
+              [NX|XX]
+            </span>
+          </span>
+          <span class='summary'>Set the string value of a key</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='setbit.html'>SETBIT</a>
+            <span class='args'>
+              key
+              offset
+              value
+            </span>
+          </span>
+          <span class='summary'>Sets or clears the bit at offset in the string value stored at key</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='setex.html'>SETEX</a>
+            <span class='args'>
+              key
+              seconds
+              value
+            </span>
+          </span>
+          <span class='summary'>Set the value and expiration of a key</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='setnx.html'>SETNX</a>
+            <span class='args'>
+              key
+              value
+            </span>
+          </span>
+          <span class='summary'>Set the value of a key, only if the key does not exist</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='setrange.html'>SETRANGE</a>
+            <span class='args'>
+              key
+              offset
+              value
+            </span>
+          </span>
+          <span class='summary'>Overwrite part of a string at key starting at the specified offset</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='shutdown.html'>SHUTDOWN</a>
+            <span class='args'>
+              [NOSAVE]
+              [SAVE]
+            </span>
+          </span>
+          <span class='summary'>Synchronously save the dataset to disk and then shut down the server</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='sinter.html'>SINTER</a>
+            <span class='args'>
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Intersect multiple sets</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='sinterstore.html'>SINTERSTORE</a>
+            <span class='args'>
+              destination
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Intersect multiple sets and store the resulting set in a key</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='sismember.html'>SISMEMBER</a>
+            <span class='args'>
+              key
+              member
+            </span>
+          </span>
+          <span class='summary'>Determine if a given value is a member of a set</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='slaveof.html'>SLAVEOF</a>
+            <span class='args'>
+              host
+              port
+            </span>
+          </span>
+          <span class='summary'>Make the server a slave of another instance, or promote it as master</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='slowlog.html'>SLOWLOG</a>
+            <span class='args'>
+              subcommand
+              [argument]
+            </span>
+          </span>
+          <span class='summary'>Manages the Redis slow queries log</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='smembers.html'>SMEMBERS</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get all the members in a set</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='smove.html'>SMOVE</a>
+            <span class='args'>
+              source
+              destination
+              member
+            </span>
+          </span>
+          <span class='summary'>Move a member from one set to another</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='sort.html'>SORT</a>
+            <span class='args'>
+              key
+              [BY pattern]
+              [LIMIT offset count]
+              [GET pattern [GET pattern ...]]
+              [ASC|DESC]
+              [ALPHA]
+              [STORE destination]
+            </span>
+          </span>
+          <span class='summary'>Sort the elements in a list, set or sorted set</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='spop.html'>SPOP</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Remove and return a random member from a set</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='srandmember.html'>SRANDMEMBER</a>
+            <span class='args'>
+              key
+              [count]
+            </span>
+          </span>
+          <span class='summary'>Get one or multiple random members from a set</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='srem.html'>SREM</a>
+            <span class='args'>
+              key
+              member [member ...]
+            </span>
+          </span>
+          <span class='summary'>Remove one or more members from a set</span>
+        </li>
+        <li data-group='string'>
+          <span class='command'>
+            <a href='strlen.html'>STRLEN</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get the length of the value stored in a key</span>
+        </li>
+        <li data-group='pubsub'>
+          <span class='command'>
+            <a href='subscribe.html'>SUBSCRIBE</a>
+            <span class='args'>
+              channel [channel ...]
+            </span>
+          </span>
+          <span class='summary'>Listen for messages published to the given channels</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='sunion.html'>SUNION</a>
+            <span class='args'>
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Add multiple sets</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='sunionstore.html'>SUNIONSTORE</a>
+            <span class='args'>
+              destination
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Add multiple sets and store the resulting set in a key</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='sync.html'>SYNC</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Internal command used for replication</span>
+        </li>
+        <li data-group='server'>
+          <span class='command'>
+            <a href='time.html'>TIME</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Return the current server time</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='ttl.html'>TTL</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get the time to live for a key</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='type.html'>TYPE</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Determine the type stored at key</span>
+        </li>
+        <li data-group='pubsub'>
+          <span class='command'>
+            <a href='unsubscribe.html'>UNSUBSCRIBE</a>
+            <span class='args'>
+              [channel [channel ...]]
+            </span>
+          </span>
+          <span class='summary'>Stop listening for messages posted to the given channels</span>
+        </li>
+        <li data-group='transactions'>
+          <span class='command'>
+            <a href='unwatch.html'>UNWATCH</a>
+            <span class='args'>
+            </span>
+          </span>
+          <span class='summary'>Forget about all watched keys</span>
+        </li>
+        <li data-group='transactions'>
+          <span class='command'>
+            <a href='watch.html'>WATCH</a>
+            <span class='args'>
+              key [key ...]
+            </span>
+          </span>
+          <span class='summary'>Watch the given keys to determine execution of the MULTI/EXEC block</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zadd.html'>ZADD</a>
+            <span class='args'>
+              key
+              score member [score member ...]
+            </span>
+          </span>
+          <span class='summary'>Add one or more members to a sorted set, or update its score if it already exists</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zcard.html'>ZCARD</a>
+            <span class='args'>
+              key
+            </span>
+          </span>
+          <span class='summary'>Get the number of members in a sorted set</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zcount.html'>ZCOUNT</a>
+            <span class='args'>
+              key
+              min
+              max
+            </span>
+          </span>
+          <span class='summary'>Count the members in a sorted set with scores within the given values</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zincrby.html'>ZINCRBY</a>
+            <span class='args'>
+              key
+              increment
+              member
+            </span>
+          </span>
+          <span class='summary'>Increment the score of a member in a sorted set</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zinterstore.html'>ZINTERSTORE</a>
+            <span class='args'>
+              destination
+              numkeys
+              key [key ...]
+              [WEIGHTS weight [weight ...]]
+              [AGGREGATE SUM|MIN|MAX]
+            </span>
+          </span>
+          <span class='summary'>Intersect multiple sorted sets and store the resulting sorted set in a new key</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zlexcount.html'>ZLEXCOUNT</a>
+            <span class='args'>
+              key
+              min
+              max
+            </span>
+          </span>
+          <span class='summary'>Count the number of members in a sorted set between a given lexicographical range</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zrange.html'>ZRANGE</a>
+            <span class='args'>
+              key
+              start
+              stop
+              [WITHSCORES]
+            </span>
+          </span>
+          <span class='summary'>Return a range of members in a sorted set, by index</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zrangebylex.html'>ZRANGEBYLEX</a>
+            <span class='args'>
+              key
+              min
+              max
+              [LIMIT offset count]
+            </span>
+          </span>
+          <span class='summary'>Return a range of members in a sorted set, by lexicographical range</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zrangebyscore.html'>ZRANGEBYSCORE</a>
+            <span class='args'>
+              key
+              min
+              max
+              [WITHSCORES]
+              [LIMIT offset count]
+            </span>
+          </span>
+          <span class='summary'>Return a range of members in a sorted set, by score</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zrank.html'>ZRANK</a>
+            <span class='args'>
+              key
+              member
+            </span>
+          </span>
+          <span class='summary'>Determine the index of a member in a sorted set</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zrem.html'>ZREM</a>
+            <span class='args'>
+              key
+              member [member ...]
+            </span>
+          </span>
+          <span class='summary'>Remove one or more members from a sorted set</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zremrangebylex.html'>ZREMRANGEBYLEX</a>
+            <span class='args'>
+              key
+              min
+              max
+            </span>
+          </span>
+          <span class='summary'>Remove all members in a sorted set between the given lexicographical range</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zremrangebyrank.html'>ZREMRANGEBYRANK</a>
+            <span class='args'>
+              key
+              start
+              stop
+            </span>
+          </span>
+          <span class='summary'>Remove all members in a sorted set within the given indexes</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zremrangebyscore.html'>ZREMRANGEBYSCORE</a>
+            <span class='args'>
+              key
+              min
+              max
+            </span>
+          </span>
+          <span class='summary'>Remove all members in a sorted set within the given scores</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zrevrange.html'>ZREVRANGE</a>
+            <span class='args'>
+              key
+              start
+              stop
+              [WITHSCORES]
+            </span>
+          </span>
+          <span class='summary'>Return a range of members in a sorted set, by index, with scores ordered from high to low</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zrevrangebyscore.html'>ZREVRANGEBYSCORE</a>
+            <span class='args'>
+              key
+              max
+              min
+              [WITHSCORES]
+              [LIMIT offset count]
+            </span>
+          </span>
+          <span class='summary'>Return a range of members in a sorted set, by score, with scores ordered from high to low</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zrevrank.html'>ZREVRANK</a>
+            <span class='args'>
+              key
+              member
+            </span>
+          </span>
+          <span class='summary'>Determine the index of a member in a sorted set, with scores ordered from high to low</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zscore.html'>ZSCORE</a>
+            <span class='args'>
+              key
+              member
+            </span>
+          </span>
+          <span class='summary'>Get the score associated with the given member in a sorted set</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zunionstore.html'>ZUNIONSTORE</a>
+            <span class='args'>
+              destination
+              numkeys
+              key [key ...]
+              [WEIGHTS weight [weight ...]]
+              [AGGREGATE SUM|MIN|MAX]
+            </span>
+          </span>
+          <span class='summary'>Add multiple sorted sets and store the resulting sorted set in a new key</span>
+        </li>
+        <li data-group='generic'>
+          <span class='command'>
+            <a href='scan.html'>SCAN</a>
+            <span class='args'>
+              cursor
+              [MATCH pattern]
+              [COUNT count]
+            </span>
+          </span>
+          <span class='summary'>Incrementally iterate the keys space</span>
+        </li>
+        <li data-group='set'>
+          <span class='command'>
+            <a href='sscan.html'>SSCAN</a>
+            <span class='args'>
+              key
+              cursor
+              [MATCH pattern]
+              [COUNT count]
+            </span>
+          </span>
+          <span class='summary'>Incrementally iterate Set elements</span>
+        </li>
+        <li data-group='hash'>
+          <span class='command'>
+            <a href='hscan.html'>HSCAN</a>
+            <span class='args'>
+              key
+              cursor
+              [MATCH pattern]
+              [COUNT count]
+            </span>
+          </span>
+          <span class='summary'>Incrementally iterate hash fields and associated values</span>
+        </li>
+        <li data-group='sorted_set'>
+          <span class='command'>
+            <a href='zscan.html'>ZSCAN</a>
+            <span class='args'>
+              key
+              cursor
+              [MATCH pattern]
+              [COUNT count]
+            </span>
+          </span>
+          <span class='summary'>Incrementally iterate sorted sets elements and associated scores</span>
+        </li>
+      </ul>
+    </section>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="../topics/sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

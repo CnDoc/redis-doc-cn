@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      SETNX – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/commands/setnx.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='../topics/license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>SETNX</span>
+        <span class='arg'>key</span>
+        <span class='arg'>value</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='append.html'>
+                APPEND
+              </a>
+            </li>
+            <li>
+              <a href='bitcount.html'>
+                BITCOUNT
+              </a>
+            </li>
+            <li>
+              <a href='bitop.html'>
+                BITOP
+              </a>
+            </li>
+            <li>
+              <a href='bitpos.html'>
+                BITPOS
+              </a>
+            </li>
+            <li>
+              <a href='decr.html'>
+                DECR
+              </a>
+            </li>
+            <li>
+              <a href='decrby.html'>
+                DECRBY
+              </a>
+            </li>
+            <li>
+              <a href='get.html'>
+                GET
+              </a>
+            </li>
+            <li>
+              <a href='getbit.html'>
+                GETBIT
+              </a>
+            </li>
+            <li>
+              <a href='getrange.html'>
+                GETRANGE
+              </a>
+            </li>
+            <li>
+              <a href='getset.html'>
+                GETSET
+              </a>
+            </li>
+            <li>
+              <a href='incr.html'>
+                INCR
+              </a>
+            </li>
+            <li>
+              <a href='incrby.html'>
+                INCRBY
+              </a>
+            </li>
+            <li>
+              <a href='incrbyfloat.html'>
+                INCRBYFLOAT
+              </a>
+            </li>
+            <li>
+              <a href='mget.html'>
+                MGET
+              </a>
+            </li>
+            <li>
+              <a href='mset.html'>
+                MSET
+              </a>
+            </li>
+            <li>
+              <a href='msetnx.html'>
+                MSETNX
+              </a>
+            </li>
+            <li>
+              <a href='psetex.html'>
+                PSETEX
+              </a>
+            </li>
+            <li>
+              <a href='set.html'>
+                SET
+              </a>
+            </li>
+            <li>
+              <a href='setbit.html'>
+                SETBIT
+              </a>
+            </li>
+            <li>
+              <a href='setex.html'>
+                SETEX
+              </a>
+            </li>
+            <li>
+              <a href='setnx.html'>
+                <strong>SETNX</strong>
+              </a>
+            </li>
+            <li>
+              <a href='setrange.html'>
+                SETRANGE
+              </a>
+            </li>
+            <li>
+              <a href='strlen.html'>
+                STRLEN
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.0.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(1)</p>
+        </div>
+        <p>Set <code>key</code> to hold string <code>value</code> if <code>key</code> does not exist.
+        In that case, it is equal to <a href="set.html">SET</a>.
+        When <code>key</code> already holds a value, no operation is performed.
+        <a href="setnx.html">SETNX</a> is short for &quot;<strong>SET</strong> if <strong>N</strong> ot e <strong>X</strong> ists&quot;.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>, specifically:</p>
+        
+        <ul>
+        <li><code>1</code> if the key was set</li>
+        <li><code>0</code> if the key was not set</li>
+        </ul>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='9694855df8f812f73b37a2e193927279'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SETNX mykey &quot;Hello&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SETNX mykey &quot;World&quot;</span>
+          <pre>(integer) 0</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>GET mykey</span>
+          <pre>"Hello"</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+        
+        
+        <h2>Design pattern: Locking with <code>SETNX</code></h2>
+        
+        <p><strong>NOTE:</strong> Starting with Redis 2.6.12 it is possible to create a much simpler locking primitive using the <a href="set.html">SET</a> command to acquire the lock, and a simple Lua script to release the lock. The pattern is documented in the <a href="set.html">SET</a> command page.</p>
+        
+        <p>The old <a href="setnx.html">SETNX</a> based pattern is documented below for historical reasons.</p>
+        
+        <p><a href="setnx.html">SETNX</a> can be used as a locking primitive.
+        For example, to acquire the lock of the key <code>foo</code>, the client could try the
+        following:</p>
+        
+        <pre><code>SETNX lock.foo &lt;current Unix time + lock timeout + 1&gt;&#x000A;</code></pre>
+        
+        <p>If <a href="setnx.html">SETNX</a> returns <code>1</code> the client acquired the lock, setting the <code>lock.foo</code> key
+        to the Unix time at which the lock should no longer be considered valid.
+        The client will later use <code>DEL lock.foo</code> in order to release the lock.</p>
+        
+        <p>If <a href="setnx.html">SETNX</a> returns <code>0</code> the key is already locked by some other client.
+        We can either return to the caller if it&#39;s a non blocking lock, or enter a loop
+        retrying to hold the lock until we succeed or some kind of timeout expires.</p>
+        
+        <h3>Handling deadlocks</h3>
+        
+        <p>In the above locking algorithm there is a problem: what happens if a client
+        fails, crashes, or is otherwise not able to release the lock?
+        It&#39;s possible to detect this condition because the lock key contains a UNIX
+        timestamp.
+        If such a timestamp is equal to the current Unix time the lock is no longer
+        valid.</p>
+        
+        <p>When this happens we can&#39;t just call <a href="del.html">DEL</a> against the key to remove the lock
+        and then try to issue a <a href="setnx.html">SETNX</a>, as there is a race condition here, when
+        multiple clients detected an expired lock and are trying to release it.</p>
+        
+        <ul>
+        <li>C1 and C2 read <code>lock.foo</code> to check the timestamp, because they both received
+        <code>0</code> after executing <a href="setnx.html">SETNX</a>, as the lock is still held by C3 that crashed
+        after holding the lock.</li>
+        <li>C1 sends <code>DEL lock.foo</code></li>
+        <li>C1 sends <code>SETNX lock.foo</code> and it succeeds</li>
+        <li>C2 sends <code>DEL lock.foo</code></li>
+        <li>C2 sends <code>SETNX lock.foo</code> and it succeeds</li>
+        <li><strong>ERROR</strong>: both C1 and C2 acquired the lock because of the race condition.</li>
+        </ul>
+        
+        <p>Fortunately, it&#39;s possible to avoid this issue using the following algorithm.
+        Let&#39;s see how C4, our sane client, uses the good algorithm:</p>
+        
+        <ul>
+        <li><p>C4 sends <code>SETNX lock.foo</code> in order to acquire the lock</p></li>
+        <li><p>The crashed client C3 still holds it, so Redis will reply with <code>0</code> to C4.</p></li>
+        <li><p>C4 sends <code>GET lock.foo</code> to check if the lock expired.
+        If it is not, it will sleep for some time and retry from the start.</p></li>
+        <li><p>Instead, if the lock is expired because the Unix time at <code>lock.foo</code> is older
+        than the current Unix time, C4 tries to perform:</p>
+        
+        <pre><code>GETSET lock.foo &lt;current Unix timestamp + lock timeout + 1&gt;&#x000A;</code></pre></li>
+        <li><p>Because of the <a href="getset.html">GETSET</a> semantic, C4 can check if the old value stored at
+        <code>key</code> is still an expired timestamp.
+        If it is, the lock was acquired.</p></li>
+        <li><p>If another client, for instance C5, was faster than C4 and acquired the lock
+        with the <a href="getset.html">GETSET</a> operation, the C4 <a href="getset.html">GETSET</a> operation will return a non
+        expired timestamp.
+        C4 will simply restart from the first step.
+        Note that even if C4 set the key a bit a few seconds in the future this is
+        not a problem.</p></li>
+        </ul>
+        
+        <p><strong>Important note</strong>: In order to make this locking algorithm more robust, a
+        client holding a lock should always check the timeout didn&#39;t expire before
+        unlocking the key with <a href="del.html">DEL</a> because client failures can be complex, not just
+        crashing but also blocking a lot of time against some operations and trying
+        to issue <a href="del.html">DEL</a> after a lot of time (when the LOCK is already held by another
+        client).</p>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_setnx';
+          var disqus_url = 'http://redis.io/commands/setnx';
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href='http://disqus.com'>
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="../topics/sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

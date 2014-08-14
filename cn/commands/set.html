@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      SET – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/commands/set.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='../topics/license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>SET</span>
+        <span class='arg'>key</span>
+        <span class='arg'>value</span>
+        <span class='arg'>[EX seconds]</span>
+        <span class='arg'>[PX milliseconds]</span>
+        <span class='arg'>[NX|XX]</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='append.html'>
+                APPEND
+              </a>
+            </li>
+            <li>
+              <a href='bitcount.html'>
+                BITCOUNT
+              </a>
+            </li>
+            <li>
+              <a href='bitop.html'>
+                BITOP
+              </a>
+            </li>
+            <li>
+              <a href='bitpos.html'>
+                BITPOS
+              </a>
+            </li>
+            <li>
+              <a href='decr.html'>
+                DECR
+              </a>
+            </li>
+            <li>
+              <a href='decrby.html'>
+                DECRBY
+              </a>
+            </li>
+            <li>
+              <a href='get.html'>
+                GET
+              </a>
+            </li>
+            <li>
+              <a href='getbit.html'>
+                GETBIT
+              </a>
+            </li>
+            <li>
+              <a href='getrange.html'>
+                GETRANGE
+              </a>
+            </li>
+            <li>
+              <a href='getset.html'>
+                GETSET
+              </a>
+            </li>
+            <li>
+              <a href='incr.html'>
+                INCR
+              </a>
+            </li>
+            <li>
+              <a href='incrby.html'>
+                INCRBY
+              </a>
+            </li>
+            <li>
+              <a href='incrbyfloat.html'>
+                INCRBYFLOAT
+              </a>
+            </li>
+            <li>
+              <a href='mget.html'>
+                MGET
+              </a>
+            </li>
+            <li>
+              <a href='mset.html'>
+                MSET
+              </a>
+            </li>
+            <li>
+              <a href='msetnx.html'>
+                MSETNX
+              </a>
+            </li>
+            <li>
+              <a href='psetex.html'>
+                PSETEX
+              </a>
+            </li>
+            <li>
+              <a href='set.html'>
+                <strong>SET</strong>
+              </a>
+            </li>
+            <li>
+              <a href='setbit.html'>
+                SETBIT
+              </a>
+            </li>
+            <li>
+              <a href='setex.html'>
+                SETEX
+              </a>
+            </li>
+            <li>
+              <a href='setnx.html'>
+                SETNX
+              </a>
+            </li>
+            <li>
+              <a href='setrange.html'>
+                SETRANGE
+              </a>
+            </li>
+            <li>
+              <a href='strlen.html'>
+                STRLEN
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.0.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(1)</p>
+        </div>
+        <p>Set <code>key</code> to hold the string <code>value</code>.
+        If <code>key</code> already holds a value, it is overwritten, regardless of its type.
+        Any previous time to live associated with the key is discarded on successful <a href="set.html">SET</a> operation.</p>
+        
+        <h2>Options</h2>
+        
+        <p>Starting with Redis 2.6.12 <a href="set.html">SET</a> supports a set of options that modify its
+        behavior:</p>
+        
+        <ul>
+        <li><code>EX</code> <em>seconds</em> -- Set the specified expire time, in seconds.</li>
+        <li><code>PX</code> <em>milliseconds</em> -- Set the specified expire time, in milliseconds.</li>
+        <li><code>NX</code> -- Only set the key if it does not already exist.</li>
+        <li><code>XX</code> -- Only set the key if it already exist.</li>
+        </ul>
+        
+        <p>Note: Since the <a href="set.html">SET</a> command options can replace <a href="setnx.html">SETNX</a>, <a href="setex.html">SETEX</a>, <a href="psetex.html">PSETEX</a>, it is possible that in future versions of Redis these three commands will be deprecated and finally removed.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="../topics/protocol.html#simple-string-reply">Simple string reply</a>: <code>OK</code> if <a href="set.html">SET</a> was executed correctly.
+        <a href="../topics/protocol.html#nil-reply">Null reply</a>: a Null Bulk Reply is returned if the <a href="set.html">SET</a> operation was not performed becase the user specified the <code>NX</code> or <code>XX</code> option but the condition was not met.</p>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='0892006e7f5d012a464895db6c858160'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>SET mykey &quot;Hello&quot;</span>
+          <pre>OK</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>GET mykey</span>
+          <pre>"Hello"</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+        
+        
+        <h2>Patterns</h2>
+        
+        <p>The command <code>SET resource-name anystring NX EX max-lock-time</code> is a simple way to implement a locking system with Redis.</p>
+        
+        <p>A client can acquire the lock if the above command returns <code>OK</code> (or retry after some time if the command returns Nil), and remove the lock just using <a href="del.html">DEL</a>.</p>
+        
+        <p>The lock will be auto-released after the expire time is reached.</p>
+        
+        <p>It is possible to make this system more robust modifying the unlock schema as follows:</p>
+        
+        <ul>
+        <li>Instead of setting a fixed string, set a non-guessable large random string, called token.</li>
+        <li>Instead of releasing the lock with <a href="del.html">DEL</a>, send a script that only removes the key if the value matches.</li>
+        </ul>
+        
+        <p>This avoids that a client will try to release the lock after the expire time deleting the key created by another client that acquired the lock later.</p>
+        
+        <p>An example of unlock script would be similar to the following:</p>
+        
+        <pre><code>if redis.call(&quot;get&quot;,KEYS[1]) == ARGV[1]&#x000A;then&#x000A;    return redis.call(&quot;del&quot;,KEYS[1])&#x000A;else&#x000A;    return 0&#x000A;end&#x000A;</code></pre>
+        
+        <p>The script should be called with <code>EVAL ...script... 1 resource-name token-value</code></p>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_set';
+          var disqus_url = 'http://redis.io/commands/set';
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href='http://disqus.com'>
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="../topics/sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

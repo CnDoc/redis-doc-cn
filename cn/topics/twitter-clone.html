@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      Tutorial: Design and implementation of a simple Twitter clone using PHP and the Redis key-value store – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class='topics twitter-clone'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/topics/twitter-clone.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <article id='topic'>
+        <h1>Tutorial: Design and implementation of a simple Twitter clone using PHP and the Redis key-value store</h1>
+        
+        <p>This article describes the design and implementation of a <a href="https://github.com/antirez/retwis">very simple Twitter clone</a> written using PHP with Redis as the only database. The programming community has traditionally considered key-value stores as a special purpose database that couldn&#39;t be used as a drop in replacement for a relational database for the development of web applications. This article will try to show that Redis data structures on top of a key-value layer are an effective data model to implement many kinds of applications.</p>
+        
+        <p>Before to continue, you may want to play a few seconds with <a href="http://retwis.redis.io">the Retwis online demo</a>, to check what we are going to actually
+        model. Long story short: it is a toy, but complex enough to be a foundation
+        in order to learn how to create more complex applications.</p>
+        
+        <p>Note: the original version of this article was written in 2009 when Redis was
+        released. It was not exactly clear at the time that the Redis data model was
+        suitable to write entire applications. Now after 5 years there are many cases of
+        applications using Redis as their main store, so the gaol of the article today
+        is to be a tutorial for Redis newcomers. You&#39;ll learn how to design a simple
+        data layout using Redis, and how to apply different data structures.</p>
+        
+        <p>Our Twitter clone, called <a href="http://retwis.antirez.com">Retwis</a>, is structurally simple, has very good performance, and can be distributed among any number of web and Redis servers with little efforts. You can find the source code <a href="http://code.google.com/p/redis/downloads/list">here</a>.</p>
+        
+        <p>I use PHP for the example since it can be read by everybody. The same (or better) results can be obtained using Ruby, Python, Erlang, and so on.
+        A few clones exist (however not all the clones use the same data layout as the
+        current version of this toturial, so please, stick with the official PHP
+        implementation for the sake of following the article better).</p>
+        
+        <ul>
+        <li><a href="http://retwisrb.danlucraft.com/">Retwis-RB</a> is a port of Retwis to Ruby and Sinatra written by Daniel Lucraft! Full source code is included of course, and a link to its Git repository appears in the footer of this article. The rest of this article targets PHP, but Ruby programmers can also check the Retwis-RB source code since it&#39;s conceptually very similar.</li>
+        <li><a href="http://retwisj.cloudfoundry.com/">Retwis-J</a> is a port of Retwis to Java, using the Spring Data Framework, written by <a href="http://twitter.com/costinl">Costin Leau</a>. Its source code can be found on <a href="https://github.com/SpringSource/spring-data-keyvalue-examples">GitHub</a>, and there is comprehensive documentation available at <a href="http://j.mp/eo6z6I">springsource.org</a>.</li>
+        </ul>
+        
+        <h2>What is a Key-value store?</h2>
+        
+        <p>The essence of a key-value store is the ability to store some data, called a <em>value</em>, inside a key. The value can be retrieved later only if we know the specific key it was stored in. There is no direct way to search for a key by value. In a sense, it is like a very large hash/dictionary, but it is persistent, i.e. when your application ends, the data doesn&#39;t go away. So, for example, I can use the command <a href="../commands/set.html">SET</a> to store the value <em>bar</em> in the key <em>foo</em>:</p>
+        
+        <pre><code>SET foo bar&#x000A;</code></pre>
+        
+        <p>Redis stores data permanently, so if I later ask &quot;<em>What is the value stored in key foo?</em>&quot; Redis will reply with <em>bar</em>:</p>
+        
+        <pre><code>GET foo =&gt; bar&#x000A;</code></pre>
+        
+        <p>Other common operations provided by key-value stores are <a href="../commands/del.html">DEL</a>, to delete a given key and its associated value, SET-if-not-exists (called <a href="../commands/setnx.html">SETNX</a> on Redis), to assign a value to a key only if the key does not already exist, and <a href="../commands/incr.html">INCR</a>, to atomically increment a number stored in a given key:</p>
+        
+        <pre><code>SET foo 10&#x000A;INCR foo =&gt; 11&#x000A;INCR foo =&gt; 12&#x000A;INCR foo =&gt; 13&#x000A;</code></pre>
+        
+        <h2>Atomic operations</h2>
+        
+        <p>There is something special about <a href="../commands/incr.html">INCR</a>. Think about why Redis provides such an operation if we can do it ourselves with a bit of code? After all, it is as simple as:</p>
+        
+        <pre><code>x = GET foo&#x000A;x = x + 1&#x000A;SET foo x&#x000A;</code></pre>
+        
+        <p>The problem is that incrementing this way will work as long as there is only one client working with the key <em>foo</em> at one time. See what happens if two clients are accessing this key at the same time:</p>
+        
+        <pre><code>x = GET foo (yields 10)&#x000A;y = GET foo (yields 10)&#x000A;x = x + 1 (x is now 11)&#x000A;y = y + 1 (y is now 11)&#x000A;SET foo x (foo is now 11)&#x000A;SET foo y (foo is now 11)&#x000A;</code></pre>
+        
+        <p>Something is wrong! We incremented the value two times, but instead of going from 10 to 12, our key holds 11. This is because the increment done with <code>GET / increment / SET</code> <em>is not an atomic operation</em>. Instead the INCR provided by Redis, Memcached, ..., are atomic implementations, and the server will take care of protecting the key during the time needed to complete the increment in order to prevent simultaneous accesses.</p>
+        
+        <p>What makes Redis different from other key-value stores is that it provides other operations similar to INCR that can be used to model complex problems. This is why you can use Redis to write whole web applications without using another database like an SQL database, and without going crazy.</p>
+        
+        <h2>Beyond key-value stores: lists</h2>
+        
+        <p>In this section we will see which Redis features we need to build our Twitter clone. The first thing to know is that Redis values can be more than strings. Redis supports Lists, Sets, Hashes, Sorted Sets, Bitmaps, and HyperLogLog types as values, and there are atomic operations to operate on them so we are safe even with multiple accesses to the same key. Let&#39;s start with Lists:</p>
+        
+        <pre><code>LPUSH mylist a (now mylist holds &#39;a&#39;)&#x000A;LPUSH mylist b (now mylist holds &#39;b&#39;,&#39;a&#39;)&#x000A;LPUSH mylist c (now mylist holds &#39;c&#39;,&#39;b&#39;,&#39;a&#39;)&#x000A;</code></pre>
+        
+        <p><a href="../commands/lpush.html">LPUSH</a> means <em>Left Push</em>, that is, add an element to the left (or to the head) of the list stored in <em>mylist</em>. If the key <em>mylist</em> does not exist it is automatically created as an empty list before the PUSH operation. As you can imagine, there is also an <a href="../commands/rpush.html">RPUSH</a> operation that adds the element to the right of the list (on the tail). This is very useful for our Twitter clone. User updates can be added to a list stored in <code>username:updates</code>, for instance.</p>
+        
+        <p>There are operations to get data from Lists, of course. For instance, LRANGE returns a range from the list, or the whole list.</p>
+        
+        <pre><code>LRANGE mylist 0 1 =&gt; c,b&#x000A;</code></pre>
+        
+        <p>LRANGE uses zero-based indexes - that is the first element is 0, the second 1, and so on. The command arguments are <code>LRANGE key first-index last-index</code>. The <em>last-index</em> argument can be negative, with a special meaning: -1 is the last element of the list, -2 the penultimate, and so on. So, to get the whole list use:</p>
+        
+        <pre><code>LRANGE mylist 0 -1 =&gt; c,b,a&#x000A;</code></pre>
+        
+        <p>Other important operations are LLEN that returns the number of elements in the list, and LTRIM that is like LRANGE but instead of returning the specified range <em>trims</em> the list, so it is like <em>Get range from mylist, Set this range as new value</em> but does so atomically.</p>
+        
+        <h2>The Set data type</h2>
+        
+        <p>Currently we don&#39;t use the Set type in this tutorial, but since we use
+        Sorted Sets, which are kind of a more capable version of Sets, it is better
+        to start introducing Sets first (which are a very useful data structure
+        per se), and later Sorted Sets.</p>
+        
+        <p>There are more data types than just Lists. Redis also supports Sets, which are unsorted collections of elements. It is possible to add, remove, and test for existence of members, and perform the intersection between different Sets. Of course it is possible to get the elements of a set. Some examples will make it more clear. Keep in mind that <a href="../commands/sadd.html">SADD</a> is the <em>add to set</em> operation, <a href="../commands/srem.html">SREM</a> is the <em>remove from set</em> operation, <em>sismember</em> is the <em>test if member</em> operation, and <a href="../commands/sinter.html">SINTER</a> is the <em>perform intersection</em> operation. Other operations are <a href="../commands/scard.html">SCARD</a> to get the cardinality (the number of elements) of a Set, and <a href="../commands/smembers.html">SMEMBERS</a> to return all the members of a Set.</p>
+        
+        <pre><code>SADD myset a&#x000A;SADD myset b&#x000A;SADD myset foo&#x000A;SADD myset bar&#x000A;SCARD myset =&gt; 4&#x000A;SMEMBERS myset =&gt; bar,a,foo,b&#x000A;</code></pre>
+        
+        <p>Note that <a href="../commands/smembers.html">SMEMBERS</a> does not return the elements in the same order we added them since Sets are <em>unsorted</em> collections of elements. When you want to store in order it is better to use Lists instead. Some more operations against Sets:</p>
+        
+        <pre><code>SADD mynewset b&#x000A;SADD mynewset foo&#x000A;SADD mynewset hello&#x000A;SINTER myset mynewset =&gt; foo,b&#x000A;</code></pre>
+        
+        <p><a href="../commands/sinter.html">SINTER</a> can return the intersection between Sets but it is not limited to two sets. You may ask for the intersection of 4,5, or 10000 Sets. Finally let&#39;s check how SISMEMBER works:</p>
+        
+        <pre><code>SISMEMBER myset foo =&gt; 1&#x000A;SISMEMBER myset notamember =&gt; 0&#x000A;</code></pre>
+        
+        <h2>The Sorted Set data type</h2>
+        
+        <p>Sorted Sets are similar to Sets: collection of elements. However in Sorted
+        Sets each element is associated with a floating point value, called the
+        <em>element score</em>. Because of the score, elements inside a sorted set are
+        ordered, since we can always compare two elements by score (and if the score
+        happens to be the same, we compare the two elements as strings).</p>
+        
+        <p>Like Sets in Sorted Sets it is not possible to add repeated elements, every
+        element is unique. However it is possible to update an element&#39;s score.</p>
+        
+        <p>Sorted Set commands are prefixed with <code>Z</code>. The following is an example
+        of Sorted Sets usage:</p>
+        
+        <pre><code>ZADD zset 10 a&#x000A;ZADD zset 5 b&#x000A;ZADD zset 12.55 c&#x000A;ZRANGE zset 0 -1 =&gt; b,a,c&#x000A;</code></pre>
+        
+        <p>In the above example we added a few elements with <a href="../commands/zadd.html">ZADD</a>, and later retrivied
+        the elements with <a href="../commands/zrange.html">ZRANGE</a>. As you can see the elements are returned in order
+        according to their score. In order to check if a given element exists, and
+        also to retrieve its score if it exists, we use the <a href="../commands/zscore.html">ZSCORE</a> command:</p>
+        
+        <pre><code>ZSCORE zset a =&gt; 10&#x000A;ZSCORE zset non_existing_element =&gt; NULL&#x000A;</code></pre>
+        
+        <p>Sorted Sets are a very powerful data structure, you can query elements by
+        score range, lexocographically, in reverse order, and so forth.
+        To know more <a href="../commands/index.html#sorted_set">please check the Sorted Set sections in the official Redis commands documentation</a>.</p>
+        
+        <h2>The Hash data type</h2>
+        
+        <p>This is the last data structure we use in our program, and is extremely easy
+        to gasp since there is an equivalent in almost every programming language out
+        there: Hashes. Redis Hashes are basically like Ruby or Python hashes, a
+        collection of fields associated with values:</p>
+        
+        <pre><code>HMSET myuser name Salvatore surname Sanfilippo country Italy&#x000A;HGET myuser surname =&gt; Sanfilippo&#x000A;</code></pre>
+        
+        <p><a href="../commands/hmset.html">HMSET</a> can be used to set fields in the hash, that can be retrivied with
+        <a href="../commands/hget.html">HGET</a> later. It is possible to check if a field exists with <a href="../commands/hexists.html">HEXISTS</a>, or
+        to increment an hash field with <a href="../commands/hincrby.html">HINCRBY</a> and so forth.</p>
+        
+        <p>Hashes are the ideal data structure to represent <em>objects</em>. For example we
+        use Hashes in order to represent Users and Updates in our Twitter clone.</p>
+        
+        <p>Okay, we just exposed the basics of the Redis main data structures,
+        we are ready to start coding!</p>
+        
+        <h2>Prerequisites</h2>
+        
+        <p>If you haven&#39;t downloaded the <a href="https://github.com/antirez/retwis">Retwis source code</a> already please grab it now. It contains a few PHP files, and also a copy of <a href="https://github.com/nrk/predis">Predis</a>, the PHP client library we use in this example.</p>
+        
+        <p>Another thing you probably want is a working Redis server. Just get the source, build with make, run with ./redis-server, and you&#39;re ready to go. No configuration is required at all in order to play with or run Retwis on your computer.</p>
+        
+        <h2>Data layout</h2>
+        
+        <p>When working with a relational database, a database schema must be designed so that we&#39;d know the tables, indexes, and so on that the database will contain. We don&#39;t have tables in Redis, so what do we need to design? We need to identify what keys are needed to represent our objects and what kind of values this keys need to hold.</p>
+        
+        <p>Let&#39;s start with Users. We need to represent users, of course, with their username, userid, password, the set of users following a given user, the set of users a given user follows, and so on. The first question is, how should we identify a user? Like in a relational DB, a good solution is to identify different users with different numbers, so we can associate a unique ID with every user. Every other reference to this user will be done by id. Creating unique IDs is very simple to do by using our atomic <a href="../commands/incr.html">INCR</a> operation. When we create a new user we can do something like this, assuming the user is called &quot;antirez&quot;:</p>
+        
+        <pre><code>INCR next_user_id =&gt; 1000&#x000A;HMSET user:1000 username antirez password p1pp0&#x000A;</code></pre>
+        
+        <p><em>Note: you should use an hashed password in a real application, for simplicity
+        we store the password in clear text.</em></p>
+        
+        <p>We use the <code>next_user_id</code> key in order to always get an unique ID for every new user. Then we use this unique ID to name the key holdign an Hash with user&#39;s data. <em>This is a common design pattern</em> with key-values stores! Keep it in mind.
+        Besides the fields already defined, we need some more stuff in order to fully define a User. For example, sometimes it can be useful to be able to get the user ID from the username, so every time we add an user, we also populate the <code>users</code> key, which is an Hash, with the username as field, and its ID as value.</p>
+        
+        <pre><code>HSET users antirez 1000&#x000A;</code></pre>
+        
+        <p>This may appear strange at first, but remember that we are only able to access data in a direct way, without secondary indexes. It&#39;s not possible to tell Redis to return the key that holds a specific value. This is also <em>our strength</em>. This new paradigm is forcing us to organize data so that everything is accessible by <em>primary key</em>, speaking in relational DB terms.</p>
+        
+        <h2>Followers, following, and updates</h2>
+        
+        <p>There is another central need in our system. A user might have users who follow them, which we&#39;ll call their followers. A user might follow other users, which we&#39;ll call a following. We have a perfect data structure for this. That is... Sets.
+        The uniqueness of Sets elements, and the fact we can test in constant time for
+        existence, are two interesting features. However what about also remembering
+        the time at which a given user started following another one? In an enhanced
+        version of our simple Twitter clone this may be useful, so instead of using
+        a simple Set, we use a Sorted Set, using the user ID of the following or follower
+        user as element, and the unix time at which the relation between the users
+        was created, as our score.</p>
+        
+        <p>So let&#39;s define our keys:</p>
+        
+        <pre><code>followers:1000 =&gt; Sorted Set of uids of all the followers users&#x000A;following:1000 =&gt; Sorted Set of uids of all the following users&#x000A;</code></pre>
+        
+        <p>We can add new followers with:</p>
+        
+        <pre><code>ZADD followers:1000 1401267618 1234 =&gt; Add user 1234 with time 1401267618&#x000A;</code></pre>
+        
+        <p>Another important thing we need is a place were we can add the updates to display in the user&#39;s home page. We&#39;ll need to access this data in chronological order later, from the most recent update to the oldest, so the perfect kind of data structure for this is a List. Basically every new update will be <code>LPUSH</code>ed in the user updates key, and thanks to <a href="../commands/lrange.html">LRANGE</a>, we can implement pagination and so on. Note that we use the words <em>updates</em> and <em>posts</em> interchangeably, since updates are actually &quot;little posts&quot; in some way.</p>
+        
+        <pre><code>posts:1000 =&gt; a List of post ids - every new post is LPUSHed here.&#x000A;</code></pre>
+        
+        <p>This list is basically the User timeline. We&#39;ll push the IDs of her/his own
+        posts, and, the IDs of all the posts of created by the following users.
+        Basically we implement a write fanout.</p>
+        
+        <h2>Authentication</h2>
+        
+        <p>OK, we have more or less everything about the user except for authentication. We&#39;ll handle authentication in a simple but robust way: we don&#39;t want to use PHP sessions, our system must be ready to be distributed among different web servers easily, so we&#39;ll keep the whole state in our Redis database. All we need is a random <strong>unguessable</strong> string to set as the cookie of an authenticated user, and a key that will contain the user ID of the client holding the string.</p>
+        
+        <p>We need two things in order to make this thing work in a robust way.
+        First: the current authentication <em>secret</em> (the random unguessable string)
+        should be part of the User object, so when the user is created we also set
+        an <code>auth</code> field in its Hash:</p>
+        
+        <pre><code>HSET user:1000 auth fea5e81ac8ca77622bed1c2132a021f9&#x000A;</code></pre>
+        
+        <p>Moreover, we need a way to map authentication secrets to user IDs, so
+        we also take an <code>auths</code> key, which has as value an Hash type mapping
+        authentication secrets to user IDs.</p>
+        
+        <pre><code>HSET auths fea5e81ac8ca77622bed1c2132a021f9 1000&#x000A;</code></pre>
+        
+        <p>In order to authenticate a user we&#39;ll do these simple steps ( see the <code>login.php</code> file in the Retwis source code):
+         * Get the username and password via the login form
+         * Check if the <code>username</code> field actually exists in the <code>users</code> Hash.
+         * If it exists we have the user id, (i.e. 1000)
+         * Check if user:1000 password matches, if not, return an error message
+         * Ok authenticated! Set &quot;fea5e81ac8ca77622bed1c2132a021f9&quot; (the value of user:1000 <code>auth</code> field) as the &quot;auth&quot; cookie.</p>
+        
+        <p>This is the actual code:</p>
+        
+        <pre><code>include(&quot;retwis.php&quot;);&#x000A;&#x000A;# Form sanity checks&#x000A;if (!gt(&quot;username&quot;) || !gt(&quot;password&quot;))&#x000A;    goback(&quot;You need to enter both username and password to login.&quot;);&#x000A;&#x000A;# The form is ok, check if the username is available&#x000A;$username = gt(&quot;username&quot;);&#x000A;$password = gt(&quot;password&quot;);&#x000A;$r = redisLink();&#x000A;$userid = $r-&gt;hget(&quot;users&quot;,$username);&#x000A;if (!$userid)&#x000A;    goback(&quot;Wrong username or password&quot;);&#x000A;$realpassword = $r-&gt;hget(&quot;user:$userid&quot;,&quot;password&quot;);&#x000A;if ($realpassword != $password)&#x000A;    goback(&quot;Wrong useranme or password&quot;);&#x000A;&#x000A;# Username / password OK, set the cookie and redirect to index.php&#x000A;$authsecret = $r-&gt;hget(&quot;user:$userid&quot;,&quot;auth&quot;);&#x000A;setcookie(&quot;auth&quot;,$authsecret,time()+3600*24*365);&#x000A;header(&quot;Location: index.php&quot;);&#x000A;</code></pre>
+        
+        <p>This happens every time a user logs in, but we also need a function <code>isLoggedIn</code> in order to check if a given user is already authenticated or not. These are the logical steps preformed by the <code>isLoggedIn</code> function:</p>
+        
+        <ul>
+        <li>Get the &quot;auth&quot; cookie from the user. If there is no cookie, the user is not logged in, of course. Let&#39;s call the value of the cookie <code>&lt;authcookie&gt;</code></li>
+        <li>Check if <code>&lt;authcookie&gt;</code> field in the <code>auths</code> Hash exists, and what the value (the user ID) is (1000 in the example).</li>
+        <li>In order for the system to be more robust, also verify that user:1000 auth field also matches.</li>
+        <li>OK the user is authenticated, and we loaded a bit of information in the $User global variable.</li>
+        </ul>
+        
+        <p>The code is simpler than the description, possibly:</p>
+        
+        <pre><code>function isLoggedIn() {&#x000A;    global $User, $_COOKIE;&#x000A;&#x000A;    if (isset($User)) return true;&#x000A;&#x000A;    if (isset($_COOKIE[&#39;auth&#39;])) {&#x000A;        $r = redisLink();&#x000A;        $authcookie = $_COOKIE[&#39;auth&#39;];&#x000A;        if ($userid = $r-&gt;hget(&quot;auths&quot;,$authcookie)) {&#x000A;            if ($r-&gt;hget(&quot;user:$userid&quot;,&quot;auth&quot;) != $authcookie) return false;&#x000A;            loadUserInfo($userid);&#x000A;            return true;&#x000A;        }&#x000A;    }&#x000A;    return false;&#x000A;}&#x000A;&#x000A;function loadUserInfo($userid) {&#x000A;    global $User;&#x000A;&#x000A;    $r = redisLink();&#x000A;    $User[&#39;id&#39;] = $userid;&#x000A;    $User[&#39;username&#39;] = $r-&gt;hget(&quot;user:$userid&quot;,&quot;username&quot;);&#x000A;    return true;&#x000A;}&#x000A;</code></pre>
+        
+        <p>Having <code>loadUserInfo</code> as a separate function is overkill for our application, but it&#39;s a good approach in a complex application. The only thing that&#39;s missing from all the authentication is the logout. What do we do on logout? That&#39;s simple, we&#39;ll just change the random string in user:1000 <code>auth</code> field, remove the old authentication secret from the <code>auths</code> Hash., and add the new one.</p>
+        
+        <p><em>Important:</em> the logout procedure explains why we don&#39;t just authenticate the user after looking up the authentication secret in the <code>auths</code> Hash, but double check it against user:1000 <code>auth</code> field. The true authentication string is the latter, while the <code>auths</code> Hash is just an authentication field that may even be volatile, or, if there are bugs in the program or a script gets interrupted, we may even end with multiple entries in the <code>auths</code> key pointing to the same user ID. The logout code is the following (logout.php):</p>
+        
+        <pre><code>include(&quot;retwis.php&quot;);&#x000A;&#x000A;if (!isLoggedIn()) {&#x000A;    header(&quot;Location: index.php&quot;);&#x000A;    exit;&#x000A;}&#x000A;&#x000A;$r = redisLink();&#x000A;$newauthsecret = getrand();&#x000A;$userid = $User[&#39;id&#39;];&#x000A;$oldauthsecret = $r-&gt;hget(&quot;user:$userid&quot;,&quot;auth&quot;);&#x000A;&#x000A;$r-&gt;hset(&quot;user:$userid&quot;,&quot;auth&quot;,$newauthsecret);&#x000A;$r-&gt;hset(&quot;auths&quot;,$newauthsecret,$userid);&#x000A;$r-&gt;hdel(&quot;auths&quot;,$oldauthsecret);&#x000A;&#x000A;header(&quot;Location: index.php&quot;);&#x000A;</code></pre>
+        
+        <p>That is just what we described and should be simple to understand.</p>
+        
+        <h2>Updates</h2>
+        
+        <p>Updates, also known as posts, are even simpler. In order to create a new post in the database we do something like this:</p>
+        
+        <pre><code>INCR next_post_id =&gt; 10343&#x000A;HMSET post:10343 user_id $owner_id time $time body &quot;I&#39;m having fun with Retwis&quot;&#x000A;</code></pre>
+        
+        <p>As you can see each post is just represented by an Hash with three fields. The ID of the user owning the post, the time at which the post was published, and finally the body of the post, which is, the actual status message.</p>
+        
+        <p>After we create a post and we obtain the post ID, we need to LPUSH the ID in the timeline of every user that is following the author of the post, and of course in the list of posts of the author itself (everybody is virtually following herself/himself). This is the file <code>post.php</code> that shows how this is performed:</p>
+        
+        <pre><code>include(&quot;retwis.php&quot;);&#x000A;&#x000A;if (!isLoggedIn() || !gt(&quot;status&quot;)) {&#x000A;    header(&quot;Location:index.php&quot;);&#x000A;    exit;&#x000A;}&#x000A;&#x000A;$r = redisLink();&#x000A;$postid = $r-&gt;incr(&quot;next_post_id&quot;);&#x000A;$status = str_replace(&quot;\n&quot;,&quot; &quot;,gt(&quot;status&quot;));&#x000A;$r-&gt;hmset(&quot;post:$postid&quot;,&quot;user_id&quot;,$User[&#39;id&#39;],&quot;time&quot;,time(),&quot;body&quot;,$status);&#x000A;$followers = $r-&gt;zrange(&quot;followers:&quot;.$User[&#39;id&#39;],0,-1);&#x000A;$followers[] = $User[&#39;id&#39;]; /* Add the post to our own posts too */&#x000A;&#x000A;foreach($followers as $fid) {&#x000A;    $r-&gt;lpush(&quot;posts:$fid&quot;,$postid);&#x000A;}&#x000A;# Push the post on the timeline, and trim the timeline to the&#x000A;# newest 1000 elements.&#x000A;$r-&gt;lpush(&quot;timeline&quot;,$postid);&#x000A;$r-&gt;ltrim(&quot;timeline&quot;,0,1000);&#x000A;&#x000A;header(&quot;Location: index.php&quot;);&#x000A;</code></pre>
+        
+        <p>The core of the function is the <code>foreach</code> loop. We use <a href="../commands/zrange.html">ZRANGE</a> to get all the followers of the current user, then the loop will LPUSH the push the post in every follower timeline List.</p>
+        
+        <p>Note that we also maintain a global timeline for all the posts, so that in the Retwis home page we can show everybody&#39;s updates easily. This requires just doing an <a href="../commands/lpush.html">LPUSH</a> to the <code>timeline</code> List. Let&#39;s face it, aren&#39;t you start thinking it was a bit strange to have to sort things added in chronological order using <code>ORDER BY</code> with SQL? I think so.</p>
+        
+        <p>There is an interesting thing to notice in the code above: we use a new
+        command called <a href="../commands/ltrim.html">LTRIM</a> after we perform the <a href="../commands/lpush.html">LPUSH</a> operation in the global
+        timeline. This is used in order to trim the list to just 1000 elements. The
+        global timeline is actually only used in order to show a few posts in the
+        home page, there is no need to have the full history of all the posts.</p>
+        
+        <p>Basically <a href="../commands/ltrim.html">LTRIM</a> + <a href="../commands/lpush.html">LPUSH</a> is a way to create a <em>capped collection</em> in Redis.</p>
+        
+        <h2>Paginating updates</h2>
+        
+        <p>Now it should be pretty clear how we can use <a href="../commands/lrange.html">LRANGE</a> in order to get ranges of posts, and render these posts on the screen. The code is simple:</p>
+        
+        <pre><code>function showPost($id) {&#x000A;    $r = redisLink();&#x000A;    $post = $r-&gt;hgetall(&quot;post:$id&quot;);&#x000A;    if (empty($post)) return false;&#x000A;&#x000A;    $userid = $post[&#39;user_id&#39;];&#x000A;    $username = $r-&gt;hget(&quot;user:$userid&quot;,&quot;username&quot;);&#x000A;    $elapsed = strElapsed($post[&#39;time&#39;]);&#x000A;    $userlink = &quot;&lt;a class=\&quot;username\&quot; href=\&quot;profile.php?u=&quot;.urlencode($username).&quot;\&quot;&gt;&quot;.utf8entities($username).&quot;&lt;/a&gt;&quot;;&#x000A;&#x000A;    echo(&#39;&lt;div class=&quot;post&quot;&gt;&#39;.$userlink.&#39; &#39;.utf8entities($post[&#39;body&#39;]).&quot;&lt;br&gt;&quot;);&#x000A;    echo(&#39;&lt;i&gt;posted &#39;.$elapsed.&#39; ago via web&lt;/i&gt;&lt;/div&gt;&#39;);&#x000A;    return true;&#x000A;}&#x000A;&#x000A;function showUserPosts($userid,$start,$count) {&#x000A;    $r = redisLink();&#x000A;    $key = ($userid == -1) ? &quot;timeline&quot; : &quot;posts:$userid&quot;;&#x000A;    $posts = $r-&gt;lrange($key,$start,$start+$count);&#x000A;    $c = 0;&#x000A;    foreach($posts as $p) {&#x000A;        if (showPost($p)) $c++;&#x000A;        if ($c == $count) break;&#x000A;    }&#x000A;    return count($posts) == $count+1;&#x000A;}&#x000A;</code></pre>
+        
+        <p><code>showPost</code> will simply convert and print a Post in HTML while <code>showUserPosts</code> gets a range of posts and then passes them to <code>showPosts</code>.</p>
+        
+        <p><em>Note: <a href="../commands/lrange.html">LRANGE</a> is not very efficient if the list of posts start to be very
+        big, and we want to access elements which are in the middle of the list, since Redis Lists are backed by linked lists. If a system is designed for
+        deep pagination of million of items, it is better to resort to Sorted Sets
+        instead.</em></p>
+        
+        <h2>Following users</h2>
+        
+        <p>It is not hard, but we did not yet checked how we create following / follower relationships. If user ID 1000 (antirez) wants to follow user ID 5000 (pippo), we need to create both a following and a follower relationship. We just need to <a href="../commands/zadd.html">ZADD</a> calls:</p>
+        
+        <pre><code>    ZADD following:1000 5000&#x000A;    ZADD followers:5000 1000&#x000A;</code></pre>
+        
+        <p>Note the same pattern again and again. In theory with a relational database the list of following and followers would be contained in a single table with fields like <code>following_id</code> and <code>follower_id</code>. You can extract the followers or following of every user using an SQL query. With a key-value DB things are a bit different since we need to set both the <code>1000 is following 5000</code> and <code>5000 is followed by 1000</code> relations. This is the price to pay, but on the other hand accessing the data is simpler and extremely fast. Having these things as separate sets allows us to do interesting stuff. For example, using <a href="../commands/zinterstore.html">ZINTERSTORE</a> we can have the intersection of &#39;following&#39; of two different users, so we may add a feature to our Twitter clone so that it is able to tell you very quickly when you visit somebody else&#39;s profile, &quot;you and Alice have 34 followers in common&quot;, and things like that.</p>
+        
+        <p>You can find the code that sets or removes a following / follower relation in the <code>follow.php</code> file.</p>
+        
+        <h2>Making it horizontally scalable</h2>
+        
+        <p>Gentle reader, if you reached this point you are already a hero. Thank you. Before talking about scaling horizontally it is worth checking performance on a single server. Retwis is <em>extremely fast</em>, without any kind of cache. On a very slow and loaded server, an apache benchmark with 100 parallel clients issuing 100000 requests measured the average pageview to take 5 milliseconds. This means you can serve millions of users every day with just a single Linux box, and this one was monkey ass slow... Imagine the results with more recent hardware.</p>
+        
+        <p>However you can&#39;t go with a single server forever, how do you scale a key-value
+        store?</p>
+        
+        <p>Retwis does not perform any multi-keys operation, so making it scalable is
+        simple: you may use client-side sharding, or something like a sharding proxy
+        like Twemproxy, or the upcoming Redis Cluster.</p>
+        
+        <p>To know more about those topics please read
+        <a href="partitioning.html">our documentation about sharding</a>. However here the point
+        to stress is that in a key-value store, if you design with care, the data set
+        is split among <strong>many independent small keys</strong>. To distribute those keys
+        to multiple nodes is more straightforward and predictable compared to using
+        a semantically more complex database system.</p>
+      </article>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>

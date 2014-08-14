@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link href='../styles.css%3F1333128600.css' rel='stylesheet' type='text/css' />
+    <link href='../images/favicon.png' rel='shortcut icon' />
+    <link href='../opensearch.xml' rel='search' title='Look up a Redis command' type='application/opensearchdescription+xml' />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script async='async' defer='defer' src='../app.js%3F1375789679'></script>
+    <meta content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <title>
+      ZREM – Redis
+    </title>
+    <script type='text/javascript'>
+      //<![CDATA[
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-20243082-1']);
+         _gaq.push(['_trackPageview']);
+        
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+      //]]>
+    </script>
+  </head>
+  <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 50px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 60px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/redis.io/commands/zrem.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
+    <header>
+      <div class='container'>
+        <a href='../index.html'>
+          <img alt='Redis' height='30' src='../images/redis.png' width='93' />
+        </a>
+        <nav>
+          <a href='../commands.html'>Commands</a>
+          <a href='../clients.html'>Clients</a>
+          <a href='../documentation.html'>Documentation</a>
+          <a href='../community.html'>Community</a>
+          <a href='../download.html'>Download</a>
+          <a href='https://github.com/antirez/redis/issues'>Issues</a>
+          <a href='../support.html'>Support</a>
+          <a href='../topics/license.html'>License</a>
+        </nav>
+      </div>
+    </header>
+    <div class='text'>
+      <h1 class='command'>
+        <span class='name'>ZREM</span>
+        <span class='arg'>key</span>
+        <span class='arg'>member [member ...]</span>
+      </h1>
+      <article>
+        <aside>
+          <h2>
+            Related commands
+          </h2>
+          <ul>
+            <li>
+              <a href='zadd.html'>
+                ZADD
+              </a>
+            </li>
+            <li>
+              <a href='zcard.html'>
+                ZCARD
+              </a>
+            </li>
+            <li>
+              <a href='zcount.html'>
+                ZCOUNT
+              </a>
+            </li>
+            <li>
+              <a href='zincrby.html'>
+                ZINCRBY
+              </a>
+            </li>
+            <li>
+              <a href='zinterstore.html'>
+                ZINTERSTORE
+              </a>
+            </li>
+            <li>
+              <a href='zlexcount.html'>
+                ZLEXCOUNT
+              </a>
+            </li>
+            <li>
+              <a href='zrange.html'>
+                ZRANGE
+              </a>
+            </li>
+            <li>
+              <a href='zrangebylex.html'>
+                ZRANGEBYLEX
+              </a>
+            </li>
+            <li>
+              <a href='zrangebyscore.html'>
+                ZRANGEBYSCORE
+              </a>
+            </li>
+            <li>
+              <a href='zrank.html'>
+                ZRANK
+              </a>
+            </li>
+            <li>
+              <a href='zrem.html'>
+                <strong>ZREM</strong>
+              </a>
+            </li>
+            <li>
+              <a href='zremrangebylex.html'>
+                ZREMRANGEBYLEX
+              </a>
+            </li>
+            <li>
+              <a href='zremrangebyrank.html'>
+                ZREMRANGEBYRANK
+              </a>
+            </li>
+            <li>
+              <a href='zremrangebyscore.html'>
+                ZREMRANGEBYSCORE
+              </a>
+            </li>
+            <li>
+              <a href='zrevrange.html'>
+                ZREVRANGE
+              </a>
+            </li>
+            <li>
+              <a href='zrevrangebyscore.html'>
+                ZREVRANGEBYSCORE
+              </a>
+            </li>
+            <li>
+              <a href='zrevrank.html'>
+                ZREVRANK
+              </a>
+            </li>
+            <li>
+              <a href='zscan.html'>
+                ZSCAN
+              </a>
+            </li>
+            <li>
+              <a href='zscore.html'>
+                ZSCORE
+              </a>
+            </li>
+            <li>
+              <a href='zunionstore.html'>
+                ZUNIONSTORE
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <div class='metadata'>
+          <p><strong>Available since 1.2.0.</strong></p>
+          <p><strong>Time complexity:</strong> O(M*log(N)) with N being the number of elements in the sorted set and M the number of elements to be removed.</p>
+        </div>
+        <p>Removes the specified members from the sorted set stored at <code>key</code>.
+        Non existing members are ignored.</p>
+        
+        <p>An error is returned when <code>key</code> exists and does not hold a sorted set.</p>
+        
+        <h2>Return value</h2>
+        
+        <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>, specifically:</p>
+        
+        <ul>
+        <li>The number of members removed from the sorted set, not including non existing
+        members.</li>
+        </ul>
+        
+        <h2>History</h2>
+        
+        <ul>
+        <li><code>&gt;= 2.4</code>: Accepts multiple elements.
+        In Redis versions older than 2.4 it was possible to remove a single member per
+        call.</li>
+        </ul>
+        
+        <h2>Examples</h2>
+        
+        <div class='example' data-session='847bb4b402940c0f2da51f604d45e3a5'>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZADD myzset 1 &quot;one&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZADD myzset 2 &quot;two&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZADD myzset 3 &quot;three&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZREM myzset &quot;two&quot;</span>
+          <pre>(integer) 1</pre>
+          <span class='monospace prompt'>redis&gt;&nbsp;</span>
+          <span class='monospace command'>ZRANGE myzset 0 -1 WITHSCORES</span>
+          <pre>1) "one"&#x000A;2) "1"&#x000A;3) "three"&#x000A;4) "3"</pre><form>
+            <span class='monospace prompt'>redis&gt;&nbsp;</span>
+            <input autocomplete='off' name='command' spellcheck='false' type='text' />
+          </form></div>
+      </article>
+    </div>
+    <div class='text' id='comments'>
+      <div id='disqus_thread'></div>
+      <script type='text/javascript'>
+        //<![CDATA[
+          var disqus_shortname = 'redisio';
+          
+          // The following are highly recommended additional parameters. Remove the slashes in front to use.
+          var disqus_identifier = 'command_zrem';
+          var disqus_url = 'http://redis.io/commands/zrem';
+          
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        //]]>
+      </script>
+      <a class='dsq-brlink' href='http://disqus.com'>
+        Comments powered by
+        <span class='logo-disqus'>
+          Disqus
+        </span>
+      </a>
+    </div>
+    <footer>
+      <p>
+        This website is
+        <a href="https://github.com/antirez/redis-io">open source software</a>
+        developed by <a href="http://citrusbyte.com">Citrusbyte</a>.
+        <br> The Redis logo was designed by <a href="http://www.carlosprioglio.com/">Carlos Prioglio</a>. See more <a href="../topics/sponsors.html">credits</a>.
+      </p>
+      <div class='sponsor'>
+        Sponsored by
+        <a href='http://www.gopivotal.com/products/redis'>
+          <img alt='Redis Support' height='25' src='../images/pivotal.png' title='Redis Sponsor' width='99' />
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+<script type="text/javascript">
+lloogg_clientid = "20bb9c026e";
+</script>
+<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
+</script>
