@@ -11,19 +11,6 @@
     <title>
       An introduction to Redis data types and abstractions – Redis
     </title>
-    <script type='text/javascript'>
-      //<![CDATA[
-         var _gaq = _gaq || [];
-         _gaq.push(['_setAccount', 'UA-20243082-1']);
-         _gaq.push(['_trackPageview']);
-        
-         (function() {
-           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-         })();
-      //]]>
-    </script>
   </head>
   <body class='topics data-types-intro'><style type="text/css">#modify_div {position: fixed;right: 0px;top: 60px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 70px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/topics/data-types-intro.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
     <header>
@@ -32,26 +19,24 @@
           <img alt='Redis' height='30' src='../images/redis.png' width='93' />
         </a>
         <nav>
-          <a href='../commands.html'>Commands</a>
-          <a href='../clients.html'>Clients</a>
-          <a href='../documentation.html'>Documentation</a>
-          <a href='../community.html'>Community</a>
-          <a href='../download.html'>Download</a>
-          <a href='https://github.com/antirez/redis/issues'>Issues</a>
-          <a href='../support.html'>Support</a>
-          <a href='license.html'>License</a>
+          <a href='../commands.html'>命令</a>
+          <a href='../clients.html'>客户端</a>
+          <a href='../documentation.html'>文档</a>
+          <a href='../community.html'>社区</a>
+          <a href='../download.html'>下载</a>
+          <a href='https://github.com/antirez/redis/issues'>问题</a>
+          <a href='../support.html'>帮助</a>
+          <a href='license.html'>许可</a>
         </nav>
       </div>
     </header>
     <div class='text'>
       <article id='topic'>
-        <h1>An introduction to Redis data types and abstractions</h1>
+        <h1>Redis的数据类型和抽象的介绍</h1>
         
-        <p>Redis is not a <em>plain</em> key-value store, actually it is a <em>data structures server</em>, supporting different kind of values. What this means is that, while in
-        traditional key-value stores you associated string keys to string values, in
-        Redis the value is not limited to a simple string, but can also hold more complex
-        data structures. The following is the list of all the data structures supported
-        by Redis, which will be covered separately in this tutorial:</p>
+        <p>Redis不是一个<em>单纯</em>的键-值存储, 事实上她是一个<em>数据结构服务器</em>, 支持不同类型的值。这意味着，在传统的键-值key-value存储里，你关联的是一个字符串键到一个字符串值, 而在
+        Redis里值不限制为一个简单的字符串，还可以是一些更加复杂的数据结构。
+        下面列出了全部Redis支持的数据结构，他们会在这篇教程里被逐一介绍:</p>
         
         <ul>
         <li>Binary-safe strings.</li>
