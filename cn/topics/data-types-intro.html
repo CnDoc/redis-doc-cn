@@ -34,28 +34,24 @@
       <article id='topic'>
         <h1>Redis的数据类型和抽象的介绍</h1>
         
-        <p>Redis不是一个<em>单纯</em>的键-值存储, 事实上她是一个<em>数据结构服务器</em>, 支持不同类型的值。这意味着，在传统的键-值key-value存储里，你关联的是一个字符串键到一个字符串值, 而在
+        <p>Redis不是一个<em>单纯</em>的键-值存储, 事实上她是一个<em>数据结构服务器</em>, 
+        支持不同类型的值。这意味着，在传统的键-值存储里，你关联的是一个字符串键到一个字符串值, 而在
         Redis里值不限制为一个简单的字符串，还可以是一些更加复杂的数据结构。
         下面列出了全部Redis支持的数据结构，他们会在这篇教程里被逐一介绍:</p>
         
         <ul>
-        <li>Binary-safe strings.</li>
-        <li>Lists: collections of string elements sorted according to the order of insertion. They are basically <em>linked lists</em>.</li>
-        <li>Sets: collections of unique, unsorted string elements.</li>
-        <li>Sorted sets, similar to Sets but where every string element is associated to a
-        floating number value, called <em>score</em>. The elements are always taken sorted
-        by their score, so unlike Sets it is possible to retrieve range of elements
-        (for example you may aks: give me the top 10, or the bottom 10).</li>
-        <li>Hashes, which are maps composed of fields associated with values. Both the
-        field and the value are strings. This are very similary to Ruby or Python
-        hashes.</li>
-        <li>Bit arrays (or simply bitmaps): it is possible, usign special commands, to
-        handle String values like array of bits: you can set and clear individual
-        bits, count all the bits set to 1, find the first set or unset bit, and so
-        forth.</li>
-        <li>HyperLogLogs: this is a probabilistic data structure which is used in order
-        to estimate the cardinality of a set. Don&#39;t be scared, it is simpler than
-        it seems... See later in the HyperLogLog section of this tutorial.</li>
+        <li>二进制安全的字符串（Binary-safe strings）。</li>
+        <li>列表(Lists): 根据插入的顺序的字符串的集合。
+        他们本质是<em>链表(linked lists)</em>。</li>
+        <li>集合（Sets）: 唯一字符串的，无须的集合。</li>
+        <li>有序集合（Sorted sets），类似于集合（Sets），但里面所有的字符串元素都关联到一个叫<em>分数(score)</em>的
+        浮点数字。元素总是根据分数来排序，所以可以和集合不同，它可以接收一个范围元素（比如你可以请求：给我前
+        10个元素，或给我最后面的10个元素）。</li>
+        <li>哈希（Hashes）, 他由字段和字段关联值组成。字段和值都是字符串类型。他和Ruby和Python里面的哈希非常相似。</li>
+        <li>比特列（Bit arrays）（或者简称位图（bitmaps））: 可以使用特定的命令去像处理比特列那样处理字符串：
+        你可以设置或清空单个位，计算所有设置为1的位数目，找到第一个设置或没设置的位，等等。</li>
+        <li>HyperLogLogs: 这是一种用于以估计一组的基数的概率数据结构。不要害怕, 他比他看起来简单...
+        在本教程后面会见到HyperLogLog章节。</li>
         </ul>
         
         <p>It&#39;s not always trivial to grasp how these data types work and what to use in
