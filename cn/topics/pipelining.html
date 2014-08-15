@@ -45,15 +45,15 @@
     </header>
     <div class='text'>
       <article id='topic'>
-        <h1>Request/Response protocols and RTT</h1>
+        <h1>请求/响应协议和 往返时延</h1>
         
-        <p>Redis is a TCP server using the client-server model and what is called a <em>Request/Response</em> protocol.</p>
+        <p>Redis是一个使用客户端-服务器模式也叫<em>请求/响应</em>协议的TCP服务器。</p>
         
-        <p>This means that usually a request is accomplished with the following steps:</p>
+        <p>这意味着一个请求通常由以下几个步骤完成：</p>
         
         <ul>
-        <li>The client sends a query to the server, and reads from the socket, usually in a blocking way, for the server response.</li>
-        <li>The server processes the command and sends the response back to the client.</li>
+        <li>客户端向服务器发送请求，并读取套接字, 通常以阻塞的方式等待服务器响应。</li>
+        <li>服务器处理请求并将响应结果返回给客户端。</li>
         </ul>
         
         <p>So for instance a four commands sequence is something like this:</p>
@@ -69,9 +69,9 @@
         <li><em>Server:</em> 4</li>
         </ul>
         
-        <p>Clients and Servers are connected via a networking link. Such a link can be very fast (a loopback interface) or very slow (a connection established over the Internet with many hops between the two hosts). Whatever the network latency is, there is a time for the packets to travel from the client to the server, and back from the server to the client to carry the reply.</p>
+        <p>客户端群和服务器群之间通过网络连接。 Such a link can be very fast (a loopback interface) or very slow (a connection established over the Internet with many hops between the two hosts). Whatever the network latency is, there is a time for the packets to travel from the client to the server, and back from the server to the client to carry the reply.</p>
         
-        <p>This time is called RTT (Round Trip Time). It is very easy to see how this can affect the performances when a client needs to perform many requests in a row (for instance adding many elements to the same list, or populating a database with many keys). For instance if the RTT time is 250 milliseconds (in the case of a very slow link over the Internet), even if the server is able to process 100k requests per second, we&#39;ll be able to process at max four requests per second.</p>
+        <p>这个时间叫往返时延。显而易见， how this can affect the performances when a client needs to perform many requests in a row (for instance adding many elements to the same list, or populating a database with many keys). For instance if the RTT time is 250 milliseconds (in the case of a very slow link over the Internet), even if the server is able to process 100k requests per second, we&#39;ll be able to process at max four requests per second.</p>
         
         <p>If the interface used is a loopback interface, the RTT is much shorter (for instance my host reports 0,044 milliseconds pinging 127.0.0.1), but it is still a lot if you need to perform many writes in a row.</p>
         
