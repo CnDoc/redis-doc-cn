@@ -54,20 +54,19 @@
         在本教程后面会见到HyperLogLog章节。</li>
         </ul>
         
-        <p>It&#39;s not always trivial to grasp how these data types work and what to use in
-        order to solve a given problem from the <a href="../commands.html">command reference</a>, so this
-        document is a crash course to Redis data types and their most used patterns.</p>
+        <p>不是总是那么容易可以从<a href="../commands.html">命令指南</a>里掌握到数据类型是如何运行
+        和怎么运用他们去解决问题的，所以本文档是一个Redis数据类型和他们最常用模式的速成课程。</p>
         
-        <p>For all the examples we&#39;ll use the <code>redis-cli</code> utility, that&#39;s a simple but
-        handy command line utility to issue commands against the Redis server.</p>
+        <p>所有的例子我们将会用<code>redis-cli</code>这个工具, 他是一个简单但是
+        方便的对Redis服务器发送命令的命令行工具。</p>
         
-        <h2>Redis keys</h2>
+        <h2>Redis键</h2>
         
-        <p>Redis keys are binary safe, this means that you can use any binary sequence as a
-        key, from a string like &quot;foo&quot; to the content of a JPEG file.
-        The empty string is also a valid key.</p>
+        <p>Redis键是二进制安全的，这意味着你可以用任何二进制序列作为键，
+        总一个好像“foo”的字符串到一个JPEG文件的内容。
+        空字符串也是一个合法的键。</p>
         
-        <p>A few other rules about keys:</p>
+        <p>键的一些其他规则:</p>
         
         <ul>
         <li>Too long keys are not a good idea, for instance a key of 1024 bytes is not a
@@ -861,8 +860,3 @@
     </footer>
   </body>
 </html>
-<script type="text/javascript">
-lloogg_clientid = "20bb9c026e";
-</script>
-<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
-</script>
