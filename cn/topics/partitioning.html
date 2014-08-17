@@ -47,7 +47,7 @@
       <article id='topic'>
         <h1>分区：如何在多台Redis中分离数据。</h1>
         
-        <p>分区是一个将数据分离到多台Redis中的处理过程，因此每台Redis将只会contain a subset of your keys. 文档的第一部分将会给你介绍分区的概念，第二部分将会给你展示一些Redis分区的替代方案。</p>
+        <p>分区是一个将数据分离到多台Redis中的处理过程，因此每台Redis将只会包括一部分键。 文档的第一部分将会给你介绍分区的概念，第二部分将会给你展示一些Redis分区的替代方案。</p>
         
         <h2>为什么分区有用</h2>
         
@@ -60,34 +60,34 @@
         
         <h2>分区基础知识</h2>
         
-        <p>分区的标准是有差异的。 假设我们有四台Redis <strong>R0</strong>, <strong>R1</strong>, <strong>R2</strong>, <strong>R3</strong>, and many keys representing users like <code>user:1</code>, <code>user:2</code>, ... and so forth, we can find different ways to select in which instance we store a given key. In other words there are <em>different systems to map</em> a given key to a given Redis server.</p>
+        <p>分区的标准是有差异的。 假设我们实例化四台Redis <strong>R0</strong>, <strong>R1</strong>, <strong>R2</strong>, <strong>R3</strong>, 很多表示用户的键像 <code>user:1</code>, <code>user:2</code>, ... 等等, 我们可以找到不同的方式在我们存储的键的实例中来查询。也就是说有 <em>不同的系统来映射</em> 一个指定的键到一个指定的Redis服务器。</p>
         
         <p>其中最简单的分区方式是 <strong>范围分区</strong>, 根据对象的范围映射到特定的某台Redis中来实现。例如，我假设将ID为0-10000的用户分到 <strong>R0</strong>, 而ID为10001-20000的用户分到 <strong>R1</strong> ，以此类推。</p>
         
         <p>这种体系可行并且被用到实际中，然而它的缺点是需要用一张表来实现映射范围。这个表需要被管理并且它还要适合我们所有的对象。 对于Redis来说通常这不是一个好的方法。</p>
         
-        <p>另一种范围分区方式是<strong>哈希分区</strong>。 此方式适合于任何键, no need for a key in the form <code>object_name:&lt;id&gt;</code> as is as simple as this:</p>
+        <p>另一种范围分区方式是<strong>哈希分区</strong>。 此方式适合于任何键, 没有必要存在形如 <code>object_name:&lt;id&gt;</code> 的键，只是像这样简单：</p>
         
         <ul>
-        <li>Take the key name and use an hash function to turn it into a number. For instance I could use the <code>crc32</code> hash function. So if the key is <code>foobar</code> I do <code>crc32(foobar)</code> that will output something like 93024922.</li>
-        <li>I use a modulo operation with this number in order to turn it into a number between 0 and 3, so that I can map this number to one of the four Redis instances I&#39;ve. So <code>93024922 modulo 4</code> equals 2, so I know my key <code>foobar</code> should be stored into the <strong>R2</strong> instance. <em>Note: the modulo operation is just the rest of the division, usually it is implemented by the <code>%</code> operator in many programming languages.</em></li>
+        <li>用一个键名和一个哈希函数来返回一个数值。例如我可以用 <code>crc32</code> 哈希函数。所以如果我用的这个键是 <code>foobar</code> ， <code>crc32(foobar)</code> 就会输出值 93024922。</li>
+        <li>我对这个数值取来返回一个在0到3之间的数， 所以我可以将这个值映射到前面说的四台Redis中的一台。 因为 <code>93024922 模 4</code> 等于 2, 所以我知道键 <code>foobar</code> 应该被存储到 <strong>R2</strong> 实例中. <em>注意: 取模就是除法取余，在很多程序语言中用 <code>%</code> 来表示。</em></li>
         </ul>
         
-        <p>There are many other ways to perform partitioning, but with this two examples you should get the idea. One advanced form of hash partitioning is called <strong>consistent hashing</strong> and is implemented by a few Redis clients and proxies.</p>
+        <p>虽然有很多其他的方式来实现分区,但是通过这两个例子你应该明白分区的思想了。一种改进的哈希分区方式叫 <strong>consistent hashing</strong> 并被一些Redis客户端和代理实现。</p>
         
         <h2>分区的不同实现方案</h2>
         
-        <p>Partitioning can be responsibility of different parts of a software stack.</p>
+        <p>分区可以是一个软件栈的不同部分来负责的。</p>
         
         <ul>
-        <li><strong>Client side partitioning</strong> means that the clients directly select the right node where to write or read a given key. Many Redis clients implement client side partitioning.</li>
-        <li><strong>Proxy assisted partitioning</strong> means that our clients send requests to a proxy that is able to speak the Redis protocol, instead of sending requests directly to the right Redis instance. The proxy will make sure to forward our request to the right Redis instance accordingly to the configured partitioning schema, and will send the replies back to the client. The Redis and Memcached proxy <a href="https://github.com/twitter/twemproxy">Twemproxy</a> implements proxy assisted partitioning.</li>
-        <li><strong>Query routing</strong> means that you can send your query to a random instance, and the instance will make sure to forward your query to the right node. Redis Cluster implements an hybrid form of query routing, with the help of the client (the request is not directly forwarded from a Redis instance to another, but the client gets <em>redirected</em> to the right node).</li>
+        <li><strong>客户端分区</strong> 是客户端直接指定一个合适的 node where to write or read a given key. 很多Redis客户端实现了客户端分区。</li>
+        <li><strong>代理协助分区</strong> means that our clients send requests to a proxy that is able to speak the Redis protocol, instead of sending requests directly to the right Redis instance. The proxy will make sure to forward our request to the right Redis instance accordingly to the configured partitioning schema, and will send the replies back to the client. The Redis and Memcached proxy <a href="https://github.com/twitter/twemproxy">Twemproxy</a> implements proxy assisted partitioning.</li>
+        <li><strong>查询路由</strong> means that you can send your query to a random instance, and the instance will make sure to forward your query to the right node. Redis Cluster implements an hybrid form of query routing, with the help of the client (the request is not directly forwarded from a Redis instance to another, but the client gets <em>redirected</em> to the right node).</li>
         </ul>
         
         <h2>分区的缺点</h2>
         
-        <p>Some features of Redis don&#39;t play very well with partitioning:</p>
+        <p>Redis的一些特点影响分区:</p>
         
         <ul>
         <li>Operations involving multiple keys are usually not supported. For instance you can&#39;t perform the intersection between two sets if they are stored in keys that are mapped to different Redis instances (actually there are ways to do this, but not directly).</li>
@@ -134,7 +134,7 @@
         <li>Finally shut down the no longer used instances in the old server.</li>
         </ul>
         
-        <h1>Implementations of Redis partitioning</h1>
+        <h1>Redis分区实现</h1>
         
         <p>So far we covered Redis partitioning in theory, but what about practice? What system should you use?</p>
         
