@@ -11,19 +11,6 @@
     <title>
       DUMP – Redis
     </title>
-    <script type='text/javascript'>
-      //<![CDATA[
-         var _gaq = _gaq || [];
-         _gaq.push(['_setAccount', 'UA-20243082-1']);
-         _gaq.push(['_trackPageview']);
-        
-         (function() {
-           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-         })();
-      //]]>
-    </script>
   </head>
   <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 60px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 70px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/commands/dump.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
     <header>
@@ -162,39 +149,37 @@
           </ul>
         </aside>
         <div class='metadata'>
-          <p><strong>Available since 2.6.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(1) to access the key and additional O(N*M) to serialized it, where N is the number of Redis objects composing the value and M their average size. For small string values the time complexity is thus O(1)+O(1*M) where M is small, so simply O(1).</p>
+          <p><strong>始于2.6.0可用。</strong></p>
+          <p><strong>时间负责度:</strong>查找给定键的复杂度为 O(1) ，
+          对键进行序列化的复杂度为 O(N*M) ，其中 N 是构成 key 的 Redis 对象的数量，
+          而 M 则是这些对象的平均大小。
+           For small string values the time complexity is thus O(1)+O(1*M) where M is small, so simply O(1).
+          如果序列化的对象是比较小的字符串，复杂度因此O(1)+O(1*M)，这里M很小，所以约等于O(1) 。</p>
         </div>
-        <p>Serialize the value stored at key in a Redis-specific format and return it to
-        the user.
-        The returned value can be synthesized back into a Redis key using the <a href="restore.html">RESTORE</a>
-        command.</p>
+        <p>用特定的Redis格式序列化value到给定的key，并将他返回给用户，
+        使用RESTORE命令可以将这个值反序列化为 Redis 键。</p>
         
-        <p>The serialization format is opaque and non-standard, however it has a few
-        semantical characteristics:</p>
+        <p>这个序列化格式是不透明和非标准的，然而他有一些语义特征：</p>
         
         <ul>
-        <li>It contains a 64-bit checksum that is used to make sure errors will be
-        detected.
-        The <a href="restore.html">RESTORE</a> command makes sure to check the checksum before synthesizing a
-        key using the serialized value.</li>
-        <li>Values are encoded in the same format used by RDB.</li>
-        <li>An RDB version is encoded inside the serialized value, so that different Redis
-        versions with incompatible RDB formats will refuse to process the serialized
-        value.</li>
+        <li>它包含一个64位的校验码以确保错误可以被检测到。
+        <a href="restore.html">RESTORE</a>命令会在将一个序列化值序反列化为键之前检查这个校验码。</li>
+        <li>值会被和RDB一样的格式来编码。</li>
+        <li>RDB版本会被编码到序列化的值里面，
+        所以不同的Redis版本之间不兼容的RDB格式，Redis将会被拒绝去处理那些已序列化的值。
+        </li>
         </ul>
         
-        <p>The serialized value does NOT contain expire information.
-        In order to capture the time to live of the current value the <a href="pttl.html">PTTL</a> command
-        should be used.</p>
+        <p>序列化值不会包含到期时间的信息。
+        为了获得当前值的生存时间，应该使用<a href="pttl.html">PTTL</a>命令。</p>
         
-        <p>If <code>key</code> does not exist a nil bulk reply is returned.</p>
+        <p>如果<code>key</code>不存在，将会返回nil。</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
-        <p><a href="../topics/protocol.html#bulk-string-reply">Bulk string reply</a>: the serialized value.</p>
+        <p><a href="../topics/protocol.html#bulk-string-reply">Bulk string reply</a>: 序列化值。</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='f2d7902db38993ea6e640cd0de94c46a'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>
@@ -249,8 +234,3 @@
     </footer>
   </body>
 </html>
-<script type="text/javascript">
-lloogg_clientid = "20bb9c026e";
-</script>
-<script type="text/javascript" src="http://demo.lloogg.com/l.js?c=20bb9c026e">
-</script>
