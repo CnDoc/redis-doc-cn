@@ -11,19 +11,6 @@
     <title>
       EXPIRE – Redis
     </title>
-    <script type='text/javascript'>
-      //<![CDATA[
-         var _gaq = _gaq || [];
-         _gaq.push(['_setAccount', 'UA-20243082-1']);
-         _gaq.push(['_trackPageview']);
-        
-         (function() {
-           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-         })();
-      //]]>
-    </script>
   </head>
   <body class=''><style type="text/css">#modify_div {position: fixed;right: 0px;top: 60px;	background-color: #000000;	height: 30px;width: 100px;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: dashed;border-right-style: none;border-bottom-style: dashed;border-left-style: dashed;border-top-color: #333333;border-right-color: #333333;border-bottom-color: #333333;border-left-color: #333333;}#modify {display: block;position: fixed;right: 23px;top: 70px;color: #FFFFFF;text-decoration: none;font-size: 12px;font-weight: bold;}#modify:hover {text-decoration: underline;}</style><div id="modify_div"></div><a href="https://github.com/jialechan/redis-doc-cn/edit/gh-pages/cn/commands/expire.html" id="modify" target="_blank">修改本页</a><script>$('#modify_div').css('opacity', '0.6');	</script>
     <header>
@@ -32,14 +19,14 @@
           <img alt='Redis' height='30' src='../images/redis.png' width='93' />
         </a>
         <nav>
-          <a href='../commands.html'>Commands</a>
-          <a href='../clients.html'>Clients</a>
-          <a href='../documentation.html'>Documentation</a>
-          <a href='../community.html'>Community</a>
-          <a href='../download.html'>Download</a>
-          <a href='https://github.com/antirez/redis/issues'>Issues</a>
-          <a href='../support.html'>Support</a>
-          <a href='../topics/license.html'>License</a>
+          <a href='../commands.html'>命令</a>
+          <a href='../clients.html'>客户端</a>
+          <a href='../documentation.html'>文档</a>
+          <a href='../community.html'>社区</a>
+          <a href='../download.html'>下载</a>
+          <a href='https://github.com/antirez/redis/issues'>问题</a>
+          <a href='../support.html'>支持</a>
+          <a href='../topics/license.html'>许可</a>
         </nav>
       </div>
     </header>
@@ -52,7 +39,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -163,21 +150,22 @@
           </ul>
         </aside>
         <div class='metadata'>
-          <p><strong>Available since 1.0.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(1)</p>
+          <p><strong>始于1.0.0可用。</strong></p>
+          <p><strong>时间复杂度:</strong> O(1)</p>
         </div>
-        <p>Set a timeout on <code>key</code>.
-        After the timeout has expired, the key will automatically be deleted.
-        A key with an associated timeout is often said to be <em>volatile</em> in Redis
-        terminology.</p>
+        <p>为<code>key</code>设置一个超时值.
+        当一个key过期时，它会被自动删除。
+        在 Redis 中，带有生存时间的 key 被称为<em>易失的 (volatile)</em>。
+        </p>
         
-        <p>The timeout is cleared only when the key is removed using the <a href="del.html">DEL</a> command or
-        overwritten using the <a href="set.html">SET</a> or <a href="getset.html">GETSET</a> commands.
-        This means that all the operations that conceptually <em>alter</em> the value stored at
-        the key without replacing it with a new one will leave the timeout untouched.
-        For instance, incrementing the value of a key with <a href="incr.html">INCR</a>, pushing a new value
-        into a list with <a href="lpush.html">LPUSH</a>, or altering the field value of a hash with <a href="hset.html">HSET</a> are
-        all operations that will leave the timeout untouched.</p>
+        <p>
+        生存时间可以通过使用 <a href="del.html">DEL</a> 命令来删除整个 key 来移除，
+        或者被 <a href="set.html">SET</a> 和 <a href="getset.html">GETSET</a> 命令覆写(overwrite)，这意味着，
+        如果一个命令只是修改(<em>alter</em>)一个带生存时间的 key 的值而不是用一个新的 key 值来代替(replace)它的话，
+        那么生存时间不会被改变。
+        
+        比如说，对一个 key 执行 <a href="incr.html">INCR</a> 命令，对一个列表进行 <a href="lpush.html">LPUSH</a> 命令，
+        或者对一个哈希表执行 <a href="hset.html">HSET</a> 命令，这类操作都不会修改 key 本身的生存时间。</p>
         
         <p>The timeout can also be cleared, turning the key back into a persistent key,
         using the <a href="persist.html">PERSIST</a> command.</p>
