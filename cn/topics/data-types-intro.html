@@ -69,9 +69,9 @@
         
         <ul>
         <li>太长的键是不好的，比如一个长1024字节的键不但浪费内存，还会在查找对比键的时候，消耗更多资源。
-        即使现在任务正是要比较一个大的键值，从内存和带宽的角度来说，用哈希（比如SHA1）转存它也是一个不错的注意。
+        即使现在任务正是要比较一个大的键值，从内存和带宽的角度来说，用哈希（比如SHA1）转存它也是一个不错的主意。
         </li>
-        <li>太短的键通常也不是一个好主意。如果你将以个键&quot;user:1000:followers&quot;写成
+        <li>太短的键通常也不是一个好主意。如果你将一个键&quot;user:1000:followers&quot;写成
         &quot;u1000flw&quot;就会太少信息了，前者更具有可读性，同时比起键和值消耗的空间这只是多了一点点的空间消耗。
         虽然不能否认短的键消耗更少的内存，你的任务就是找到消耗和可读性之间的平衡点。</li>
         <li>尽量坚持使用模式。例如&quot;object-type:id&quot;就是一个好的做法，比如&quot;user:1000&quot;。
@@ -82,28 +82,28 @@
         
         <p><a name="strings"></a></p>
         
-        <h2>Redis Strings</h2>
+        <h2>Redis的字符串类型</h2>
         
-        <p>The Redis String type is the simplest type of value you can associate to
-        a Redis key. It is the only data type in Memcached, so it is also very natural
-        for newcomers to use it in Redis.</p>
+        <p>Redis的字符串类型是你可以关联到Reids的键的最简单类型。
+        它是Memcached的唯一数据类型，所以它对新人来说在Redis使用它是很自然的事。
+        </p>
         
-        <p>Since Redis keys are strings, when we use the string type as a value too,
-        we are mapping a string to another string. The string data type is useful
-        for a number of use cases, like caching HTML fragments or pages.</p>
+        <p>当Redis的键是字符串，同时我们用字符串来作为值的时候，我们就是在左字符串到字符串的映射。
+        字符串类型在大量例子都非常有用，比如换成HTML片段或整个页面。
+        </p>
         
-        <p>Let&#39;s play a bit with the string type, using <code>redis-cli</code> (all the examples
-        will be performed via <code>redis-cli</code> in this tutorial).</p>
+        <p>让我们用<code>redis-cli</code>（所有在本教程出现的例子都是通过<code>redis-cli</code>执行）对字符串做更多操作。
+        </p>
         
         <pre><code>&gt; set mykey somevalue&#x000A;OK&#x000A;&gt; get mykey&#x000A;&quot;somevalue&quot;&#x000A;</code></pre>
         
-        <p>As you can see using the <a href="../commands/set.html">SET</a> and the <a href="../commands/get.html">GET</a> commands are the way we set
-        and retrieve a string value. Note that <a href="../commands/set.html">SET</a> will replace any existing value
-        stored already into the key, in case the key already exists, even if the key
-        is associated with a non-string value. So <a href="../commands/set.html">SET</a> performs an assignment.</p>
+        <p>正如你看到的用<a href="../commands/set.html">SET</a>和<a href="../commands/get.html">GET</a>命令是我们设置和获取一个字符串的值。
+        注意<a href="../commands/set.html">SET</a>命令将会替换已经存储在键里面的值，甚至这个键本来关联的不是以个字符串类型也一样。
+        所以<a href="../commands/set.html">SET</a>执行的是一个指派动作。</p>
         
-        <p>Values can be strings (including binary data) of every kind, for instance you
-        can store a jpeg image inside a key. A value can&#39;t be bigger than 512 MB.</p>
+        <p>值可以是任何类型的字符串类型（包括二进制数据），
+        例如你可以存储一个jpeg图片到一个值。
+        一个值不能大于512 MB。</p>
         
         <p>The <a href="../commands/set.html">SET</a> command has interesting options, that are provided as additional
         arguments. For example if I may ask <a href="../commands/set.html">SET</a> to fail if the key already exists,
