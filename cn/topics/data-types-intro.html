@@ -68,22 +68,16 @@
         <p>键的一些其他规则:</p>
         
         <ul>
-        <li>Too long keys are not a good idea, for instance a key of 1024 bytes is not a
-        good idea not only memory-wise, but also because the lookup of the key in the
-        dataset may require several costly key-comparisons. Even when the task at hand
-        is to match the existence of a big value, to resort to hashing it (for example
-        with SHA1) is a better idea, especially from the point of view of memory
-        and bandwidth.</li>
-        <li>Too short keys are often not a good idea. There is little point in writing
-        &quot;u1000flw&quot; as key if you can write instead &quot;user:1000:followers&quot;, the latter
-        is more readable and the added space is little compared to the space used by
-        the key object itself and the value object. However it is not possible to deny
-        that short keys will consume a bit less memory. Your job is to find the
-        right balance.</li>
-        <li>Try to stick with a schema. For instance &quot;object-type:id&quot; can be a nice
-        idea, like in &quot;user:1000&quot;. Dots or dashes are often used for multi-words
-        fields, like in &quot;comment:1234:reply.to&quot; or &quot;comment:1234:reply-to&quot;.</li>
-        <li>The maximum allowed key size is 512 MB.</li>
+        <li>太长的键是不好的，比如一个长1024字节的键不但浪费内存，还会在查找对比键的时候，消耗更多资源。
+        即使现在任务正是要比较一个大的键值，从内存和带宽的角度来说，用哈希（比如SHA1）转存它也是一个不错的注意。
+        </li>
+        <li>太短的键通常也不是一个好主意。如果你将以个键&quot;user:1000:followers&quot;写成
+        &quot;u1000flw&quot;就会太少信息了，前者更具有可读性，同时比起键和值消耗的空间这只是多了一点点的空间消耗。
+        虽然不能否认短的键消耗更少的内存，你的任务就是找到消耗和可读性之间的平衡点。</li>
+        <li>尽量坚持使用模式。例如&quot;object-type:id&quot;就是一个好的做法，比如&quot;user:1000&quot;。
+        点号或分号通常会用来分隔单词，比如&quot;comment:1234:reply.to&quot;或者&quot;comment:1234:reply-to&quot;。
+        </li>
+        <li>键最大为512 MB。</li>
         </ul>
         
         <p><a name="strings"></a></p>
