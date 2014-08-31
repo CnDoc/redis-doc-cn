@@ -42,7 +42,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -149,7 +149,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.8.9.</strong></p>
-          <p><strong>Time complexity:</strong> O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N)).</p>
+          <p><strong>时间复杂度：</strong> O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N)).</p>
         </div>
         <p>When all the elements in a sorted set are inserted with the same score, in order to force lexicographical ordering, this command returns all the elements in the sorted set at <code>key</code> with a value between <code>min</code> and <code>max</code>.</p>
         
@@ -199,11 +199,11 @@
         queries on 64 bit values. As in the example below, after the first 8 bytes
         we can store the value of the element we are actually indexing.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#array-reply">Array reply</a>: list of elements in the specified score range.</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='4d08b90f7bbcbeca5ba4fa7a0a2d1de7'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

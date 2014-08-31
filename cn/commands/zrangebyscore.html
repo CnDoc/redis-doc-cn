@@ -43,7 +43,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -150,7 +150,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 1.0.5.</strong></p>
-          <p><strong>Time complexity:</strong> O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N)).</p>
+          <p><strong>时间复杂度：</strong> O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N)).</p>
         </div>
         <p>Returns all the elements in the sorted set at <code>key</code> with a score between <code>min</code>
         and <code>max</code> (including elements with score equal to <code>min</code> or <code>max</code>).
@@ -189,12 +189,12 @@
         
         <p>Will return all the elements with <code>5 &lt; score &lt; 10</code> (5 and 10 excluded).</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#array-reply">Array reply</a>: list of elements in the specified score range (optionally
         with their scores).</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='7a25dd0e346c5375d384c86d1554c857'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

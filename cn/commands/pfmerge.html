@@ -40,7 +40,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -62,7 +62,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.8.9.</strong></p>
-          <p><strong>Time complexity:</strong> O(N) to merge N HyperLogLogs, but with high constant times.</p>
+          <p><strong>时间复杂度：</strong> O(N) to merge N HyperLogLogs, but with high constant times.</p>
         </div>
         <p>Merge multiple HyperLogLog values into an unique value that will approximate
         the cardinality of the union of the observed Sets of the source HyperLogLog
@@ -71,11 +71,11 @@
         <p>The computed merged HyperLogLog is set to the destination variable, which is
         created if does not exist (defauling to an empty HyperLogLog).</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#simple-string-reply">Simple string reply</a>: The command just returns <code>OK</code>.</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='513859d40093012b92721053e6fe2515'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

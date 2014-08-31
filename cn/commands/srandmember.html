@@ -40,7 +40,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -121,8 +121,8 @@
           </ul>
         </aside>
         <div class='metadata'>
-          <p><strong>Available since 1.0.0.</strong></p>
-          <p><strong>Time complexity:</strong> Without the count argument O(1), otherwise O(N) where N is the absolute value of the passed count.</p>
+          <p><strong>始于1.0.0可用。</strong></p>
+          <p><strong>时间复杂度：</strong> Without the count argument O(1), otherwise O(N) where N is the absolute value of the passed count.</p>
         </div>
         <p>When called with just the <code>key</code> argument, return a random element from the set value stored at <code>key</code>.</p>
         
@@ -130,12 +130,12 @@
         
         <p>When called with just the key argument, the operation is similar to <a href="spop.html">SPOP</a>, however while <a href="spop.html">SPOP</a> also removes the randomly selected element from the set, <a href="srandmember.html">SRANDMEMBER</a> will just return a random element without altering the original set in any way.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#bulk-string-reply">Bulk string reply</a>: without the additional <code>count</code> argument the command returns a Bulk Reply with the randomly selected element, or <code>nil</code> when <code>key</code> does not exist.
         <a href="../topics/protocol.html#array-reply">Array reply</a>: when the additional <code>count</code> argument is passed the command returns an array of elements, or an empty array when <code>key</code> does not exist.</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='1576fe41aa5a5dd0035d380e976e952d'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

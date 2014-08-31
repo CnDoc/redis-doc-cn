@@ -41,7 +41,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -153,7 +153,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.8.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(1) for every call. O(N) for a complete iteration, including enough command calls for the cursor to return back to 0. N is the number of elements inside the collection..</p>
+          <p><strong>时间复杂度：</strong> O(1) for every call. O(N) for a complete iteration, including enough command calls for the cursor to return back to 0. N is the number of elements inside the collection..</p>
         </div>
         <p>The <a href="scan.html">SCAN</a> command and the closely related commands <a href="sscan.html">SSCAN</a>, <a href="hscan.html">HSCAN</a> and <a href="zscan.html">ZSCAN</a> are used in order to incrementally iterate over a collection of elements.</p>
         
@@ -261,7 +261,7 @@
         
         <p>This is easy to see intuitively: if the collection grows there is more and more work to do in order to visit all the possible elements, and the ability to terminate the iteration depends on the number of calls to <a href="scan.html">SCAN</a> and its COUNT option value compared with the rate at which the collection grows.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="scan.html">SCAN</a>, <a href="sscan.html">SSCAN</a>, <a href="hscan.html">HSCAN</a> and <a href="zscan.html">ZSCAN</a> return a two elements multi-bulk reply, where the first element is a string representing an unsigned 64 bit number (the cursor), and the second element is a multi-bulk with an array of elements.</p>
         

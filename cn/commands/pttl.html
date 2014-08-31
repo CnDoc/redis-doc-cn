@@ -39,7 +39,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -151,7 +151,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.6.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(1)</p>
+          <p><strong>时间复杂度：</strong> O(1)</p>
         </div>
         <p>Like <a href="ttl.html">TTL</a> this command returns the remaining time to live of a key that has an
         expire set, with the sole difference that <a href="ttl.html">TTL</a> returns the amount of remaining
@@ -166,11 +166,11 @@
         <li>The command returns <code>-1</code> if the key exists but has no associated expire.</li>
         </ul>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>: TTL in milliseconds, or a negative value in order to signal an error (see the description above).</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='2d453abc8362d593e8a80f364bb53ae7'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

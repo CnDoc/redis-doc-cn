@@ -40,7 +40,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -162,18 +162,18 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.0.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(1). The amortized time complexity is O(1) assuming the appended value is small and the already present value is of any size, since the dynamic string library used by Redis will double the free space available on every reallocation.</p>
+          <p><strong>时间复杂度：</strong> O(1). The amortized time complexity is O(1) assuming the appended value is small and the already present value is of any size, since the dynamic string library used by Redis will double the free space available on every reallocation.</p>
         </div>
         <p>If <code>key</code> already exists and is a string, this command appends the <code>value</code> at the
         end of the string.
         If <code>key</code> does not exist it is created and set as an empty string, so <a href="append.html">APPEND</a>
         will be similar to <a href="set.html">SET</a> in this special case.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>: the length of the string after the append operation.</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='2beb59a26e39b07d99848a40aebf4d92'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

@@ -41,7 +41,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -148,7 +148,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.0.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(log(N)) with N being the number of elements in the sorted set.</p>
+          <p><strong>时间复杂度：</strong> O(log(N)) with N being the number of elements in the sorted set.</p>
         </div>
         <p>Returns the number of elements in the sorted set at <code>key</code> with a score between
         <code>min</code> and <code>max</code>.</p>
@@ -158,11 +158,11 @@
         
         <p>Note: the command has a complexity of just <span class="math">O(log(N)) </span>because it uses elements ranks (see <a href="zrank.html">ZRANK</a>) to get an idea of the range. Because of this there is no need to do a work proportional to the size of the range.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>: the number of elements in the specified score range.</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='851713dbc56e180aa4d753a30132851e'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

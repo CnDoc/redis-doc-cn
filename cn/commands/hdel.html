@@ -40,7 +40,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -117,14 +117,14 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.0.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(N) where N is the number of fields to be removed.</p>
+          <p><strong>时间复杂度：</strong> O(N) where N is the number of fields to be removed.</p>
         </div>
         <p>Removes the specified fields from the hash stored at <code>key</code>.
         Specified fields that do not exist within this hash are ignored.
         If <code>key</code> does not exist, it is treated as an empty hash and this command returns
         <code>0</code>.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>: the number of fields that were removed from the hash, not
         including specified but non existing fields.</p>
@@ -139,7 +139,7 @@
         versions, use a <a href="multi.html">MULTI</a> / <a href="exec.html">EXEC</a> block.</p></li>
         </ul>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='4c98730a032d3e56d3b89fc0c35fe133'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

@@ -39,7 +39,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -61,7 +61,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.8.9.</strong></p>
-          <p><strong>Time complexity:</strong> O(1) with every small average constant times when called with a single key. O(N) with N being the number of keys, and much bigger constant times, when called with multiple keys.</p>
+          <p><strong>时间复杂度：</strong> O(1) with every small average constant times when called with a single key. O(N) with N being the number of keys, and much bigger constant times, when called with multiple keys.</p>
         </div>
         <p>When called with a single key, returns the approximated cardinality computed by the HyperLogLog data structure stored at the specified variable, which is 0 if the variable does not exist.</p>
         
@@ -76,7 +76,7 @@
         <p>Note: as a side effect of calling this function, it is possible that the HyperLogLog is modified, since the last 8 bytes encode the latest computed cardinality
         for caching purposes. So <a href="pfcount.html">PFCOUNT</a> is technically a write command.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>, specifically:</p>
         
@@ -84,7 +84,7 @@
         <li>The approximated number of unique elements observed via <a href="pfadd.html">PFADD</a>.</li>
         </ul>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='138b03a5d276eebcaa4e173053573812'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

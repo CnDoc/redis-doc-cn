@@ -38,7 +38,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -200,7 +200,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 3.0.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(N) where N is the total number of Cluster nodes</p>
+          <p><strong>时间复杂度：</strong> O(N) where N is the total number of Cluster nodes</p>
         </div>
         <p>Returns <a href="../topics/protocol.html#array-reply">Array reply</a> of current cluster state.</p>
         
@@ -236,7 +236,7 @@
         
         <pre><code>127.0.0.1:7001&gt; cluster slots&#x000A;1) 1) (integer) 0&#x000A;   2) (integer) 4095&#x000A;   3) 1) &quot;127.0.0.1&quot;&#x000A;      2) (integer) 7000&#x000A;   4) 1) &quot;127.0.0.1&quot;&#x000A;      2) (integer) 7004&#x000A;2) 1) (integer) 12288&#x000A;   2) (integer) 16383&#x000A;   3) 1) &quot;127.0.0.1&quot;&#x000A;      2) (integer) 7003&#x000A;   4) 1) &quot;127.0.0.1&quot;&#x000A;      2) (integer) 7007&#x000A;3) 1) (integer) 4096&#x000A;   2) (integer) 8191&#x000A;   3) 1) &quot;127.0.0.1&quot;&#x000A;      2) (integer) 7001&#x000A;   4) 1) &quot;127.0.0.1&quot;&#x000A;      2) (integer) 7005&#x000A;4) 1) (integer) 8192&#x000A;   2) (integer) 12287&#x000A;   3) 1) &quot;127.0.0.1&quot;&#x000A;      2) (integer) 7002&#x000A;   4) 1) &quot;127.0.0.1&quot;&#x000A;      2) (integer) 7006&#x000A;</code></pre>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#array-reply">Array reply</a>: nested list of slot ranges with IP/Port mappings.</p>
       </article>

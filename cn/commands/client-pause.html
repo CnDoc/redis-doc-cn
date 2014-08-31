@@ -39,7 +39,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -201,7 +201,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.9.50.</strong></p>
-          <p><strong>Time complexity:</strong> O(1)</p>
+          <p><strong>时间复杂度：</strong> O(1)</p>
         </div>
         <p><code>CLIENT PAUSE</code> is a connections control command able to suspend all the Redis clients for the specified amount of time (in milliseconds).</p>
         
@@ -224,7 +224,7 @@
         
         <p>It is possible to send <code>CLIENT PAUSE</code> in a MULTI/EXEC block together with the <code>INFO replication</code> command in order to get the current master offset at the time the clients are blocked. This way it is possible to wait for a specific offset in the slave side in order to make sure all the replication stream was processed.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#simple-string-reply">Simple string reply</a>: The command returns OK or an error if the timeout is invalid.</p>
       </article>

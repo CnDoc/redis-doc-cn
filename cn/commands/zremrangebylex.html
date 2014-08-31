@@ -41,7 +41,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -148,17 +148,17 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.8.9.</strong></p>
-          <p><strong>Time complexity:</strong> O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements removed by the operation.</p>
+          <p><strong>时间复杂度：</strong> O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements removed by the operation.</p>
         </div>
         <p>When all the elements in a sorted set are inserted with the same score, in order to force lexicographical ordering, this command removes all elements in the sorted set stored at <code>key</code> between the lexicographical range specified by <code>min</code> and <code>max</code>.</p>
         
         <p>The meaining of <code>min</code> and <code>max</code> are the same of the <a href="zrangebylex.html">ZRANGEBYLEX</a> command. Similarly, this command actually returns the same elements that <a href="zrangebylex.html">ZRANGEBYLEX</a> would return if called with the same <code>min</code> and <code>max</code> arguments.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>: the number of elements removed.</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='22a17c711a27e970e2495197fed85c3b'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

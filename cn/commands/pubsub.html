@@ -46,7 +46,7 @@
             </li>
           </ul>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -83,7 +83,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.8.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(N) for the CHANNELS subcommand, where N is the number of active channels, and assuming constant time pattern matching (relatively short channels and patterns). O(N) for the NUMSUB subcommand, where N is the number of requested channels. O(1) for the NUMPAT subcommand.</p>
+          <p><strong>时间复杂度：</strong> O(N) for the CHANNELS subcommand, where N is the number of active channels, and assuming constant time pattern matching (relatively short channels and patterns). O(N) for the NUMSUB subcommand, where N is the number of requested channels. O(1) for the NUMPAT subcommand.</p>
         </div>
         <p>The PUBSUB command is an introspection command that allows to inspect the
         state of the Pub/Sub subsystem. It is composed of subcommands that are
@@ -100,7 +100,7 @@
         is specified only channels matching the specified glob-style pattern are
         listed.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#array-reply">Array reply</a>: a list of active channels, optionally matching the specified pattern.</p>
         
@@ -109,7 +109,7 @@
         <p>Returns the number of subscribers (not counting clients subscribed to patterns)
         for the specified channels.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#array-reply">Array reply</a>: a list of channels and number of subscribers for every channel. The format is channel, count, channel, count, ..., so the list is flat.
         The order in which the channels are listed is the same as the order of the
@@ -124,7 +124,7 @@
         <a href="psubscribe.html">PSUBSCRIBE</a> command). Note that this is not just the count of clients subscribed
         to patterns but the total number of patterns all the clients are subscribed to.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>: the number of patterns all the clients are subscribed to.</p>
       </article>

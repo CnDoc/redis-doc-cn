@@ -41,7 +41,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -153,7 +153,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.6.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(1) to create the new key and additional O(N*M) to recostruct the serialized value, where N is the number of Redis objects composing the value and M their average size. For small string values the time complexity is thus O(1)+O(1*M) where M is small, so simply O(1). However for sorted set values the complexity is O(N*M*log(N)) because inserting values into sorted sets is O(log(N)).</p>
+          <p><strong>时间复杂度：</strong> O(1) to create the new key and additional O(N*M) to recostruct the serialized value, where N is the number of Redis objects composing the value and M their average size. For small string values the time complexity is thus O(1)+O(1*M) where M is small, so simply O(1). However for sorted set values the complexity is O(N*M*log(N)) because inserting values into sorted sets is O(log(N)).</p>
         </div>
         <p>Create a key associated with a value that is obtained by deserializing the
         provided serialized value (obtained via <a href="dump.html">DUMP</a>).</p>
@@ -164,11 +164,11 @@
         <p><a href="restore.html">RESTORE</a> checks the RDB version and data checksum.
         If they don&#39;t match an error is returned.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#simple-string-reply">Simple string reply</a>: The command returns OK on success.</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <pre><code>redis&gt; DEL mykey&#x000A;0&#x000A;redis&gt; RESTORE mykey 0 &quot;\n\x17\x17\x00\x00\x00\x12\x00\x00\x00\x03\x00\&#x000A;                        x00\xc0\x01\x00\x04\xc0\x02\x00\x04\xc0\x03\x00\&#x000A;                        xff\x04\x00u#&lt;\xc0;.\xe9\xdd&quot;&#x000A;OK&#x000A;redis&gt; TYPE mykey&#x000A;list&#x000A;redis&gt; LRANGE mykey 0 -1&#x000A;1) &quot;1&quot;&#x000A;2) &quot;2&quot;&#x000A;3) &quot;3&quot;&#x000A;</code></pre>
       </article>

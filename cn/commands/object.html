@@ -40,7 +40,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -152,7 +152,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.2.3.</strong></p>
-          <p><strong>Time complexity:</strong> O(1) for all the currently implemented subcommands.</p>
+          <p><strong>时间复杂度：</strong> O(1) for all the currently implemented subcommands.</p>
         </div>
         <p>The <a href="object.html">OBJECT</a> command allows to inspect the internals of Redis Objects associated
         with keys.
@@ -200,7 +200,7 @@
         once you perform an operation that makes it impossible for Redis to retain the
         space saving encoding.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p>Different return values are used for different subcommands.</p>
         
@@ -211,7 +211,7 @@
         
         <p>If the object you try to inspect is missing, a null bulk reply is returned.</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <pre><code>redis&gt; lpush mylist &quot;Hello World&quot;&#x000A;(integer) 4&#x000A;redis&gt; object refcount mylist&#x000A;(integer) 1&#x000A;redis&gt; object encoding mylist&#x000A;&quot;ziplist&quot;&#x000A;redis&gt; object idletime mylist&#x000A;(integer) 10&#x000A;</code></pre>
         

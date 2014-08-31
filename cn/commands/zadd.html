@@ -40,7 +40,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -147,7 +147,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 1.2.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(log(N)) where N is the number of elements in the sorted set.</p>
+          <p><strong>时间复杂度：</strong> O(log(N)) where N is the number of elements in the sorted set.</p>
         </div>
         <p>Adds all the specified members with the specified scores to the sorted set
         stored at <code>key</code>.
@@ -185,7 +185,7 @@
         
         <p>If the user inserts all the elements in a sorted set with the same score (for example 0), all the elements of the sorted set are sorted lexicographically, and range queries on elements are possible using the command <a href="zrangebylex.html">ZRANGEBYLEX</a> (Note: it is also possible to query sorted sets by range of scores using <a href="zrangebyscore.html">ZRANGEBYSCORE</a>).</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#integer-reply">Integer reply</a>, specifically:</p>
         
@@ -202,7 +202,7 @@
         member per call.</li>
         </ul>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='b421108f3f15f80ee7586505316d9164'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>

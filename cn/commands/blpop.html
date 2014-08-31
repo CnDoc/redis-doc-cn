@@ -40,7 +40,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -132,7 +132,7 @@
         </aside>
         <div class='metadata'>
           <p><strong>Available since 2.0.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(1)</p>
+          <p><strong>时间复杂度：</strong> O(1)</p>
         </div>
         <p><a href="blpop.html">BLPOP</a> is a blocking list pop primitive.
         It is the blocking version of <a href="lpop.html">LPOP</a> because it blocks the connection when there
@@ -219,7 +219,7 @@
         <p>If you like science fiction, think of time flowing at infinite speed inside a
         <a href="multi.html">MULTI</a> / <a href="exec.html">EXEC</a> block...</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#array-reply">Array reply</a>: specifically:</p>
         
@@ -230,7 +230,7 @@
         popped element.</li>
         </ul>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <pre><code>redis&gt; DEL list1 list2&#x000A;(integer) 0&#x000A;redis&gt; RPUSH list1 a b c&#x000A;(integer) 3&#x000A;redis&gt; BLPOP list1 list2 0&#x000A;1) &quot;list1&quot;&#x000A;2) &quot;a&quot;&#x000A;</code></pre>
         

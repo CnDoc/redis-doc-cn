@@ -43,7 +43,7 @@
       <article>
         <aside>
           <h2>
-            Related commands
+            相关命令
           </h2>
           <ul>
             <li>
@@ -164,8 +164,8 @@
           </ul>
         </aside>
         <div class='metadata'>
-          <p><strong>Available since 1.0.0.</strong></p>
-          <p><strong>Time complexity:</strong> O(1)</p>
+          <p><strong>始于1.0.0可用。</strong></p>
+          <p><strong>时间复杂度：</strong> O(1)</p>
         </div>
         <p>Set <code>key</code> to hold the string <code>value</code>.
         If <code>key</code> already holds a value, it is overwritten, regardless of its type.
@@ -185,12 +185,12 @@
         
         <p>Note: Since the <a href="set.html">SET</a> command options can replace <a href="setnx.html">SETNX</a>, <a href="setex.html">SETEX</a>, <a href="psetex.html">PSETEX</a>, it is possible that in future versions of Redis these three commands will be deprecated and finally removed.</p>
         
-        <h2>Return value</h2>
+        <h2>返回值</h2>
         
         <p><a href="../topics/protocol.html#simple-string-reply">Simple string reply</a>: <code>OK</code> if <a href="set.html">SET</a> was executed correctly.
         <a href="../topics/protocol.html#nil-reply">Null reply</a>: a Null Bulk Reply is returned if the <a href="set.html">SET</a> operation was not performed becase the user specified the <code>NX</code> or <code>XX</code> option but the condition was not met.</p>
         
-        <h2>Examples</h2>
+        <h2>例子</h2>
         
         <div class='example' data-session='0892006e7f5d012a464895db6c858160'>
           <span class='monospace prompt'>redis&gt;&nbsp;</span>
